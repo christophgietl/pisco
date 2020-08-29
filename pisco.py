@@ -4,6 +4,7 @@ import io
 import logging.config
 import queue
 import tkinter
+from typing import Any, Dict
 
 import PIL.Image
 import PIL.ImageTk
@@ -133,15 +134,13 @@ class App(tkinter.Tk):
             favorite_uri = favorite.resources[0].uri
             favorite_meta_data = favorite.resource_meta_data
             self.device.play_uri(favorite_uri, favorite_meta_data)
-        elif key == "<":
+        elif keysym == "XF86AudioRewind":
             self.device.previous()
-        elif key == ">":
+        elif keysym == "XF86AudioForward":
             self.device.next()
-        elif key == "p":
-            self.device.pause()
-        elif key == "o":
-            self.device.play()
-        elif key == "s":
+        elif keysym == "XF86AudioPlay":
+            self.toggle_play_pause()
+        elif keysym == "XF86AudioStop":  # not supported by Rii MX6
             self.device.stop()
         elif keysym == "XF86AudioMute":
             self.device.mute = not self.device.mute
@@ -151,6 +150,14 @@ class App(tkinter.Tk):
             self.device.set_relative_volume(-5)
         else:
             logger.info(f"Unknown key pressed: {event}")
+
+    def toggle_play_pause(self) -> None:
+        transport: Dict[str, Any] = self.device.get_current_transport_info()
+        state = transport["current_transport_state"]
+        if state == "PLAYING":
+            self.device.pause()
+        else:
+            self.device.play()
 
 
 def main() -> None:
