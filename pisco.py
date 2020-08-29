@@ -126,27 +126,26 @@ class App(tkinter.Tk):
 
     def handle_key_press_event(self, event: tkinter.Event) -> None:
         # noinspection PyUnresolvedReferences
-        key: str = event.char
-        keysym: str = event.keysym
-        if key.isdigit():
-            favorite_number = (int(key) - 1) % 10
+        key_symbol: str = event.keysym
+        if key_symbol.isdigit():
+            favorite_number = int(key_symbol)
             favorite = self.device.music_library.get_sonos_favorites()[favorite_number]
             favorite_uri = favorite.resources[0].uri
             favorite_meta_data = favorite.resource_meta_data
             self.device.play_uri(favorite_uri, favorite_meta_data)
-        elif keysym == "XF86AudioRewind":
+        elif key_symbol == "XF86AudioRewind":
             self.device.previous()
-        elif keysym == "XF86AudioForward":
+        elif key_symbol == "XF86AudioForward":
             self.device.next()
-        elif keysym == "XF86AudioPlay":
+        elif key_symbol == "XF86AudioPlay":
             self.toggle_play_pause()
-        elif keysym == "XF86AudioStop":  # not supported by Rii MX6
+        elif key_symbol == "XF86AudioStop":  # not supported by Rii MX6
             self.device.stop()
-        elif keysym == "XF86AudioMute":
+        elif key_symbol == "XF86AudioMute":
             self.device.mute = not self.device.mute
-        elif keysym == "XF86AudioRaiseVolume":
+        elif key_symbol == "XF86AudioRaiseVolume":
             self.device.set_relative_volume(+5)
-        elif keysym == "XF86AudioLowerVolume":
+        elif key_symbol == "XF86AudioLowerVolume":
             self.device.set_relative_volume(-5)
         else:
             logger.info(f"Unknown key pressed: {event}")
