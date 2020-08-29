@@ -126,6 +126,7 @@ class App(tkinter.Tk):
     def handle_key_press_event(self, event: tkinter.Event) -> None:
         # noinspection PyUnresolvedReferences
         key: str = event.char
+        keysym: str = event.keysym
         if key.isdigit():
             favorite_number = (int(key) - 1) % 10
             favorite = self.device.music_library.get_sonos_favorites()[favorite_number]
@@ -142,11 +143,11 @@ class App(tkinter.Tk):
             self.device.play()
         elif key == "s":
             self.device.stop()
-        elif key == "m":
+        elif keysym == "XF86AudioMute":
             self.device.mute()
-        elif key == "u":
+        elif keysym == "XF86AudioRaiseVolume":
             self.device.set_relative_volume(+5)
-        elif key == "d":
+        elif keysym == "XF86AudioLowerVolume":
             self.device.set_relative_volume(-5)
         else:
             logger.info(f"Unknown key pressed: {event}")
