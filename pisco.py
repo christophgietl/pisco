@@ -149,7 +149,7 @@ class App(tkinter.Tk):
         elif key == "d":
             self.device.set_relative_volume(-5)
         else:
-            logger.info(f"Unknown key pressed: {key}")
+            logger.info(f"Unknown key pressed: {event}")
 
 
 def main() -> None:
