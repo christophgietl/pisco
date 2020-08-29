@@ -129,19 +129,19 @@ class App(tkinter.Tk):
         key_symbol: str = event.keysym
         if key_symbol.isdigit():
             self.play_sonos_favorite(int(key_symbol))
-        elif key_symbol == "XF86AudioRewind":
+        elif key_symbol in ("Left", "XF86AudioRewind"):
             self.device.previous()
-        elif key_symbol == "XF86AudioForward":
+        elif key_symbol in ("Right", "XF86AudioForward"):
             self.device.next()
-        elif key_symbol == "XF86AudioPlay":
+        elif key_symbol in ("Return", "XF86AudioPlay"):
             self.toggle_current_transport_state()
         elif key_symbol == "XF86AudioStop":  # not supported by Rii MX6
             self.device.stop()
         elif key_symbol == "XF86AudioMute":
             self.device.mute = not self.device.mute
-        elif key_symbol == "XF86AudioRaiseVolume":
+        elif key_symbol in ("Up", "XF86AudioRaiseVolume"):
             self.device.set_relative_volume(+5)
-        elif key_symbol == "XF86AudioLowerVolume":
+        elif key_symbol in ("Down", "XF86AudioLowerVolume"):
             self.device.set_relative_volume(-5)
         else:
             logger.info(f"No action defined for key press {event}.")
