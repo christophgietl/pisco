@@ -4,6 +4,7 @@ import io
 import logging.config
 import queue
 import tkinter
+from typing import Optional
 
 import PIL.Image
 import PIL.ImageTk
@@ -45,60 +46,69 @@ class AlbumArtLabel(tkinter.Label):
         super().__init__(*args, **kwargs)
         self.av_transport_event_queue = av_transport_event_queue
         self.album_art_absolute_uri = ""
-        self.album_art_image = None
-        self.after(AFTER_MS, self.process_event_queue)
+        self.album_art_image = self.get_tk_photo_image(self.album_art_absolute_uri)
+        self.after(AFTER_MS, self.process_av_transport_event_queue)
 
     @staticmethod
-    def get_content(image_uri: str) -> bytes:
-        logger.info(f"Downloading {image_uri} ...")
-        r = requests.get(image_uri)
+    def download_resource(uri: str) -> bytes:
+        logger.info(f"Downloading resource {uri} ...")
+        r = requests.get(uri)
         content = r.content
-        logger.info(f"{image_uri} downloaded.")
+        logger.info(f"Resource {uri} downloaded.")
         return content
 
     @classmethod
-    def get_tk_photo_image(cls, content: bytes) -> PIL.ImageTk.PhotoImage:
-        logger.info("Resizing image ...")
+    def get_tk_photo_image(cls, album_art_absolute_uri: str) -> Optional[PIL.ImageTk.PhotoImage]:
+        if album_art_absolute_uri == "":
+            return None
+        content = cls.download_resource(album_art_absolute_uri)
         image: PIL.Image.Image = PIL.Image.open(io.BytesIO(content))
-        image_wo_alpha = cls.remove_alpha_channel_if_exists(image)
+        image_wo_alpha = cls.remove_alpha_channel(image)
         resized_image = cls.resize_image(image_wo_alpha, WINDOW_WIDTH, WINDOW_HEIGHT)
         tk_photo_image = PIL.ImageTk.PhotoImage(resized_image)
-        logger.info("Image resized.")
         return tk_photo_image
 
-    def process_event(self, event: soco.events_base.Event) -> None:
-        logger.debug(f"Received event: {event.variables}")
-        track_meta_data = event.variables["current_track_meta_data"]
-        if hasattr(track_meta_data, "__dict__"):
-            logger.debug(f"Received meta data: {track_meta_data.__dict__}")
-        if hasattr(track_meta_data, "album_art_uri"):
-            album_art_uri = track_meta_data.album_art_uri
-            album_art_absolute_uri = event.service.soco.music_library.build_album_art_full_uri(album_art_uri)
-            if self.album_art_absolute_uri != album_art_absolute_uri:
-                self.update_album_art(album_art_absolute_uri)
+    def process_av_transport_event(self, event: soco.events_base.Event) -> None:
+        logger.info(f"Processing AV transport event {event.__dict__} ...")
+        if event.variables["transport_state"] in ("PLAYING", "TRANSITIONING"):
+            self.process_track_meta_data(event)
         else:
-            logger.info(f"Track meta data does not have an attribute album_art_uri: {repr(track_meta_data)}")
+            self.update_album_art("")
+        logger.info("AV transport event processed.")
 
-    def process_event_queue(self) -> None:
+    def process_av_transport_event_queue(self) -> None:
         try:
             event = self.av_transport_event_queue.get_nowait()
         except queue.Empty:
             pass
         else:
-            self.process_event(event)
+            self.process_av_transport_event(event)
         finally:
-            self.after(AFTER_MS, self.process_event_queue)
+            self.after(AFTER_MS, self.process_av_transport_event_queue)
+
+    def process_track_meta_data(self, event: soco.events_base.Event) -> None:
+        track_meta_data = event.variables["current_track_meta_data"]
+        logger.info(f"Processing track meta data {track_meta_data.__dict__} ...")
+        if hasattr(track_meta_data, "album_art_uri"):
+            album_art_uri = track_meta_data.album_art_uri
+            album_art_absolute_uri = event.service.soco.music_library.build_album_art_full_uri(album_art_uri)
+            self.update_album_art(album_art_absolute_uri)
+        logger.info("Track meta data processed.")
 
     @staticmethod
-    def remove_alpha_channel_if_exists(image: PIL.Image.Image) -> PIL.Image.Image:
-        if image.mode == "RGBA":
-            rgb_image = PIL.Image.new("RGB", image.size, "white")
-            rgb_image.paste(image, mask=image.getchannel("A"))
-            return rgb_image
-        return image
+    def remove_alpha_channel(image: PIL.Image.Image) -> PIL.Image.Image:
+        logger.info("Removing alpha channel ...")
+        if image.mode != "RGBA":
+            logger.info("Image does not have an alpha channel.")
+            return image
+        rgb_image = PIL.Image.new("RGB", image.size, "white")
+        rgb_image.paste(image, mask=image.getchannel("A"))
+        logger.info("Alpha channel removed.")
+        return rgb_image
 
     @staticmethod
     def resize_image(image: PIL.Image.Image, max_width: int, max_height: int) -> PIL.Image.Image:
+        logger.info("Resizing image ...")
         if max_width * image.height <= max_height * image.width:
             new_width = max_width
             new_height = round(image.height * max_width / image.width)
@@ -106,13 +116,18 @@ class AlbumArtLabel(tkinter.Label):
             new_width = round(image.width * max_height / image.height)
             new_height = max_height
         resized_image = image.resize(size=(new_width, new_height))
+        logger.info("Image resized.")
         return resized_image
 
     def update_album_art(self, album_art_absolute_uri: str) -> None:
-        content = self.get_content(album_art_absolute_uri)
-        self.album_art_image = self.get_tk_photo_image(content)
+        logger.info("Updating album art ...")
+        if self.album_art_absolute_uri == album_art_absolute_uri:
+            logger.info("Album art is already up-to-date.")
+            return
+        self.album_art_image = self.get_tk_photo_image(album_art_absolute_uri)
         self.config(image=self.album_art_image)
         self.album_art_absolute_uri = album_art_absolute_uri
+        logger.info("Album art updated.")
 
 
 class App(tkinter.Tk):
