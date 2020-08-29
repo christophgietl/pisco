@@ -4,7 +4,6 @@ import io
 import logging.config
 import queue
 import tkinter
-from typing import Any, Dict
 
 import PIL.Image
 import PIL.ImageTk
@@ -125,20 +124,17 @@ class App(tkinter.Tk):
         self.bind_all("<KeyPress>", self.handle_key_press_event)
 
     def handle_key_press_event(self, event: tkinter.Event) -> None:
+        logger.info(f"Handling key press event {event} ...")
         # noinspection PyUnresolvedReferences
         key_symbol: str = event.keysym
         if key_symbol.isdigit():
-            favorite_number = int(key_symbol)
-            favorite = self.device.music_library.get_sonos_favorites()[favorite_number]
-            favorite_uri = favorite.resources[0].uri
-            favorite_meta_data = favorite.resource_meta_data
-            self.device.play_uri(favorite_uri, favorite_meta_data)
+            self.play_sonos_favorite(int(key_symbol))
         elif key_symbol == "XF86AudioRewind":
             self.device.previous()
         elif key_symbol == "XF86AudioForward":
             self.device.next()
         elif key_symbol == "XF86AudioPlay":
-            self.toggle_play_pause()
+            self.toggle_current_transport_state()
         elif key_symbol == "XF86AudioStop":  # not supported by Rii MX6
             self.device.stop()
         elif key_symbol == "XF86AudioMute":
@@ -148,15 +144,26 @@ class App(tkinter.Tk):
         elif key_symbol == "XF86AudioLowerVolume":
             self.device.set_relative_volume(-5)
         else:
-            logger.info(f"Unknown key pressed: {event}")
+            logger.info(f"No action defined for key press {event}.")
+        logger.info(f"Key press event {event} handled.")
 
-    def toggle_play_pause(self) -> None:
-        transport: Dict[str, Any] = self.device.get_current_transport_info()
+    def play_sonos_favorite(self, favorite_index: int) -> None:
+        logger.info(f"Starting to play Sonos favorite {favorite_index} ...")
+        favorite = self.device.music_library.get_sonos_favorites()[favorite_index]
+        favorite_uri = favorite.resources[0].uri
+        favorite_meta_data = favorite.resource_meta_data
+        self.device.play_uri(favorite_uri, favorite_meta_data)
+        logger.info(f"Started to play Sonos favorite {favorite_index}.")
+
+    def toggle_current_transport_state(self) -> None:
+        logger.info("Toggling current transport state ...")
+        transport = self.device.get_current_transport_info()
         state = transport["current_transport_state"]
         if state == "PLAYING":
             self.device.pause()
         else:
             self.device.play()
+        logger.info("Toggled current transport state.")
 
 
 def main() -> None:
