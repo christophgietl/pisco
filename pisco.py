@@ -144,7 +144,7 @@ class App(tkinter.Tk):
         elif key == "s":
             self.device.stop()
         elif keysym == "XF86AudioMute":
-            self.device.mute()
+            self.device.mute = not self.device.mute
         elif keysym == "XF86AudioRaiseVolume":
             self.device.set_relative_volume(+5)
         elif keysym == "XF86AudioLowerVolume":
