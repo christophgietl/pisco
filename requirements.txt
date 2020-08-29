@@ -1,0 +1,4 @@
+Pillow ~= 7.2
+requests ~= 2.24
+soco ~= 0.19
+xdg ~= 4.0
