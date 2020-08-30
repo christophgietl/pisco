@@ -227,6 +227,7 @@ def main() -> None:
     finally:
         av_transport_subscription.unsubscribe()
         av_transport_subscription.event_listener.stop()
+        backlight.activate()
 
 
 if __name__ == "__main__":
