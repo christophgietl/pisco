@@ -3,6 +3,7 @@
 import io
 import logging.config
 import queue
+import signal
 import tkinter
 from pathlib import Path
 from typing import Optional
@@ -162,6 +163,12 @@ class App(tkinter.Tk):
         self.geometry(f"{WINDOW_WIDTH}x{WINDOW_HEIGHT}")
         self.title("Pisco")
         self.bind_all("<KeyPress>", self.handle_key_press_event)
+        signal.signal(signal.SIGINT, self.handle_int_or_term_signal)
+        signal.signal(signal.SIGTERM, self.handle_int_or_term_signal)
+
+    def handle_int_or_term_signal(self, signal_number: int, _) -> None:
+        logger.info(f"Received signal {signal_number}.")
+        self.destroy()
 
     def handle_key_press_event(self, event: tkinter.Event) -> None:
         logger.info(f"Handling key press event {event} ...")
@@ -206,6 +213,14 @@ class App(tkinter.Tk):
         logger.info("Toggled current transport state.")
 
 
+def clean_up(av_transport_subscription: soco.events.Subscription, backlight: Backlight) -> None:
+    logger.info("Cleaning up ...")
+    av_transport_subscription.unsubscribe()
+    av_transport_subscription.event_listener.stop()
+    backlight.activate()
+    logger.info("Cleaned up.")
+
+
 def main() -> None:
     device: soco.core.SoCo = soco.discovery.by_name(DEVICE_NAME)
     av_transport_subscription: soco.events.Subscription = device.avTransport.subscribe()
@@ -225,9 +240,7 @@ def main() -> None:
     try:
         app.mainloop()
     finally:
-        av_transport_subscription.unsubscribe()
-        av_transport_subscription.event_listener.stop()
-        backlight.activate()
+        clean_up(av_transport_subscription, backlight)
 
 
 if __name__ == "__main__":
