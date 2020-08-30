@@ -4,6 +4,7 @@ import io
 import logging.config
 import queue
 import tkinter
+from pathlib import Path
 from typing import Optional
 
 import PIL.Image
@@ -14,6 +15,7 @@ import soco.events_base
 import xdg
 
 AFTER_MS = 40
+BACKLIGHT_DIRECTORY = Path("/sys/class/backlight/soc:backlight/")
 DEVICE_NAME = "Schlafzimmer"
 LOG_DIRECTORY = xdg.XDG_DATA_HOME / "pisco" / "logs"
 LOGGING = {
@@ -41,10 +43,31 @@ logging.config.dictConfig(LOGGING)
 logger = logging.getLogger(__name__)
 
 
+class Backlight:
+    def __init__(self, backlight_directory: Path):
+        self.backlight_directory = backlight_directory
+        self.brightness = backlight_directory / "brightness"
+        self.max_brightness = backlight_directory / "max_brightness"
+
+    def activate(self) -> None:
+        try:
+            max_brightness_value = self.max_brightness.read_text()
+            self.brightness.write_text(max_brightness_value)
+        except OSError:
+            logger.exception(f"Failed to activate backlight {self.backlight_directory}.")
+
+    def deactivate(self) -> None:
+        try:
+            self.brightness.write_text("0")
+        except OSError:
+            logger.exception(f"Failed to deactivate backlight {self.backlight_directory}.")
+
+
 class AlbumArtLabel(tkinter.Label):
-    def __init__(self, av_transport_event_queue: queue.Queue, *args, **kwargs):
+    def __init__(self, av_transport_event_queue: queue.Queue, backlight: Backlight, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.av_transport_event_queue = av_transport_event_queue
+        self.backlight = backlight
         self.album_art_absolute_uri = ""
         self.album_art_image = self.get_tk_photo_image(self.album_art_absolute_uri)
         self.after(AFTER_MS, self.process_av_transport_event_queue)
@@ -72,7 +95,9 @@ class AlbumArtLabel(tkinter.Label):
         logger.info(f"Processing AV transport event {event.__dict__} ...")
         if event.variables["transport_state"] in ("PLAYING", "TRANSITIONING"):
             self.process_track_meta_data(event)
+            self.backlight.activate()
         else:
+            self.backlight.deactivate()
             self.update_album_art("")
         logger.info("AV transport event processed.")
 
@@ -186,8 +211,15 @@ def main() -> None:
     av_transport_subscription: soco.events.Subscription = device.avTransport.subscribe()
     av_transport_event_queue: queue.Queue = av_transport_subscription.events
 
+    backlight = Backlight(BACKLIGHT_DIRECTORY)
+
     app = App(device)
-    label = AlbumArtLabel(master=app, background="black", av_transport_event_queue=av_transport_event_queue)
+    label = AlbumArtLabel(
+        master=app,
+        background="black",
+        av_transport_event_queue=av_transport_event_queue,
+        backlight=backlight
+    )
     label.pack(expand=True, fill="both")
 
     try:
