@@ -185,7 +185,8 @@ class SonosDevice(contextlib.AbstractContextManager):
     def __init__(self, name: str) -> None:
         logger.info(f"Initialising interface to Sonos device {name} ...")
         self.controller: soco.core.SoCo = soco.discovery.by_name(name)
-        self._av_transport_subscription: soco.events.Subscription = self.controller.avTransport.subscribe()
+        self._av_transport_subscription: soco.events.Subscription = \
+            self.controller.avTransport.subscribe(auto_renew=True)
         self.av_transport_event_queue: queue.Queue = self._av_transport_subscription.events
         logger.info(f"Interface to Sonos device {name} initialised.")
 
