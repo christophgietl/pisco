@@ -12,6 +12,7 @@ from typing import Optional
 
 import PIL.Image
 import PIL.ImageTk
+import click
 import requests
 import soco.events
 import soco.events_base
@@ -37,7 +38,6 @@ LOGGING = {
     "root": {"handlers": ["rot_file_handler", "stream_handler"], "level": "INFO"},
     "version": 1
 }
-SONOS_DEVICE_NAME = "Schlafzimmer"
 WINDOW_HEIGHT = 320
 WINDOW_WIDTH = 240
 
@@ -250,8 +250,10 @@ class UserInterface(tkinter.Tk):
         logger.info(f"Key press event {event} handled.")
 
 
-def main() -> None:
-    with SonosDevice(SONOS_DEVICE_NAME) as sonos_device:
+@click.command()
+@click.argument('sonos_device_name')
+def main(sonos_device_name: str) -> None:
+    with SonosDevice(sonos_device_name) as sonos_device:
         with Backlight(BACKLIGHT_DIRECTORY) as backlight:
             logger.info("Running pisco user interface ...")
             user_interface = UserInterface(sonos_device)
