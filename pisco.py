@@ -19,7 +19,6 @@ import soco.events_base
 import xdg
 
 AFTER_MS = 40
-BACKLIGHT_DIRECTORY = Path("/sys/class/backlight/soc:backlight/")
 LOG_DIRECTORY = xdg.XDG_DATA_HOME / "pisco" / "logs"
 LOGGING = {
     "disable_existing_loggers": False,
@@ -48,35 +47,40 @@ logger = logging.getLogger(__name__)
 
 class Backlight(contextlib.AbstractContextManager):
     def __exit__(self, exc_type, exc_value, traceback) -> None:
-        logger.info(f"Tearing down interface to backlight {self._backlight_directory} ...")
-        self.activate()
-        logger.info(f"Interface to backlight {self._backlight_directory} torn down.")
+        if self._backlight_directory:
+            logger.info(f"Tearing down interface to backlight {self._backlight_directory} ...")
+            self.activate()
+            logger.info(f"Interface to backlight {self._backlight_directory} torn down.")
 
-    def __init__(self, backlight_directory: Path) -> None:
-        logger.info(f"Initialising interface to backlight {backlight_directory} ...")
-        self._backlight_directory = backlight_directory
-        self._brightness = backlight_directory / "brightness"
-        self._max_brightness = backlight_directory / "max_brightness"
-        logger.info(f"Interface to backlight {backlight_directory} initialised.")
+    def __init__(self, backlight_directory: Optional[str]) -> None:
+        self._backlight_directory = None
+        if backlight_directory:
+            logger.info(f"Initialising interface to backlight {backlight_directory} ...")
+            self._backlight_directory = Path(backlight_directory)
+            self._brightness = self._backlight_directory / "brightness"
+            self._max_brightness = self._backlight_directory / "max_brightness"
+            logger.info(f"Interface to backlight {backlight_directory} initialised.")
 
     def activate(self) -> None:
-        logger.info(f"Activating backlight {self._backlight_directory} ...")
-        try:
-            max_brightness_value = self._max_brightness.read_text()
-            self._brightness.write_text(max_brightness_value)
-        except OSError:
-            logger.exception(f"Could not activate backlight {self._backlight_directory}.")
-        else:
-            logger.info(f"Backlight {self._backlight_directory} activated.")
+        if self._backlight_directory:
+            logger.info(f"Activating backlight {self._backlight_directory} ...")
+            try:
+                max_brightness_value = self._max_brightness.read_text()
+                self._brightness.write_text(max_brightness_value)
+            except OSError:
+                logger.exception(f"Could not activate backlight {self._backlight_directory}.")
+            else:
+                logger.info(f"Backlight {self._backlight_directory} activated.")
 
     def deactivate(self) -> None:
-        logger.info(f"Deactivating backlight {self._backlight_directory} ...")
-        try:
-            self._brightness.write_text("0")
-        except OSError:
-            logger.exception(f"Could not deactivate backlight {self._backlight_directory}.")
-        else:
-            logger.info(f"Backlight {self._backlight_directory} deactivated.")
+        if self._backlight_directory:
+            logger.info(f"Deactivating backlight {self._backlight_directory} ...")
+            try:
+                self._brightness.write_text("0")
+            except OSError:
+                logger.exception(f"Could not deactivate backlight {self._backlight_directory}.")
+            else:
+                logger.info(f"Backlight {self._backlight_directory} deactivated.")
 
 
 class HttpPhotoImageManager:
@@ -252,9 +256,17 @@ class UserInterface(tkinter.Tk):
 
 @click.command()
 @click.argument('sonos_device_name')
-def main(sonos_device_name: str) -> None:
+@click.option(
+    '-b',
+    '--backlight',
+    'backlight_directory',
+    help="sysfs directory of the backlight that should be deactivated when the device is not playing",
+    type=click.Path(exists=True, file_okay=False)
+)
+def main(sonos_device_name: str, backlight_directory: str) -> None:
+    """Control your Sonos device with your keyboard"""
     with SonosDevice(sonos_device_name) as sonos_device:
-        with Backlight(BACKLIGHT_DIRECTORY) as backlight:
+        with Backlight(backlight_directory) as backlight:
             logger.info("Running pisco user interface ...")
             user_interface = UserInterface(sonos_device)
             playback_information_label = PlaybackInformationLabel(
