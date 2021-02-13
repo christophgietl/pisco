@@ -37,9 +37,6 @@ LOGGING = {
     "root": {"handlers": ["rot_file_handler", "stream_handler"], "level": "INFO"},
     "version": 1
 }
-WINDOW_HEIGHT = 320
-WINDOW_WIDTH = 240
-
 LOG_DIRECTORY.mkdir(exist_ok=True, parents=True)
 logging.config.dictConfig(LOGGING)
 logger = logging.getLogger(__name__)
@@ -84,13 +81,16 @@ class Backlight(contextlib.AbstractContextManager):
 
 
 class HttpPhotoImageManager:
-    @classmethod
-    def _create_photo_image(cls, absolute_uri: str) -> PIL.ImageTk.PhotoImage:
+    def __init__(self, max_width: int, max_height: int) -> None:
+        self._max_width = max_width
+        self._max_height = max_height
+
+    def _create_photo_image(self, absolute_uri: str) -> PIL.ImageTk.PhotoImage:
         logger.info(f"Creating Tkinter-compatible photo image from URI {absolute_uri} ...")
-        content = cls._download_resource(absolute_uri)
+        content = self._download_resource(absolute_uri)
         image: PIL.Image.Image = PIL.Image.open(io.BytesIO(content))
-        image_wo_alpha = cls._remove_alpha_channel(image)
-        resized_image = cls._resize_image(image_wo_alpha, WINDOW_WIDTH, WINDOW_HEIGHT)
+        image_wo_alpha = self._remove_alpha_channel(image)
+        resized_image = self._resize_image(image_wo_alpha)
         photo_image = PIL.ImageTk.PhotoImage(resized_image)
         logger.info(f"Tkinter-compatible photo image created from URI {absolute_uri}.")
         return photo_image
@@ -114,33 +114,39 @@ class HttpPhotoImageManager:
         logger.info("Alpha channel removed.")
         return rgb_image
 
-    @staticmethod
-    def _resize_image(image: PIL.Image.Image, max_width: int, max_height: int) -> PIL.Image.Image:
+    def _resize_image(self, image: PIL.Image.Image) -> PIL.Image.Image:
         logger.info("Resizing image ...")
-        if max_width * image.height <= max_height * image.width:
-            new_width = max_width
-            new_height = round(image.height * max_width / image.width)
+        if self._max_width * image.height <= self._max_height * image.width:
+            new_width = self._max_width
+            new_height = round(image.height * self._max_width / image.width)
         else:
-            new_width = round(image.width * max_height / image.height)
-            new_height = max_height
+            new_width = round(image.width * self._max_height / image.height)
+            new_height = self._max_height
         resized_image = image.resize(size=(new_width, new_height))
         logger.info("Image resized.")
         return resized_image
 
-    @classmethod
     @functools.lru_cache(maxsize=1)
-    def get_photo_image(cls, absolute_uri: Optional[str]) -> Optional[PIL.ImageTk.PhotoImage]:
-        if absolute_uri is not None:
-            photo_image = cls._create_photo_image(absolute_uri)
+    def get_photo_image(self, absolute_uri: Optional[str]) -> Optional[PIL.ImageTk.PhotoImage]:
+        if absolute_uri:
+            photo_image = self._create_photo_image(absolute_uri)
             return photo_image
 
 
 class PlaybackInformationLabel(tkinter.Label):
-    def __init__(self, av_transport_event_queue: queue.Queue, backlight: Backlight, *args, **kwargs) -> None:
+    def __init__(
+            self,
+            av_transport_event_queue: queue.Queue,
+            backlight: Backlight,
+            max_width: int,
+            max_height: int,
+            *args,
+            **kwargs
+    ) -> None:
         super().__init__(*args, **kwargs)
         self._av_transport_event_queue = av_transport_event_queue
         self._backlight = backlight
-        self._album_art_image_manager = HttpPhotoImageManager()
+        self._album_art_image_manager = HttpPhotoImageManager(max_width, max_height)
         self.after(AFTER_MS, self._process_av_transport_event_queue)
 
     def _process_av_transport_event(self, event: soco.events_base.Event) -> None:
@@ -214,10 +220,10 @@ class SonosDevice(contextlib.AbstractContextManager):
 
 
 class UserInterface(tkinter.Tk):
-    def __init__(self, sonos_device: SonosDevice, *args, **kwargs) -> None:
+    def __init__(self, sonos_device: SonosDevice, window_width: int, window_height: int, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self._sonos_device = sonos_device
-        self.geometry(f"{WINDOW_WIDTH}x{WINDOW_HEIGHT}")
+        self.geometry(f"{window_width}x{window_height}")
         self.title("Pisco")
         self.bind_all("<KeyPress>", self._handle_key_press_event)
         signal.signal(signal.SIGINT, self._handle_int_or_term_signal)
@@ -263,17 +269,37 @@ class UserInterface(tkinter.Tk):
     help="sysfs directory of the backlight that should be deactivated when the device is not playing",
     type=click.Path(exists=True, file_okay=False)
 )
-def main(sonos_device_name: str, backlight_directory: str) -> None:
+@click.option(
+    '-w',
+    '--width',
+    'window_width',
+    help="width of the Pisco window",
+    type=click.IntRange(min=0),
+    default=240,
+    show_default=True
+)
+@click.option(
+    '-h',
+    '--height',
+    'window_height',
+    help="height of the Pisco window",
+    type=click.IntRange(min=0),
+    default=320,
+    show_default=True
+)
+def main(sonos_device_name: str, backlight_directory: str, window_width: int, window_height: int) -> None:
     """Control your Sonos device with your keyboard"""
     with SonosDevice(sonos_device_name) as sonos_device:
         with Backlight(backlight_directory) as backlight:
             logger.info("Running pisco user interface ...")
-            user_interface = UserInterface(sonos_device)
+            user_interface = UserInterface(sonos_device, window_width, window_height)
             playback_information_label = PlaybackInformationLabel(
                 master=user_interface,
                 background="black",
                 av_transport_event_queue=sonos_device.av_transport_event_queue,
-                backlight=backlight
+                backlight=backlight,
+                max_width=window_width,
+                max_height=window_height
             )
             playback_information_label.pack(expand=True, fill="both")
             user_interface.mainloop()

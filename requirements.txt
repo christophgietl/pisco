@@ -1,5 +1,5 @@
 click ~= 7.1
 Pillow ~= 7.2
-requests ~= 2.24
-soco ~= 0.19
+requests ~= 2.25
+soco ~= 0.21.1
 xdg ~= 4.0
