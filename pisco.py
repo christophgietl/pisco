@@ -18,7 +18,6 @@ import soco.events
 import soco.events_base
 import xdg
 
-AFTER_MS = 40
 LOG_DIRECTORY = xdg.XDG_DATA_HOME / "pisco" / "logs"
 LOGGING = {
     "disable_existing_loggers": False,
@@ -140,6 +139,7 @@ class PlaybackInformationLabel(tkinter.Label):
             backlight: Backlight,
             max_width: int,
             max_height: int,
+            refresh_interval: int,
             *args,
             **kwargs
     ) -> None:
@@ -147,7 +147,8 @@ class PlaybackInformationLabel(tkinter.Label):
         self._av_transport_event_queue = av_transport_event_queue
         self._backlight = backlight
         self._album_art_image_manager = HttpPhotoImageManager(max_width, max_height)
-        self.after(AFTER_MS, self._process_av_transport_event_queue)
+        self._refresh_interval = refresh_interval
+        self.after(self._refresh_interval, self._process_av_transport_event_queue)
 
     def _process_av_transport_event(self, event: soco.events_base.Event) -> None:
         logger.info(f"Processing AV transport event {event.__dict__} ...")
@@ -167,7 +168,7 @@ class PlaybackInformationLabel(tkinter.Label):
         else:
             self._process_av_transport_event(event)
         finally:
-            self.after(AFTER_MS, self._process_av_transport_event_queue)
+            self.after(self._refresh_interval, self._process_av_transport_event_queue)
 
     def _process_track_meta_data(self, event: soco.events_base.Event) -> None:
         track_meta_data = event.variables["current_track_meta_data"]
@@ -287,7 +288,22 @@ class UserInterface(tkinter.Tk):
     default=320,
     show_default=True
 )
-def main(sonos_device_name: str, backlight_directory: str, window_width: int, window_height: int) -> None:
+@click.option(
+    '-r',
+    '--refresh',
+    'playback_information_refresh_interval',
+    help="time in milliseconds after which playback information is updated",
+    type=click.IntRange(min=1),
+    default=40,
+    show_default=True
+)
+def main(
+        sonos_device_name: str,
+        backlight_directory: str,
+        window_width: int,
+        window_height: int,
+        playback_information_refresh_interval: int
+) -> None:
     """Control your Sonos device with your keyboard"""
     with SonosDevice(sonos_device_name) as sonos_device:
         with Backlight(backlight_directory) as backlight:
@@ -299,7 +315,8 @@ def main(sonos_device_name: str, backlight_directory: str, window_width: int, wi
                 av_transport_event_queue=sonos_device.av_transport_event_queue,
                 backlight=backlight,
                 max_width=window_width,
-                max_height=window_height
+                max_height=window_height,
+                refresh_interval=playback_information_refresh_interval
             )
             playback_information_label.pack(expand=True, fill="both")
             user_interface.mainloop()
