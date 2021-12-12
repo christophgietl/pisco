@@ -20,6 +20,10 @@
           - python3-tk
           - xserver-xorg
 
+    - name: Set default locale
+      become: yes
+      ansible.builtin.command: raspi-config nonint do_change_locale en_US.UTF-8
+
     - name: Download setup script for display
       become: yes
       ansible.builtin.git:
