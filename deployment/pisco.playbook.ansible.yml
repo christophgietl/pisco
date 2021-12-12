@@ -2,10 +2,6 @@
   remote_user: pi
   tasks:
 
-    - name: Set timezone to Europe/Berlin
-      become: yes
-      community.general.timezone:
-        name: Europe/Berlin
     - name: Upgrade packages
       become: yes
       ansible.builtin.apt:
