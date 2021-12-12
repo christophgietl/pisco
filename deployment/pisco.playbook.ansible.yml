@@ -20,6 +20,10 @@
           - python3-tk
           - xserver-xorg
 
+    - name: Set default locale
+      become: yes
+      ansible.builtin.command: raspi-config nonint do_change_locale en_US.UTF-8
+
     - name: Download setup script for display
       become: yes
       ansible.builtin.git:
@@ -43,6 +47,11 @@
     - name: Enable autologin to GUI
       become: yes
       ansible.builtin.command: raspi-config nonint do_boot_behaviour B4
+    - name: Fix auto-re-login
+      become: yes
+      ansible.builtin.copy:
+        dest: /etc/lightdm/
+        src: etc/lightdm/lightdm.conf.d
 
     - name: Download Pisco
       become: yes
