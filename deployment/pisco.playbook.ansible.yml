@@ -1,0 +1,69 @@
+- hosts: pisco
+  remote_user: pi
+  tasks:
+
+    - name: Upgrade packages
+      become: yes
+      ansible.builtin.apt:
+        update_cache: yes
+        upgrade: yes
+    - name: Install packages
+      become: yes
+      ansible.builtin.apt:
+        install_recommends: no
+        name:
+          - brightness-udev # allows unprivileged users to set brightness
+          - git
+          - libopenjp2-7    # needed by tkinter
+          - lightdm
+          - python3-pip
+          - python3-tk
+          - xserver-xorg
+
+    - name: Download setup script for display
+      become: yes
+      ansible.builtin.git:
+        dest: /opt/github.com/pimoroni/hyperpixel4/
+        repo: https://github.com/pimoroni/hyperpixel4.git
+        version: square
+    - name: Set up display
+      become: yes
+      ansible.builtin.command:
+        chdir: /opt/github.com/pimoroni/hyperpixel4/
+        cmd: ./install.sh
+    - name: Set display rotation to 180°
+      become: yes
+      ansible.builtin.lineinfile:
+        line: display_rotate=2
+        path: /boot/config.txt
+        regexp: '^display_rotate='
+    - name: Disable screen blanking
+      become: yes
+      ansible.builtin.command: raspi-config nonint do_blanking 1
+    - name: Enable autologin to GUI
+      become: yes
+      ansible.builtin.command: raspi-config nonint do_boot_behaviour B4
+
+    - name: Download Pisco
+      become: yes
+      ansible.builtin.git:
+        dest: /opt/github.com/christophgietl/pisco/
+        repo: https://github.com/christophgietl/pisco.git
+    - name: Install Pisco dependencies
+      ansible.builtin.pip:
+        executable: pip3
+        requirements: /opt/github.com/christophgietl/pisco/requirements.txt
+    - name: Start Pisco after login
+      ansible.builtin.copy:
+        content: >
+          exec
+          /opt/github.com/christophgietl/pisco/pisco.py
+          --backlight /sys/class/backlight/rpi_backlight/
+          --width 720
+          --height 720
+          Leseecke
+        dest: /home/pi/.xsession
+
+    - name: Reboot
+      become: yes
+      ansible.builtin.reboot: { }
