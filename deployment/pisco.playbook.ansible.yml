@@ -14,13 +14,11 @@
         name:
           - brightness-udev # allows unprivileged users to set brightness
           - git
-          - libopenjp2-7 # needed by tkinter
+          - libopenjp2-7    # needed by tkinter
           - lightdm
           - python3-pip
           - python3-tk
           - xserver-xorg
-          - xserver-xorg-input-evdev
-          - xserver-xorg-input-libinput
 
     - name: Download setup script for display
       become: yes
