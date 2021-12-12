@@ -48,3 +48,11 @@ Options:
 
   --help                       Show this message and exit.
 ```
+
+As soon as Pisco is running, you can use the following keys to control playback:
+- numbers `0-9` to play the top 10 tracks (or radio stations) of your Sonos favorites
+- ⏮ and ⏭ (or left and right arrow) to play previous or next track
+- ⏯ (or return) to pause or resume playback
+- ⏹ to stop playback
+- ➕ and ➖ (or up and down arrow) to raise or lower volume
+- 🔇 to mute or unmute
