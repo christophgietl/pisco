@@ -1,7 +1,7 @@
 # deployment
 
-This document describes the minimalistic deployment of Pisco
-to a [Raspberry Pi Zero](https://www.raspberrypi.com/products/raspberry-pi-zero/)
+This document describes a process for a minimalistic deployment of Pisco
+to a clean [Raspberry Pi Zero](https://www.raspberrypi.com/products/raspberry-pi-zero/)
 with a [Pimoroni HyperPixel 4.0 Square](https://shop.pimoroni.com/products/hyperpixel-4-square?variant=30138251477075)
 display.
 
@@ -25,7 +25,7 @@ Use the *Advanced options* menu to configure the operating system as follows:
 After the SD card has been created, insert it into the Pi Zero and boot it.
 
 
-## Setting up display and Pisco
+## Setting up display drivers and Pisco on the Pi Zero
 
 Once the Pi Zero has booted,
 you can use the Ansible playbook `pisco.playbook.ansible.yml`
