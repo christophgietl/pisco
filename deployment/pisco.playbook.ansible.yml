@@ -41,10 +41,7 @@
         regexp: '^display_rotate='
     - name: Disable screen blanking
       become: yes
-      ansible.builtin.copy:
-        dest: /etc/X11/xorg.conf.d/
-        remote_src: yes
-        src: /usr/share/raspi-config/10-blanking.conf
+      ansible.builtin.command: raspi-config nonint do_blanking 1
     - name: Enable autologin to GUI
       become: yes
       ansible.builtin.command: raspi-config nonint do_boot_behaviour B4
