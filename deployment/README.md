@@ -33,3 +33,6 @@ to install the display drivers and Pisco:
 ```shell
 ansible-playbook pisco.playbook.ansible.yml
 ```
+
+When the playbook has finished, you can manually
+[set up your Bluetooth devices](https://howchoo.com/pi/bluetooth-raspberry-pi#setting-up-bluetooth-using-a-terminal-or-ssh-connection).
