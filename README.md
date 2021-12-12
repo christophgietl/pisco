@@ -14,6 +14,8 @@ media remotes (e.g. [Satechi Bluetooth Multi-Media Remote](https://satechi.net/p
 
 ## Setup
 
+Proceed as follows to set up Pisco on an ordinary Linux or macOS machine:
+
 1. Make sure you are using Python 3.7 or newer.
 2. Create a virtual environment if you do not want to clutter up your default environment.
 3. Clone this repository.
@@ -21,6 +23,10 @@ media remotes (e.g. [Satechi Bluetooth Multi-Media Remote](https://satechi.net/p
     ```shell
     pip3 install --requirement requirements.txt
     ```
+
+For a clean and minimalistic deployment
+on a [Raspberry Pi Zero](https://www.raspberrypi.com/products/raspberry-pi-zero/),
+please check the directory `deployment`.
 
 
 ## Usage
