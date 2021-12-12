@@ -16,7 +16,8 @@ media remotes (e.g. [Satechi Bluetooth Multi-Media Remote](https://satechi.net/p
 
 1. Make sure you are using Python 3.7 or newer.
 2. Create a virtual environment if you do not want to clutter up your default environment.
-3. Install dependencies:
+3. Clone this repository.
+4. Install dependencies:
     ```shell
     pip3 install --requirement requirements.txt
     ```
