@@ -63,6 +63,7 @@
           --height 720
           Leseecke
         dest: /home/pi/.xsession
+
     - name: Reboot
       become: yes
       ansible.builtin.reboot: { }
