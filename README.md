@@ -2,7 +2,7 @@
 
 Pisco is a keyboard only controller for Sonos speakers.
 
-![Screenshot of Pisco while playing Kendrick Lamar's album 'DAMN.'](images/screenshot.png)
+<img src="images/screenshot.png" width="432" height="460" alt="Screenshot of Pisco while playing Kendrick Lamar's album DAMN.">
 
 While Pisco's graphical interface displays the album art of the currently running track,
 you can control playback with your keyboard.
