@@ -24,7 +24,8 @@ media remotes (e.g. [Satechi Bluetooth Multi-Media Remote](https://satechi.net/p
 
 ## Usage
 
-When starting Pisco, you need to provide the name of the Sonos device (i.e. Sonos room) you want to control.
+When starting Pisco,
+you need to provide the name of the Sonos device (i.e. Sonos room) you want to control:
 
 ```shell
 ./pisco.py Leseecke # Replace 'Leseecke' by the name of your Sonos device.
@@ -32,7 +33,7 @@ When starting Pisco, you need to provide the name of the Sonos device (i.e. Sono
 
 You can use the option `--help` to find additional options:
 ```text
-$ ./pisco.py --help                                                                                                                                                                                            master!
+$ ./pisco.py --help
 Usage: pisco.py [OPTIONS] SONOS_DEVICE_NAME
 
   Control your Sonos device with your keyboard
@@ -50,9 +51,9 @@ Options:
 ```
 
 As soon as Pisco is running, you can use the following keys to control playback:
-- numbers `0-9` to play the top 10 tracks (or radio stations) of your Sonos favorites
-- ⏮ and ⏭ (or left and right arrow) to play previous or next track
 - ⏯ (or return) to pause or resume playback
 - ⏹ to stop playback
+- ⏮ and ⏭ (or left and right arrow) to play previous or next track
+- 0️⃣ to 9️⃣ to play the top 10 tracks (or radio stations) of your Sonos favorites
 - ➕ and ➖ (or up and down arrow) to raise or lower volume
 - 🔇 to mute or unmute
