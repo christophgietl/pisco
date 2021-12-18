@@ -1,5 +1,12 @@
 - hosts: pisco
   remote_user: pi
+  vars_prompt:
+
+    - name: sonos_device_name
+      default: Schlafzimmer
+      prompt: What is the name of your Sonos device?
+      private: no
+
   tasks:
 
     - name: Upgrade packages
@@ -70,7 +77,7 @@
           --backlight /sys/class/backlight/rpi_backlight/
           --width 720
           --height 720
-          Leseecke
+          {{ sonos_device_name }}
         dest: /home/pi/.xsession
 
     - name: Reboot
