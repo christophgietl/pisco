@@ -9,11 +9,11 @@ repository = "https://github.com/christophgietl/pisco"
 
 [tool.poetry.dependencies]
 python = "^3.7"
-click = "^7.1"
+click = "^8.0"
 Pillow = "^8.4"
 requests = "^2.25"
-soco = "^0.21.1"
-xdg = "^4.0"
+soco = "^0.25.0"
+xdg = "^5.1"
 
 [tool.poetry.dev-dependencies]
 
