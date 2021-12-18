@@ -20,20 +20,18 @@ import xdg
 log_directory = xdg.XDG_DATA_HOME / "pisco" / "logs"
 log_directory.mkdir(exist_ok=True, parents=True)
 logging_configuration = {
-    "disable_existing_loggers": False,
     "formatters": {"default_formatter": {"format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"}},
     "handlers": {
         "rot_file_handler": {
             "backupCount": 9,
             "class": "logging.handlers.RotatingFileHandler",
-            "filename": log_directory / "sonos_display.log",
+            "filename": log_directory / "pisco.log",
             "formatter": "default_formatter",
             "maxBytes": 1_000_000
-        },
-        "stream_handler": {"class": "logging.StreamHandler", "formatter": "default_formatter"}
+        }
     },
     "loggers": {__name__: {"level": "DEBUG"}},
-    "root": {"handlers": ["rot_file_handler", "stream_handler"], "level": "INFO"},
+    "root": {"handlers": ["rot_file_handler"], "level": "INFO"},
     "version": 1
 }
 logging.config.dictConfig(logging_configuration)
