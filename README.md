@@ -4,8 +4,6 @@ Pisco is a keyboard only controller for Sonos speakers.
 While Pisco's graphical interface displays the album art of the currently running track,
 you can control playback with your keyboard.
 
-<img src="images/screenshot.png" width="432" height="460" alt="Screenshot of Pisco while playing Kendrick Lamar's album DAMN.">
-
 Pisco has been tested on Linux and on macOS.
 It is particularly well-suited for usage with
 small displays (e.g. [Pimoroni HyperPixel 4.0 Square](https://shop.pimoroni.com/products/hyperpixel-4-square?variant=30138251477075)) and
@@ -17,10 +15,10 @@ media remotes (e.g. [Satechi Bluetooth Multi-Media Remote](https://satechi.net/p
 Proceed as follows to set up Pisco on an ordinary Linux or macOS machine:
 
 1. Make sure you are using Python 3.7 or newer.
-2. Clone this repository.
+2. Create a virtual environment if you do not want to clutter up your default environment.
 3. Install Pisco:
     ```shell
-    poetry install
+    pip3 install pisco
     ```
 
 For a clean and minimalistic deployment
