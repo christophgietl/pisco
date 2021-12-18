@@ -25,7 +25,7 @@
         name:
           - brightness-udev # allows unprivileged users to set brightness
           - git
-          - libopenjp2-7    # needed by tkinter
+          - libopenjp2-7    # required by Python package Pillow
           - lightdm
           - python3-pip
           - python3-tk
@@ -64,20 +64,26 @@
         dest: /etc/lightdm/
         src: etc/lightdm/lightdm.conf.d
 
-    - name: Download Pisco
+    - name: Copy Pisco package
+      copy:
+        dest: /tmp/pisco-current-py3-none-any.whl
+        src: "{{ item }}"
+      with_fileglob:
+        - ../dist/pisco-*-py3-none-any.whl
+    - name: Install Pisco package
       become: yes
-      git:
-        dest: /opt/github.com/christophgietl/pisco/
-        repo: https://github.com/christophgietl/pisco.git
-    - name: Install Pisco dependencies
       pip:
         executable: pip3
-        requirements: /opt/github.com/christophgietl/pisco/requirements.txt
+        name: file:///tmp/pisco-current-py3-none-any.whl
+    - name: Delete Pisco package
+      file:
+        path: /tmp/pisco-current-py3-none-any.whl
+        state: absent
     - name: Start Pisco after login
       copy:
         content: >
           exec
-          /opt/github.com/christophgietl/pisco/pisco.py
+          pisco
           --backlight /sys/class/backlight/rpi_backlight/
           --width 720
           --height 720

@@ -17,11 +17,10 @@ media remotes (e.g. [Satechi Bluetooth Multi-Media Remote](https://satechi.net/p
 Proceed as follows to set up Pisco on an ordinary Linux or macOS machine:
 
 1. Make sure you are using Python 3.7 or newer.
-2. Create a virtual environment if you do not want to clutter up your default environment.
-3. Clone this repository.
-4. Install dependencies:
+2. Clone this repository.
+3. Install Pisco:
     ```shell
-    pip3 install --requirement requirements.txt
+    poetry install
     ```
 
 For a clean and minimalistic deployment
@@ -35,13 +34,13 @@ When starting Pisco,
 you need to provide the name of the Sonos device (i.e. Sonos room) you want to control:
 
 ```shell
-./pisco.py Leseecke # Replace 'Leseecke' by the name of your Sonos device.
+pisco Leseecke  # Replace 'Leseecke' by the name of your Sonos device.
 ```
 
 You can use the option `--help` to find additional options:
 ```text
-$ ./pisco.py --help
-Usage: pisco.py [OPTIONS] SONOS_DEVICE_NAME
+$ pisco --help
+Usage: pisco [OPTIONS] SONOS_DEVICE_NAME
 
   Control your Sonos device with your keyboard
 
