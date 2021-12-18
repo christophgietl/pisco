@@ -1,3 +1,4 @@
+import _thread
 import contextlib
 import functools
 import io
@@ -49,11 +50,11 @@ class Backlight(contextlib.AbstractContextManager):
     def __init__(self, backlight_directory: Optional[str]) -> None:
         self._backlight_directory = None
         if backlight_directory:
-            logger.info(f"Initialising interface to backlight {backlight_directory} ...")
+            logger.info(f"Initializing interface to backlight {backlight_directory} ...")
             self._backlight_directory = Path(backlight_directory)
             self._brightness = self._backlight_directory / "brightness"
             self._max_brightness = self._backlight_directory / "max_brightness"
-            logger.info(f"Interface to backlight {backlight_directory} initialised.")
+            logger.info(f"Interface to backlight {backlight_directory} initialized.")
 
     def activate(self) -> None:
         if self._backlight_directory:
@@ -192,12 +193,25 @@ class SonosDevice(contextlib.AbstractContextManager):
         logger.info(f"Interface to Sonos device {self.controller.player_name} torn down.")
 
     def __init__(self, name: str) -> None:
-        logger.info(f"Initialising interface to Sonos device {name} ...")
+        logger.info(f"Initializing interface to Sonos device {name} ...")
         self.controller: soco.core.SoCo = soco.discovery.by_name(name)
-        self._av_transport_subscription: soco.events.Subscription = \
-            self.controller.avTransport.subscribe(auto_renew=True)
+        self._av_transport_subscription: soco.events.Subscription = self._initialize_av_transport_subscription()
         self.av_transport_event_queue: queue.Queue = self._av_transport_subscription.events
-        logger.info(f"Interface to Sonos device {name} initialised.")
+        logger.info(f"Interface to Sonos device {name} initialized.")
+
+    def _initialize_av_transport_subscription(self) -> soco.events.Subscription:
+        def handle_autorenew_failure(_: Exception) -> None:
+            logger.info("Handling autorenew failure ...")
+            logger.info("Raising a KeyboardInterrupt in the main thread ...")
+            _thread.interrupt_main()
+            logger.info("KeyboardInterrupt raised in the main thread.")
+            logger.info("Autorenew failure handled.")
+
+        logger.info("Initializing AV transport subscription ...")
+        subscription = self.controller.avTransport.subscribe(auto_renew=True)
+        subscription.auto_renew_fail = handle_autorenew_failure
+        logger.info("AV transport subscription initialized.")
+        return subscription
 
     def play_sonos_favorite(self, favorite_index: int) -> None:
         logger.info(f"Starting to play Sonos favorite {favorite_index} ...")
