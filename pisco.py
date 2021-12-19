@@ -31,7 +31,11 @@ logging_configuration = {
             "maxBytes": 1_000_000
         }
     },
-    "loggers": {__name__: {"level": "DEBUG"}},
+    "loggers": {
+        "soco.core": {"level": "DEBUG"},
+        "soco.discovery": {"level": "DEBUG"},
+        "soco.events": {"level": "DEBUG"}
+    },
     "root": {"handlers": ["rot_file_handler"], "level": "INFO"},
     "version": 1
 }
