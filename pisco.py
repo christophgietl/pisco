@@ -21,13 +21,18 @@ log_directory = xdg.XDG_DATA_HOME / "pisco" / "logs"
 log_directory.mkdir(exist_ok=True, parents=True)
 logging_configuration = {
     "disable_existing_loggers": False,
-    "formatters": {"default_formatter": {"format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"}},
+    "formatters": {
+        "json_formatter": {
+            "class": "pythonjsonlogger.jsonlogger.JsonFormatter",
+            "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s - %(thread)s - %(threadName)s"
+        }
+    },
     "handlers": {
         "rot_file_handler": {
             "backupCount": 9,
             "class": "logging.handlers.RotatingFileHandler",
-            "filename": log_directory / "pisco.log",
-            "formatter": "default_formatter",
+            "filename": log_directory / "pisco.jsonl",
+            "formatter": "json_formatter",
             "maxBytes": 1_000_000
         }
     },
