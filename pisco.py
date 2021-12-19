@@ -20,6 +20,7 @@ import xdg
 log_directory = xdg.XDG_DATA_HOME / "pisco" / "logs"
 log_directory.mkdir(exist_ok=True, parents=True)
 logging_configuration = {
+    "disable_existing_loggers": False,
     "formatters": {"default_formatter": {"format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"}},
     "handlers": {
         "rot_file_handler": {
