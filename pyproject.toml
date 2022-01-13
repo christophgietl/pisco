@@ -10,7 +10,7 @@ repository = "https://github.com/christophgietl/pisco"
 [tool.poetry.dependencies]
 python = "^3.7"
 click = "^7.1"
-Pillow = "^8.4"
+Pillow = "^9.0"
 requests = "^2.25"
 soco = "^0.21.1"
 xdg = "^4.0"
