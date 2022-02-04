@@ -68,7 +68,6 @@
       become: yes
       pip:
         executable: pip3
-        extra_args: --extra-index-url https://test.pypi.org/simple/
         name: pisco
     - name: Start Pisco after login
       copy:
