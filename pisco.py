@@ -1,3 +1,4 @@
+import _thread
 import contextlib
 import functools
 import io
@@ -20,19 +21,27 @@ log_directory = xdg.XDG_DATA_HOME / "pisco" / "logs"
 log_directory.mkdir(exist_ok=True, parents=True)
 logging_configuration = {
     "disable_existing_loggers": False,
-    "formatters": {"default_formatter": {"format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"}},
+    "formatters": {
+        "json_formatter": {
+            "class": "pythonjsonlogger.jsonlogger.JsonFormatter",
+            "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s - %(thread)s - %(threadName)s"
+        }
+    },
     "handlers": {
         "rot_file_handler": {
             "backupCount": 9,
             "class": "logging.handlers.RotatingFileHandler",
-            "filename": log_directory / "sonos_display.log",
-            "formatter": "default_formatter",
+            "filename": log_directory / "pisco.jsonl",
+            "formatter": "json_formatter",
             "maxBytes": 1_000_000
-        },
-        "stream_handler": {"class": "logging.StreamHandler", "formatter": "default_formatter"}
+        }
     },
-    "loggers": {__name__: {"level": "DEBUG"}},
-    "root": {"handlers": ["rot_file_handler", "stream_handler"], "level": "INFO"},
+    "loggers": {
+        "soco.core": {"level": "DEBUG"},
+        "soco.discovery": {"level": "DEBUG"},
+        "soco.events": {"level": "DEBUG"}
+    },
+    "root": {"handlers": ["rot_file_handler"], "level": "INFO"},
     "version": 1
 }
 logging.config.dictConfig(logging_configuration)
@@ -42,39 +51,51 @@ logger = logging.getLogger(__name__)
 class Backlight(contextlib.AbstractContextManager):
     def __exit__(self, exc_type, exc_value, traceback) -> None:
         if self._backlight_directory:
-            logger.info(f"Tearing down interface to backlight {self._backlight_directory} ...")
+            logger.info(
+                "Tearing down interface to backlight ...",
+                extra={"backlight_directory": self._backlight_directory}
+            )
             self.activate()
-            logger.info(f"Interface to backlight {self._backlight_directory} torn down.")
+            logger.info(
+                "Interface to backlight torn down.",
+                extra={"backlight_directory": self._backlight_directory}
+            )
 
     def __init__(self, backlight_directory: Optional[str]) -> None:
         self._backlight_directory = None
         if backlight_directory:
-            logger.info(f"Initialising interface to backlight {backlight_directory} ...")
+            logger.info("Initializing interface to backlight ...", extra={"backlight_directory": backlight_directory})
             self._backlight_directory = Path(backlight_directory)
             self._brightness = self._backlight_directory / "brightness"
             self._max_brightness = self._backlight_directory / "max_brightness"
-            logger.info(f"Interface to backlight {backlight_directory} initialised.")
+            logger.info("Interface to backlight initialized.", extra={"backlight_directory": backlight_directory})
 
     def activate(self) -> None:
         if self._backlight_directory:
-            logger.info(f"Activating backlight {self._backlight_directory} ...")
+            logger.info("Activating backlight ...", extra={"backlight_directory": self._backlight_directory})
             try:
                 max_brightness_value = self._max_brightness.read_text()
                 self._brightness.write_text(max_brightness_value)
             except OSError:
-                logger.exception(f"Could not activate backlight {self._backlight_directory}.")
+                logger.exception(
+                    "Could not activate backlight.",
+                    extra={"backlight_directory": self._backlight_directory}
+                )
             else:
-                logger.info(f"Backlight {self._backlight_directory} activated.")
+                logger.info("Backlight activated.", extra={"backlight_directory": self._backlight_directory})
 
     def deactivate(self) -> None:
         if self._backlight_directory:
-            logger.info(f"Deactivating backlight {self._backlight_directory} ...")
+            logger.info("Deactivating backlight ...", extra={"backlight_directory": self._backlight_directory})
             try:
                 self._brightness.write_text("0")
             except OSError:
-                logger.exception(f"Could not deactivate backlight {self._backlight_directory}.")
+                logger.exception(
+                    "Could not deactivate backlight.",
+                    extra={"backlight_directory": self._backlight_directory}
+                )
             else:
-                logger.info(f"Backlight {self._backlight_directory} deactivated.")
+                logger.info("Backlight deactivated.", extra={"backlight_directory": self._backlight_directory})
 
 
 class HttpPhotoImageManager:
@@ -83,21 +104,21 @@ class HttpPhotoImageManager:
         self._max_height = max_height
 
     def _create_photo_image(self, absolute_uri: str) -> PIL.ImageTk.PhotoImage:
-        logger.info(f"Creating Tkinter-compatible photo image from URI {absolute_uri} ...")
+        logger.info("Creating Tkinter-compatible photo image ...", extra={"URI": absolute_uri})
         content = self._download_resource(absolute_uri)
         image: PIL.Image.Image = PIL.Image.open(io.BytesIO(content))
         image_wo_alpha = self._remove_alpha_channel(image)
         resized_image = self._resize_image(image_wo_alpha)
         photo_image = PIL.ImageTk.PhotoImage(resized_image)
-        logger.info(f"Tkinter-compatible photo image created from URI {absolute_uri}.")
+        logger.info("Tkinter-compatible photo image created.", extra={"URI": absolute_uri})
         return photo_image
 
     @staticmethod
     def _download_resource(absolute_uri: str) -> bytes:
-        logger.info(f"Downloading resource {absolute_uri} ...")
+        logger.info("Downloading resource ...", extra={"URI": absolute_uri})
         r = requests.get(absolute_uri)
         content = r.content
-        logger.info(f"Resource {absolute_uri} downloaded.")
+        logger.info("Resource downloaded.", extra={"URI": absolute_uri})
         return content
 
     @staticmethod
@@ -149,14 +170,14 @@ class PlaybackInformationLabel(tkinter.Label):
         self.after(self._refresh_interval, self._process_av_transport_event_queue)
 
     def _process_av_transport_event(self, event: soco.events_base.Event) -> None:
-        logger.info(f"Processing AV transport event {event.__dict__} ...")
+        logger.info("Processing AV transport event ...", extra={"event": event.__dict__})
         if event.variables["transport_state"] in ("PLAYING", "TRANSITIONING"):
             self._process_track_meta_data(event)
             self._backlight.activate()
         else:
             self._backlight.deactivate()
             self._update_album_art(None)
-        logger.info("AV transport event processed.")
+        logger.info("AV transport event processed.", extra={"event": event.__dict__})
 
     def _process_av_transport_event_queue(self) -> None:
         try:
@@ -170,12 +191,12 @@ class PlaybackInformationLabel(tkinter.Label):
 
     def _process_track_meta_data(self, event: soco.events_base.Event) -> None:
         track_meta_data = event.variables["current_track_meta_data"]
-        logger.info(f"Processing track meta data {track_meta_data.__dict__} ...")
+        logger.info("Processing track meta data ...", extra={"track_meta_data": track_meta_data.__dict__})
         if hasattr(track_meta_data, "album_art_uri"):
             album_art_uri = track_meta_data.album_art_uri
             album_art_absolute_uri = event.service.soco.music_library.build_album_art_full_uri(album_art_uri)
             self._update_album_art(album_art_absolute_uri)
-        logger.info("Track meta data processed.")
+        logger.info("Track meta data processed.", extra={"track_meta_data": track_meta_data.__dict__})
 
     def _update_album_art(self, absolute_uri: Optional[str]) -> None:
         logger.info("Updating album art ...")
@@ -186,26 +207,42 @@ class PlaybackInformationLabel(tkinter.Label):
 
 class SonosDevice(contextlib.AbstractContextManager):
     def __exit__(self, exc_type, exc_value, traceback) -> None:
-        logger.info(f"Tearing down interface to Sonos device {self.controller.player_name} ...")
+        logger.info(
+            "Tearing down interface to Sonos device ...",
+            extra={"sonos_device_name": self.controller.player_name}
+        )
         self._av_transport_subscription.unsubscribe()
         self._av_transport_subscription.event_listener.stop()
-        logger.info(f"Interface to Sonos device {self.controller.player_name} torn down.")
+        logger.info("Interface to Sonos device torn down.", extra={"sonos_device_name": self.controller.player_name})
 
     def __init__(self, name: str) -> None:
-        logger.info(f"Initialising interface to Sonos device {name} ...")
+        logger.info("Initializing interface to Sonos device ...", extra={"sonos_device_name": name})
         self.controller: soco.core.SoCo = soco.discovery.by_name(name)
-        self._av_transport_subscription: soco.events.Subscription = \
-            self.controller.avTransport.subscribe(auto_renew=True)
+        self._av_transport_subscription: soco.events.Subscription = self._initialize_av_transport_subscription()
         self.av_transport_event_queue: queue.Queue = self._av_transport_subscription.events
-        logger.info(f"Interface to Sonos device {name} initialised.")
+        logger.info("Interface to Sonos device initialized.", extra={"sonos_device_name": name})
+
+    def _initialize_av_transport_subscription(self) -> soco.events.Subscription:
+        def handle_autorenew_failure(_: Exception) -> None:
+            logger.info("Handling autorenew failure ...")
+            logger.info("Raising a KeyboardInterrupt in the main thread ...")
+            _thread.interrupt_main()
+            logger.info("KeyboardInterrupt raised in the main thread.")
+            logger.info("Autorenew failure handled.")
+
+        logger.info("Initializing AV transport subscription ...")
+        subscription = self.controller.avTransport.subscribe(auto_renew=True)
+        subscription.auto_renew_fail = handle_autorenew_failure
+        logger.info("AV transport subscription initialized.")
+        return subscription
 
     def play_sonos_favorite(self, favorite_index: int) -> None:
-        logger.info(f"Starting to play Sonos favorite {favorite_index} ...")
+        logger.info("Starting to play Sonos favorite ...", extra={"sonos_favorite_index": favorite_index})
         favorite = self.controller.music_library.get_sonos_favorites()[favorite_index]
         favorite_uri = favorite.resources[0].uri
         favorite_meta_data = favorite.resource_meta_data
         self.controller.play_uri(favorite_uri, favorite_meta_data)
-        logger.info(f"Started to play Sonos favorite {favorite_index}.")
+        logger.info("Started to play Sonos favorite.", extra={"sonos_favorite_index": favorite_index})
 
     def toggle_current_transport_state(self) -> None:
         logger.info("Toggling current transport state ...")
@@ -229,12 +266,12 @@ class UserInterface(tkinter.Tk):
         signal.signal(signal.SIGTERM, self._handle_int_or_term_signal)
 
     def _handle_int_or_term_signal(self, signal_number: int, _) -> None:
-        logger.info(f"Handling signal {signal_number} ...")
+        logger.info("Handling signal ...", extra={"signal_number": signal_number})
         self.destroy()
-        logger.info(f"Signal {signal_number} handled.")
+        logger.info("Signal handled.", extra={"signal_number": signal_number})
 
     def _handle_key_press_event(self, event: tkinter.Event) -> None:
-        logger.info(f"Handling key press event {event} ...")
+        logger.info("Handling key press event ...", extra={"key_press_event": event})
         # noinspection PyUnresolvedReferences
         key_symbol: str = event.keysym
         device = self._sonos_device
@@ -255,8 +292,8 @@ class UserInterface(tkinter.Tk):
         elif key_symbol in ("Down", "XF86AudioLowerVolume"):
             device.controller.set_relative_volume(-5)
         else:
-            logger.info(f"No action defined for key press {event}.")
-        logger.info(f"Key press event {event} handled.")
+            logger.info("No action defined for key press.", extra={"key_press_event": event})
+        logger.info("Key press event handled.")
 
 
 @click.command()

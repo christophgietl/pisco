@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pisco"
-version = "0.1.0"
+version = "0.3.0-alpha.0"
 description = "Keyboard only controller for Sonos speakers"
 authors = ["Christoph Gietl <christophgietl@users.noreply.github.com>"]
 license = "MIT"
@@ -9,11 +9,12 @@ repository = "https://github.com/christophgietl/pisco"
 
 [tool.poetry.dependencies]
 python = "^3.7"
-click = "^7.1"
+click = "^8.0"
 Pillow = "^9.0"
 requests = "^2.25"
-soco = "^0.21.1"
-xdg = "^4.0"
+soco = "^0.26.0"
+xdg = "^5.1"
+python-json-logger = "^2.0"
 
 [tool.poetry.dev-dependencies]
 
