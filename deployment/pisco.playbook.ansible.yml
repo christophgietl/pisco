@@ -55,6 +55,7 @@
     - name: Disable screen blanking
       become: yes
       command: raspi-config nonint do_blanking 1
+
     - name: Enable autologin to GUI
       become: yes
       command: raspi-config nonint do_boot_behaviour B4
@@ -70,9 +71,9 @@
         executable: pip3
         name: pisco
     - name: Start Pisco after login
-      copy:
-        content: exec pisco --backlight /sys/class/backlight/rpi_backlight/ --width 720 --height 720 Schlafzimmer
+      template:
         dest: /home/pi/.xsession
+        src: home/pi/.xsession.j2
 
     - name: Reboot
       become: yes
