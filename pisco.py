@@ -36,12 +36,7 @@ logging_configuration = {
             "maxBytes": 1_000_000
         }
     },
-    "loggers": {
-        "soco.core": {"level": "DEBUG"},
-        "soco.discovery": {"level": "DEBUG"},
-        "soco.events": {"level": "DEBUG"}
-    },
-    "root": {"handlers": ["rot_file_handler"], "level": "INFO"},
+    "root": {"handlers": ["rot_file_handler"], "level": "DEBUG"},
     "version": 1
 }
 logging.config.dictConfig(logging_configuration)
@@ -104,36 +99,36 @@ class HttpPhotoImageManager:
         self._max_height = max_height
 
     def _create_photo_image(self, absolute_uri: str) -> PIL.ImageTk.PhotoImage:
-        logger.info("Creating Tkinter-compatible photo image ...", extra={"URI": absolute_uri})
+        logger.debug("Creating Tkinter-compatible photo image ...", extra={"URI": absolute_uri})
         content = self._download_resource(absolute_uri)
         image: PIL.Image.Image = PIL.Image.open(io.BytesIO(content))
         image_wo_alpha = self._remove_alpha_channel(image)
         resized_image = self._resize_image(image_wo_alpha)
         photo_image = PIL.ImageTk.PhotoImage(resized_image)
-        logger.info("Tkinter-compatible photo image created.", extra={"URI": absolute_uri})
+        logger.debug("Tkinter-compatible photo image created.", extra={"URI": absolute_uri})
         return photo_image
 
     @staticmethod
     def _download_resource(absolute_uri: str) -> bytes:
-        logger.info("Downloading resource ...", extra={"URI": absolute_uri})
+        logger.debug("Downloading resource ...", extra={"URI": absolute_uri})
         r = requests.get(absolute_uri)
         content = r.content
-        logger.info("Resource downloaded.", extra={"URI": absolute_uri})
+        logger.debug("Resource downloaded.", extra={"URI": absolute_uri})
         return content
 
     @staticmethod
     def _remove_alpha_channel(image: PIL.Image.Image) -> PIL.Image.Image:
-        logger.info("Removing alpha channel ...")
+        logger.debug("Removing alpha channel ...")
         if image.mode != "RGBA":
-            logger.info("Cannot remove alpha channel: Image does not have an alpha channel.")
+            logger.debug("Cannot remove alpha channel: Image does not have an alpha channel.")
             return image
         rgb_image = PIL.Image.new("RGB", image.size, "white")
         rgb_image.paste(image, mask=image.getchannel("A"))
-        logger.info("Alpha channel removed.")
+        logger.debug("Alpha channel removed.")
         return rgb_image
 
     def _resize_image(self, image: PIL.Image.Image) -> PIL.Image.Image:
-        logger.info("Resizing image ...")
+        logger.debug("Resizing image ...")
         if self._max_width * image.height <= self._max_height * image.width:
             new_width = self._max_width
             new_height = round(image.height * self._max_width / image.width)
@@ -141,7 +136,7 @@ class HttpPhotoImageManager:
             new_width = round(image.width * self._max_height / image.height)
             new_height = self._max_height
         resized_image = image.resize(size=(new_width, new_height))
-        logger.info("Image resized.")
+        logger.debug("Image resized.")
         return resized_image
 
     @functools.lru_cache(maxsize=1)
@@ -199,10 +194,10 @@ class PlaybackInformationLabel(tkinter.Label):
         logger.info("Track meta data processed.", extra={"track_meta_data": track_meta_data.__dict__})
 
     def _update_album_art(self, absolute_uri: Optional[str]) -> None:
-        logger.info("Updating album art ...")
+        logger.info("Updating album art ...", extra={"URI": absolute_uri})
         album_art_photo_image = self._album_art_image_manager.get_photo_image(absolute_uri)
         self.config(image=album_art_photo_image)
-        logger.info("Album art updated.")
+        logger.info("Album art updated.", extra={"URI": absolute_uri})
 
 
 class SonosDevice(contextlib.AbstractContextManager):
@@ -230,10 +225,10 @@ class SonosDevice(contextlib.AbstractContextManager):
             logger.info("KeyboardInterrupt raised in the main thread.")
             logger.info("Autorenew failure handled.")
 
-        logger.info("Initializing AV transport subscription ...")
+        logger.debug("Initializing AV transport subscription ...")
         subscription = self.controller.avTransport.subscribe(auto_renew=True)
         subscription.auto_renew_fail = handle_autorenew_failure
-        logger.info("AV transport subscription initialized.")
+        logger.debug("AV transport subscription initialized.")
         return subscription
 
     def play_sonos_favorite(self, favorite_index: int) -> None:
@@ -334,7 +329,7 @@ class UserInterface(tkinter.Tk):
 )
 def main(
         sonos_device_name: str,
-        backlight_directory: str,
+        backlight_directory: Optional[str],
         window_width: int,
         window_height: int,
         playback_information_refresh_interval: int
