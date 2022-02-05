@@ -9,19 +9,19 @@
     - name: sonos_device_name
       default: Schlafzimmer
       prompt: What is the name of your Sonos device?
-      private: no
+      private: false
 
   tasks:
 
     - name: Upgrade packages
-      become: yes
+      become: true
       apt:
-        update_cache: yes
-        upgrade: yes
+        update_cache: true
+        upgrade: true
     - name: Install packages
-      become: yes
+      become: true
       apt:
-        install_recommends: no
+        install_recommends: false
         name:
           - brightness-udev # allows unprivileged users to set brightness
           - git
@@ -32,49 +32,49 @@
           - xserver-xorg
 
     - name: Set default locale
-      become: yes
+      become: true
       command: raspi-config nonint do_change_locale en_US.UTF-8
 
     - name: Download setup script for display
-      become: yes
+      become: true
       git:
         dest: /opt/github.com/pimoroni/hyperpixel4/
         repo: https://github.com/pimoroni/hyperpixel4.git
         version: square
     - name: Set up display
-      become: yes
+      become: true
       command:
         chdir: /opt/github.com/pimoroni/hyperpixel4/
         cmd: ./install.sh
     - name: Set display rotation to 180°
-      become: yes
+      become: true
       lineinfile:
         line: display_rotate=2
         path: /boot/config.txt
         regexp: '^display_rotate='
     - name: Disable screen blanking
-      become: yes
+      become: true
       command: raspi-config nonint do_blanking 1
+
     - name: Enable autologin to GUI
-      become: yes
+      become: true
       command: raspi-config nonint do_boot_behaviour B4
     - name: Fix auto-re-login
-      become: yes
+      become: true
       copy:
         dest: /etc/lightdm/
         src: etc/lightdm/lightdm.conf.d
 
     - name: Install Pisco package
-      become: yes
+      become: true
       pip:
         executable: pip3
-        extra_args: --extra-index-url https://test.pypi.org/simple/
         name: pisco
     - name: Start Pisco after login
-      copy:
-        content: exec pisco --backlight /sys/class/backlight/rpi_backlight/ --width 720 --height 720 Schlafzimmer
+      template:
         dest: /home/pi/.xsession
+        src: home/pi/.xsession.j2
 
     - name: Reboot
-      become: yes
+      become: true
       reboot: { }
