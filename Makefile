@@ -9,3 +9,6 @@ publish_to_pypi:	## Publish package to https://pypi.org
 
 publish_to_testpypi:	## Publish package to https://test.pypi.org
 	poetry publish --repository testpypi
+
+test:	## Run tests
+	poetry run pytest --cov=src --cov-report term-missing

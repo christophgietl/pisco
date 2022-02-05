@@ -17,6 +17,8 @@ soco = "^0.26.0"
 xdg = "^5.1"
 
 [tool.poetry.dev-dependencies]
+pytest = "^7.0"
+pytest-cov = "^3.0"
 
 [tool.poetry.scripts]
 pisco = "pisco:main"
