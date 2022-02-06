@@ -1,3 +1,4 @@
 [flake8]
 ignore = E501
+import-order-style = pycharm
 max-complexity = 10
