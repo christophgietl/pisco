@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 import _thread
-import contextlib
 import functools
 import io
 import logging.config
@@ -7,7 +8,8 @@ import queue
 import signal
 import tkinter
 from pathlib import Path
-from typing import Optional
+from types import TracebackType
+from typing import Any, ContextManager, Optional, Type
 
 import PIL.Image
 import PIL.ImageTk
@@ -43,8 +45,13 @@ logging.config.dictConfig(logging_configuration)
 logger = logging.getLogger(__name__)
 
 
-class Backlight(contextlib.AbstractContextManager):
-    def __exit__(self, exc_type, exc_value, traceback) -> None:
+class Backlight(ContextManager["Backlight"]):
+    def __exit__(
+            self,
+            exc_type: Optional[Type[BaseException]],
+            exc_value: Optional[BaseException],
+            traceback: Optional[TracebackType]
+    ) -> None:
         if self._backlight_directory:
             logger.info(
                 "Tearing down interface to backlight ...",
@@ -98,16 +105,6 @@ class HttpPhotoImageManager:
         self._max_width = max_width
         self._max_height = max_height
 
-    def _create_photo_image(self, absolute_uri: str) -> PIL.ImageTk.PhotoImage:
-        logger.debug("Creating Tkinter-compatible photo image ...", extra={"URI": absolute_uri})
-        content = self._download_resource(absolute_uri)
-        image: PIL.Image.Image = PIL.Image.open(io.BytesIO(content))
-        image_wo_alpha = self._remove_alpha_channel(image)
-        resized_image = self._resize_image(image_wo_alpha)
-        photo_image = PIL.ImageTk.PhotoImage(resized_image)
-        logger.debug("Tkinter-compatible photo image created.", extra={"URI": absolute_uri})
-        return photo_image
-
     @staticmethod
     def _download_resource(absolute_uri: str) -> bytes:
         logger.debug("Downloading resource ...", extra={"URI": absolute_uri})
@@ -140,22 +137,27 @@ class HttpPhotoImageManager:
         return resized_image
 
     @functools.lru_cache(maxsize=1)
-    def get_photo_image(self, absolute_uri: Optional[str]) -> Optional[PIL.ImageTk.PhotoImage]:
-        if absolute_uri:
-            photo_image = self._create_photo_image(absolute_uri)
-            return photo_image
+    def get_photo_image(self, absolute_uri: str) -> PIL.ImageTk.PhotoImage:
+        logger.debug("Creating Tkinter-compatible photo image ...", extra={"URI": absolute_uri})
+        content = self._download_resource(absolute_uri)
+        image = PIL.Image.open(io.BytesIO(content))
+        image_wo_alpha = self._remove_alpha_channel(image)
+        resized_image = self._resize_image(image_wo_alpha)
+        photo_image = PIL.ImageTk.PhotoImage(resized_image)
+        logger.debug("Tkinter-compatible photo image created.", extra={"URI": absolute_uri})
+        return photo_image
 
 
 class PlaybackInformationLabel(tkinter.Label):
     def __init__(
             self,
-            av_transport_event_queue: queue.Queue,
+            av_transport_event_queue: queue.Queue[soco.events_base.Event],
             backlight: Backlight,
             max_width: int,
             max_height: int,
             refresh_interval: int,
-            *args,
-            **kwargs
+            *args: Any,
+            **kwargs: Any
     ) -> None:
         super().__init__(*args, **kwargs)
         self._av_transport_event_queue = av_transport_event_queue
@@ -195,13 +197,21 @@ class PlaybackInformationLabel(tkinter.Label):
 
     def _update_album_art(self, absolute_uri: Optional[str]) -> None:
         logger.info("Updating album art ...", extra={"URI": absolute_uri})
-        album_art_photo_image = self._album_art_image_manager.get_photo_image(absolute_uri)
-        self.config(image=album_art_photo_image)
+        if absolute_uri:
+            album_art_photo_image = self._album_art_image_manager.get_photo_image(absolute_uri)
+            self.config(image=album_art_photo_image)
+        else:
+            self.config(image="")  # removes image if present
         logger.info("Album art updated.", extra={"URI": absolute_uri})
 
 
-class SonosDevice(contextlib.AbstractContextManager):
-    def __exit__(self, exc_type, exc_value, traceback) -> None:
+class SonosDevice(ContextManager["SonosDevice"]):
+    def __exit__(
+            self,
+            exc_type: Optional[Type[BaseException]],
+            exc_value: Optional[BaseException],
+            traceback: Optional[TracebackType]
+    ) -> None:
         logger.info(
             "Tearing down interface to Sonos device ...",
             extra={"sonos_device_name": self.controller.player_name}
@@ -214,7 +224,7 @@ class SonosDevice(contextlib.AbstractContextManager):
         logger.info("Initializing interface to Sonos device ...", extra={"sonos_device_name": name})
         self.controller: soco.core.SoCo = soco.discovery.by_name(name)
         self._av_transport_subscription: soco.events.Subscription = self._initialize_av_transport_subscription()
-        self.av_transport_event_queue: queue.Queue = self._av_transport_subscription.events
+        self.av_transport_event_queue: queue.Queue[soco.events_base.Event] = self._av_transport_subscription.events
         logger.info("Interface to Sonos device initialized.", extra={"sonos_device_name": name})
 
     def _initialize_av_transport_subscription(self) -> soco.events.Subscription:
@@ -251,7 +261,8 @@ class SonosDevice(contextlib.AbstractContextManager):
 
 
 class UserInterface(tkinter.Tk):
-    def __init__(self, sonos_device: SonosDevice, window_width: int, window_height: int, *args, **kwargs) -> None:
+    def __init__(self, sonos_device: SonosDevice, window_width: int, window_height: int, *args: Any, **kwargs: Any) \
+            -> None:
         super().__init__(*args, **kwargs)
         self._sonos_device = sonos_device
         self.geometry(f"{window_width}x{window_height}")
@@ -260,15 +271,14 @@ class UserInterface(tkinter.Tk):
         signal.signal(signal.SIGINT, self._handle_int_or_term_signal)
         signal.signal(signal.SIGTERM, self._handle_int_or_term_signal)
 
-    def _handle_int_or_term_signal(self, signal_number: int, _) -> None:
+    def _handle_int_or_term_signal(self, signal_number: int, _: object) -> None:
         logger.info("Handling signal ...", extra={"signal_number": signal_number})
         self.destroy()
         logger.info("Signal handled.", extra={"signal_number": signal_number})
 
-    def _handle_key_press_event(self, event: tkinter.Event) -> None:
+    def _handle_key_press_event(self, event: tkinter.Event[tkinter.Misc]) -> None:
         logger.info("Handling key press event ...", extra={"key_press_event": event})
-        # noinspection PyUnresolvedReferences
-        key_symbol: str = event.keysym
+        key_symbol = event.keysym
         device = self._sonos_device
         if key_symbol.isdigit():
             device.play_sonos_favorite(int(key_symbol))
