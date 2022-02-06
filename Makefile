@@ -7,6 +7,9 @@ build:	## Build package
 check_types:	## Run mypy for static type checking
 	poetry run mypy .
 
+lint:	## Run flake8 for code linting
+	poetry run flake8
+
 publish_to_pypi:	## Publish package to https://pypi.org
 	poetry publish
 
