@@ -96,6 +96,21 @@ pycodestyle = ">=2.8.0,<2.9.0"
 pyflakes = ">=2.4.0,<2.5.0"
 
 [[package]]
+name = "flake8-bugbear"
+version = "22.1.11"
+description = "A plugin for flake8 finding likely bugs and design problems in your program. Contains warnings that don't belong in pyflakes and pycodestyle."
+category = "dev"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+attrs = ">=19.2.0"
+flake8 = ">=3.0.0"
+
+[package.extras]
+dev = ["coverage", "hypothesis", "hypothesmith (>=0.2)", "pre-commit"]
+
+[[package]]
 name = "flake8-import-order"
 version = "0.18.1"
 description = "Flake8 and pylama plugin that checks the ordering of import statements."
@@ -314,7 +329,7 @@ use_chardet_on_py3 = ["chardet (>=3.0.2,<5)"]
 
 [[package]]
 name = "soco"
-version = "0.26.1"
+version = "0.26.2"
 description = "SoCo (Sonos Controller) is a simple library to control Sonos speakers."
 category = "main"
 optional = false
@@ -424,7 +439,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "37d65fd7ce1c03e151d19f0ecc6ee8878c5f52f501dd3ab0cfb912dd31166de0"
+content-hash = "02460336088cf1b00044c74895c7e5802f7e247d7f32368c59cde869b9bb4204"
 
 [metadata.files]
 appdirs = [
@@ -501,6 +516,10 @@ coverage = [
 flake8 = [
     {file = "flake8-4.0.1-py2.py3-none-any.whl", hash = "sha256:479b1304f72536a55948cb40a32dce8bb0ffe3501e26eaf292c7e60eb5e0428d"},
     {file = "flake8-4.0.1.tar.gz", hash = "sha256:806e034dda44114815e23c16ef92f95c91e4c71100ff52813adf7132a6ad870d"},
+]
+flake8-bugbear = [
+    {file = "flake8-bugbear-22.1.11.tar.gz", hash = "sha256:4c2a4136bd4ecb8bf02d5159af302ffc067642784c9d0488b33ce4610da825ee"},
+    {file = "flake8_bugbear-22.1.11-py3-none-any.whl", hash = "sha256:ce7ae44aaaf67ef192b8a6de94a5ac617144e1675ad0654fdea556f48dc18d9b"},
 ]
 flake8-import-order = [
     {file = "flake8-import-order-0.18.1.tar.gz", hash = "sha256:a28dc39545ea4606c1ac3c24e9d05c849c6e5444a50fb7e9cdd430fc94de6e92"},
@@ -630,8 +649,8 @@ requests = [
     {file = "requests-2.27.1.tar.gz", hash = "sha256:68d7c56fd5a8999887728ef304a6d12edc7be74f1cfa47714fc8b414525c9a61"},
 ]
 soco = [
-    {file = "soco-0.26.1-py2.py3-none-any.whl", hash = "sha256:d6bde8395b40346a26114648c92b114c6eee9a200986d9dadadae0602e48005b"},
-    {file = "soco-0.26.1.tar.gz", hash = "sha256:b4bfc8af4660ac60b8906e919637004de75e102fc1decbced520c58c1700baf1"},
+    {file = "soco-0.26.2-py2.py3-none-any.whl", hash = "sha256:2e5ea767d0af00d045e167d05cb00ce0194f000e284e3198330e936c044d9319"},
+    {file = "soco-0.26.2.tar.gz", hash = "sha256:63b924563760f2805c2e66255bb48bc9f083fe33f1ef78457b79bf84608383c2"},
 ]
 tomli = [
     {file = "tomli-2.0.0-py3-none-any.whl", hash = "sha256:b5bde28da1fed24b9bd1d4d2b8cba62300bfb4ec9a6187a957e8ddb9434c5224"},
