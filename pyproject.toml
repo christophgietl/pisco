@@ -17,8 +17,11 @@ soco = "^0.26.0"
 xdg = "^5.1"
 
 [tool.poetry.dev-dependencies]
+mypy = ">=0.931, <0.1000"
 pytest = "^7.0"
 pytest-cov = "^3.0"
+types-Pillow = "^9.0"
+types-requests = "^2.25"
 
 [tool.poetry.scripts]
 pisco = "pisco:main"

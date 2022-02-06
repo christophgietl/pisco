@@ -4,6 +4,9 @@ help:	## Display this help message
 build:	## Build package
 	poetry build
 
+check_types:	## Run mypy for static type checking
+	poetry run mypy .
+
 publish_to_pypi:	## Publish package to https://pypi.org
 	poetry publish
 
