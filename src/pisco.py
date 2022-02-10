@@ -11,9 +11,9 @@ from pathlib import Path
 from types import TracebackType
 from typing import Any, ContextManager, Optional, Type
 
+import click
 import PIL.Image
 import PIL.ImageTk
-import click
 import requests
 import soco.events
 import soco.events_base
