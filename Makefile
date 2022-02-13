@@ -13,8 +13,14 @@ publish_to_pypi:	## Publish package to https://pypi.org
 publish_to_testpypi:	## Publish package to https://test.pypi.org
 	poetry publish --repository testpypi
 
+run_pre_commit_all_files:	## Run git hooks on all files
+	poetry run pre-commit run --all-files
+
 set_up_dev_environment:	## Install dependencies and dev-dependencies specified in pyproject.toml
 	poetry install
+
+set_up_pre_commit:	## Install git hooks for formatting and linting
+	poetry run pre-commit install
 
 test:	## Run tests
 	poetry run pytest --cov=src --cov-report term-missing
