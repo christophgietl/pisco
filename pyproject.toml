@@ -1,3 +1,6 @@
+[tool.black]
+target-version = ["py37", "py38", "py39", "py310"]
+
 [tool.isort]
 profile = "black"
 verbose = true
@@ -11,7 +14,7 @@ ignore_missing_imports = true
 
 [tool.poetry]
 name = "pisco"
-version = "0.3.0"
+version = "0.0.0"   # Version will be set by CI workflow based on git tag.
 description = "Keyboard only controller for Sonos speakers"
 authors = ["Christoph Gietl <christophgietl@users.noreply.github.com>"]
 license = "MIT"
