@@ -45,12 +45,11 @@ Usage: pisco [OPTIONS] SONOS_DEVICE_NAME
 Options:
   -b, --backlight DIRECTORY    sysfs directory of the backlight that should be
                                deactivated when the device is not playing
-
-  -w, --width INTEGER RANGE    width of the Pisco window  [default: 240]
-  -h, --height INTEGER RANGE   height of the Pisco window  [default: 320]
+  -w, --width INTEGER RANGE    width of the Pisco window  [default: 240; x>=0]
+  -h, --height INTEGER RANGE   height of the Pisco window  [default: 320;
+                               x>=0]
   -r, --refresh INTEGER RANGE  time in milliseconds after which playback
-                               information is updated  [default: 40]
-
+                               information is updated  [default: 40; x>=1]
   --help                       Show this message and exit.
 ```
 
