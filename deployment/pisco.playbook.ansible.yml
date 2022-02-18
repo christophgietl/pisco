@@ -70,6 +70,7 @@
       pip:
         executable: pip3
         name: pisco
+        state: latest
     - name: Start Pisco after login
       template:
         dest: /home/pi/.xsession
