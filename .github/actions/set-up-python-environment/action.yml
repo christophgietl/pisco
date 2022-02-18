@@ -1,0 +1,27 @@
+name: Set up Python environment
+description: Install Python and poetry and, if desired, dependencies
+inputs:
+  install-dependencies:
+    default: "true"
+    description: whether to install the dependencies specified in pyproject.toml
+    required: true
+  poetry-version:
+    default: 1.1.13
+    description: poetry version to be installed
+    required: true
+  python-version:
+    default: "3.7"
+    description: Python version to be installed
+    required: true
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-python@v2
+      with:
+        python-version: ${{ inputs.python-version }}
+    - uses: abatilo/actions-poetry@v2.1.3
+      with:
+        poetry-version: ${{ inputs.poetry-version }}
+    - if: fromJSON(inputs.install-dependencies)
+      run: poetry install
+      shell: bash
