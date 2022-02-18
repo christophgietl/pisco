@@ -7,12 +7,6 @@ build:	## Build package
 check_types:	## Run mypy for static type checking
 	poetry run mypy .
 
-publish_to_pypi:	## Publish package to https://pypi.org
-	poetry publish
-
-publish_to_testpypi:	## Publish package to https://test.pypi.org
-	poetry publish --repository testpypi
-
 run_pre_commit_all_files:	## Run git hooks on all files
 	poetry run pre-commit run --all-files
 
