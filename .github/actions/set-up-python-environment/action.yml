@@ -2,7 +2,7 @@ name: Set up Python environment
 description: Install Python and poetry and, if desired, dependencies
 inputs:
   install-dependencies:
-    default: "true"
+    default: "false"
     description: whether to install the dependencies specified in pyproject.toml
     required: true
   poetry-version:
