@@ -9,24 +9,21 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: ./.github/actions/set-up-python-environment
-        with:
-          install-dependencies: false
       - if: github.ref_type == 'tag'
         run: poetry version $(git describe --tags --abbrev=0)
       - run: poetry build
       - uses: actions/upload-artifact@v2
         with:
-          name: configuration
-          path: pyproject.toml
-      - uses: actions/upload-artifact@v2
-        with:
-          name: packages
-          path: dist
+          path: |
+            dist/
+            pyproject.toml
   lint:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       - uses: ./.github/actions/set-up-python-environment
+        with:
+          install-dependencies: true
       - run: poetry run pre-commit run --all-files
   test:
     strategy:
@@ -46,6 +43,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: ./.github/actions/set-up-python-environment
         with:
+          install-dependencies: true
           python-version: ${{ matrix.python-version }}
       - run: poetry run pytest --cov=src --cov-report term-missing
   type_check:
@@ -53,6 +51,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: ./.github/actions/set-up-python-environment
+        with:
+          install-dependencies: true
       - run: poetry run mypy . --platform darwin --python-version 3.7
       - run: poetry run mypy . --platform darwin --python-version 3.8
       - run: poetry run mypy . --platform darwin --python-version 3.9
@@ -75,16 +75,8 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v2
       - uses: ./.github/actions/set-up-python-environment
-        with:
-          install-dependencies: false
-      - uses: actions/download-artifact@v2
-        with:
-          name: configuration
-      - uses: actions/download-artifact@v2
-        with:
-          name: packages
-          path: dist
       - env:
           POETRY_PYPI_TOKEN_PYPI: ${{ secrets.pypi_token }}
         run: poetry publish
