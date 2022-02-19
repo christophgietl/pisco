@@ -16,12 +16,9 @@ jobs:
       - run: poetry build
       - uses: actions/upload-artifact@v2
         with:
-          name: configuration
-          path: pyproject.toml
-      - uses: actions/upload-artifact@v2
-        with:
-          name: packages
-          path: dist
+          path: |
+            dist/
+            pyproject.toml
   lint:
     runs-on: ubuntu-20.04
     steps:
@@ -79,12 +76,6 @@ jobs:
         with:
           install-dependencies: false
       - uses: actions/download-artifact@v2
-        with:
-          name: configuration
-      - uses: actions/download-artifact@v2
-        with:
-          name: packages
-          path: dist
       - env:
           POETRY_PYPI_TOKEN_PYPI: ${{ secrets.pypi_token }}
         run: poetry publish
