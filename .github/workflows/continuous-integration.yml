@@ -76,8 +76,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/download-artifact@v2
-        with:
-          path: .
       - uses: ./.github/actions/set-up-python-environment
       - env:
           POETRY_PYPI_TOKEN_PYPI: ${{ secrets.pypi_token }}
