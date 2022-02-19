@@ -6,6 +6,7 @@ import io
 import logging.config
 import queue
 import signal
+import sys
 import tkinter
 from pathlib import Path
 from types import TracebackType
@@ -268,7 +269,14 @@ class SonosDevice(ContextManager["SonosDevice"]):
             "Initializing interface to Sonos device ...",
             extra={"sonos_device_name": name},
         )
-        self.controller: soco.core.SoCo = soco.discovery.by_name(name)
+        controller: Optional[soco.core.SoCo] = soco.discovery.by_name(name)
+        if controller is None:
+            logger.error(
+                "Could not find Sonos device.",
+                extra={"sonos_device_name": name},
+            )
+            sys.exit(f"Could not find Sonos device named {name}.")
+        self.controller = controller
         self._av_transport_subscription = self._initialize_av_transport_subscription()
         self.av_transport_event_queue = self._av_transport_subscription.events
         logger.info(
