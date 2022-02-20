@@ -1,3 +1,7 @@
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
 [tool.black]
 target-version = ["py37", "py38", "py39", "py310"]
 
@@ -40,7 +44,3 @@ types-requests = "^2.25"
 
 [tool.poetry.scripts]
 pisco = "pisco:main"
-
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
