@@ -6,7 +6,6 @@ import io
 import logging.config
 import queue
 import signal
-import sys
 import tkinter
 from pathlib import Path
 from types import TracebackType
@@ -269,20 +268,20 @@ class SonosDevice(ContextManager["SonosDevice"]):
             "Initializing interface to Sonos device ...",
             extra={"sonos_device_name": name},
         )
-        controller: Optional[soco.core.SoCo] = soco.discovery.by_name(name)
-        if controller is None:
-            logger.error(
-                "Could not find Sonos device.",
-                extra={"sonos_device_name": name},
-            )
-            sys.exit(f"Could not find Sonos device named {name}.")
-        self.controller = controller
+        self.controller = self._discover_controller(name)
         self._av_transport_subscription = self._initialize_av_transport_subscription()
         self.av_transport_event_queue = self._av_transport_subscription.events
         logger.info(
             "Interface to Sonos device initialized.",
             extra={"sonos_device_name": name},
         )
+
+    @staticmethod
+    def _discover_controller(name: str) -> soco.core.SoCo:
+        controller = soco.discovery.by_name(name)
+        if controller is None:
+            raise click.ClickException(f"Could not find Sonos device named {name}.")
+        return controller
 
     def _initialize_av_transport_subscription(self) -> soco.events.Subscription:
         def handle_autorenew_failure(_: Exception) -> None:
@@ -391,7 +390,7 @@ class UserInterface(tkinter.Tk):
     "window_width",
     help="width of the Pisco window",
     type=click.IntRange(min=0),
-    default=240,
+    default=320,
     show_default=True,
 )
 @click.option(
@@ -420,22 +419,58 @@ def main(
     playback_information_refresh_interval: int,
 ) -> None:
     """Control your Sonos device with your keyboard"""
+    try:
+        run_application(
+            sonos_device_name,
+            backlight_directory,
+            window_width,
+            window_height,
+            playback_information_refresh_interval,
+        )
+    except Exception as e:
+        logger.exception(str(e))
+        raise
+
+
+def run_application(
+    sonos_device_name: str,
+    backlight_directory: Optional[str],
+    window_width: int,
+    window_height: int,
+    playback_information_refresh_interval: int,
+) -> None:
     with SonosDevice(sonos_device_name) as sonos_device:
         with Backlight(backlight_directory) as backlight:
-            logger.info("Running pisco user interface ...")
-            user_interface = UserInterface(sonos_device, window_width, window_height)
-            playback_information_label = PlaybackInformationLabel(
-                master=user_interface,
-                background="black",
-                av_transport_event_queue=sonos_device.av_transport_event_queue,
-                backlight=backlight,
-                max_width=window_width,
-                max_height=window_height,
-                refresh_interval=playback_information_refresh_interval,
+            run_user_interface(
+                sonos_device,
+                backlight,
+                window_width,
+                window_height,
+                playback_information_refresh_interval,
             )
-            playback_information_label.pack(expand=True, fill="both")
-            user_interface.mainloop()
-            logger.info("Pisco user interface run.")
+
+
+def run_user_interface(
+    sonos_device: SonosDevice,
+    backlight: Backlight,
+    window_width: int,
+    window_height: int,
+    playback_information_refresh_interval: int,
+) -> None:
+    logger.info("Running pisco user interface ...")
+    user_interface = UserInterface(sonos_device, window_width, window_height)
+    playback_information_label = PlaybackInformationLabel(
+        master=user_interface,
+        background="black",
+        av_transport_event_queue=sonos_device.av_transport_event_queue,
+        backlight=backlight,
+        max_width=window_width,
+        max_height=window_height,
+        refresh_interval=playback_information_refresh_interval,
+    )
+    playback_information_label.pack(expand=True, fill="both")
+    user_interface.mainloop()
+    logger.info("Pisco user interface run.")
 
 
 if __name__ == "__main__":
