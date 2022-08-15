@@ -157,7 +157,7 @@ class HttpPhotoImageManager:
         logger.debug("Image resized.")
         return resized_image
 
-    @functools.lru_cache(maxsize=1)
+    @functools.lru_cache(maxsize=1)  # noqa: B019
     def get_photo_image(self, absolute_uri: str) -> PIL.ImageTk.PhotoImage:
         logger.debug(
             "Creating Tkinter-compatible photo image ...",
