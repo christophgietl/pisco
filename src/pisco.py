@@ -123,6 +123,9 @@ class HttpPhotoImageManager:
     def __init__(self, max_width: int, max_height: int) -> None:
         self._max_width = max_width
         self._max_height = max_height
+        self.get_photo_image = functools.lru_cache(maxsize=1)(
+            self._get_photo_image_without_caching
+        )
 
     @staticmethod
     def _download_resource(absolute_uri: str) -> bytes:
@@ -131,6 +134,24 @@ class HttpPhotoImageManager:
         content = r.content
         logger.debug("Resource downloaded.", extra={"URI": absolute_uri})
         return content
+
+    def _get_photo_image_without_caching(
+        self, absolute_uri: str
+    ) -> PIL.ImageTk.PhotoImage:
+        logger.debug(
+            "Creating Tkinter-compatible photo image ...",
+            extra={"URI": absolute_uri},
+        )
+        content = self._download_resource(absolute_uri)
+        image = PIL.Image.open(io.BytesIO(content))
+        image_wo_alpha = self._remove_alpha_channel(image)
+        resized_image = self._resize_image(image_wo_alpha)
+        photo_image = PIL.ImageTk.PhotoImage(resized_image)
+        logger.debug(
+            "Tkinter-compatible photo image created.",
+            extra={"URI": absolute_uri},
+        )
+        return photo_image
 
     @staticmethod
     def _remove_alpha_channel(image: PIL.Image.Image) -> PIL.Image.Image:
@@ -156,23 +177,6 @@ class HttpPhotoImageManager:
         resized_image = image.resize(size=(new_width, new_height))
         logger.debug("Image resized.")
         return resized_image
-
-    @functools.lru_cache(maxsize=1)  # noqa: B019
-    def get_photo_image(self, absolute_uri: str) -> PIL.ImageTk.PhotoImage:
-        logger.debug(
-            "Creating Tkinter-compatible photo image ...",
-            extra={"URI": absolute_uri},
-        )
-        content = self._download_resource(absolute_uri)
-        image = PIL.Image.open(io.BytesIO(content))
-        image_wo_alpha = self._remove_alpha_channel(image)
-        resized_image = self._resize_image(image_wo_alpha)
-        photo_image = PIL.ImageTk.PhotoImage(resized_image)
-        logger.debug(
-            "Tkinter-compatible photo image created.",
-            extra={"URI": absolute_uri},
-        )
-        return photo_image
 
 
 class PlaybackInformationLabel(tkinter.Label):
