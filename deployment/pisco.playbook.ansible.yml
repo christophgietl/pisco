@@ -27,6 +27,7 @@
           - git
           - libopenjp2-7    # required by Python package Pillow
           - lightdm
+          - python3-lxml    # required by Python package lxml (a dependency of soco)
           - python3-pip
           - python3-tk
           - xserver-xorg
