@@ -5,7 +5,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/set-up-python-environment
@@ -19,7 +19,7 @@ jobs:
             dist/
             pyproject.toml
   lint:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/set-up-python-environment
@@ -32,7 +32,7 @@ jobs:
       matrix:
         os:
           - macos-11
-          - ubuntu-20.04
+          - ubuntu-22.04
           - windows-2022
         python-version:
           - "3.7"
@@ -48,7 +48,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - run: poetry run pytest --cov=src --cov-report term-missing
   type_check:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/set-up-python-environment
@@ -73,7 +73,7 @@ jobs:
       - lint
       - test
       - type_check
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
       - uses: actions/download-artifact@v3
