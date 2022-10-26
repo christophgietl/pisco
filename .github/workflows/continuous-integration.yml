@@ -31,7 +31,7 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - macos-11
+          - macos-12
           - ubuntu-22.04
           - windows-2022
         python-version:
@@ -39,6 +39,7 @@ jobs:
           - "3.8"
           - "3.9"
           - "3.10"
+          - "3.11"
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
@@ -58,14 +59,17 @@ jobs:
       - run: poetry run mypy . --platform darwin --python-version 3.8
       - run: poetry run mypy . --platform darwin --python-version 3.9
       - run: poetry run mypy . --platform darwin --python-version 3.10
+      - run: poetry run mypy . --platform darwin --python-version 3.11
       - run: poetry run mypy . --platform linux --python-version 3.7
       - run: poetry run mypy . --platform linux --python-version 3.8
       - run: poetry run mypy . --platform linux --python-version 3.9
       - run: poetry run mypy . --platform linux --python-version 3.10
+      - run: poetry run mypy . --platform linux --python-version 3.11
       - run: poetry run mypy . --platform win32 --python-version 3.7
       - run: poetry run mypy . --platform win32 --python-version 3.8
       - run: poetry run mypy . --platform win32 --python-version 3.9
       - run: poetry run mypy . --platform win32 --python-version 3.10
+      - run: poetry run mypy . --platform win32 --python-version 3.11
   publish:
     if: github.ref_type == 'tag'
     needs:
