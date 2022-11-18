@@ -30,8 +30,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        exclude:
+          - # "poetry install" fails for this combination (as of November 2022):
+            os: windows-2022
+            python-version: "3.11"
         os:
-          - macos-11
+          - macos-12
           - ubuntu-22.04
           - windows-2022
         python-version:
@@ -39,7 +43,7 @@ jobs:
           - "3.8"
           - "3.9"
           - "3.10"
-          # - "3.11"  # "poetry install" fails when combined with windows-2022 (as of October 2022)
+          - "3.11"
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
