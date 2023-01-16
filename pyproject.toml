@@ -28,18 +28,18 @@ repository = "https://github.com/christophgietl/pisco"
 [tool.poetry.dependencies]
 python = "^3.7"
 click = "^8.1"
-Pillow = "^9.3"
+Pillow = "^9.4"
 python-json-logger = "^2.0"
 requests = "^2.28"
-soco = "^0.28.1"
+soco = "^0.29.0"
 xdg = "^5.1"
 
 [tool.poetry.dev-dependencies]
 mypy = ">=0.991, <0.1000"
-pre-commit = "^2.20"
+pre-commit = "^2.21"
 pytest = "^7.2"
 pytest-cov = "^4.0"
-types-Pillow = "^9.3"
+types-Pillow = "^9.4"
 types-requests = "^2.28"
 
 [tool.poetry.scripts]

@@ -30,10 +30,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        exclude:
-          - # "poetry install" fails for this combination (as of November 2022):
-            os: windows-2022
-            python-version: "3.11"
         os:
           - macos-12
           - ubuntu-22.04
