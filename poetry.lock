@@ -911,26 +911,26 @@ files = [
 
 [[package]]
 name = "types-pillow"
-version = "9.4.0.3"
+version = "9.4.0.4"
 description = "Typing stubs for Pillow"
 category = "dev"
 optional = false
 python-versions = "*"
 files = [
-    {file = "types-Pillow-9.4.0.3.tar.gz", hash = "sha256:eba8ff24457a1b8669b6099793f3d313d034d407ee9f6e5fdf12c86cf54914cd"},
-    {file = "types_Pillow-9.4.0.3-py3-none-any.whl", hash = "sha256:f8f16a54ed315144296864df11f14beca82ec0990ea83710b7eac7eb1bb38971"},
+    {file = "types-Pillow-9.4.0.4.tar.gz", hash = "sha256:10777665863957ec7160ee38cdf1b3167d3cea983d94944c221d384d28621328"},
+    {file = "types_Pillow-9.4.0.4-py3-none-any.whl", hash = "sha256:4bbfafb3d13a8d368c24c64dc46033eac76a0957abd3cf1bc0f2af27fe7de24f"},
 ]
 
 [[package]]
 name = "types-requests"
-version = "2.28.11.7"
+version = "2.28.11.8"
 description = "Typing stubs for requests"
 category = "dev"
 optional = false
 python-versions = "*"
 files = [
-    {file = "types-requests-2.28.11.7.tar.gz", hash = "sha256:0ae38633734990d019b80f5463dfa164ebd3581998ac8435f526da6fe4d598c3"},
-    {file = "types_requests-2.28.11.7-py3-none-any.whl", hash = "sha256:b6a2fca8109f4fdba33052f11ed86102bddb2338519e1827387137fefc66a98b"},
+    {file = "types-requests-2.28.11.8.tar.gz", hash = "sha256:e67424525f84adfbeab7268a159d3c633862dafae15c5b19547ce1b55954f0a3"},
+    {file = "types_requests-2.28.11.8-py3-none-any.whl", hash = "sha256:61960554baca0008ae7e2db2bd3b322ca9a144d3e80ce270f5fb640817e40994"},
 ]
 
 [package.dependencies]
