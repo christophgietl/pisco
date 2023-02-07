@@ -50,7 +50,7 @@ soco = "^0.29.0"
 xdg = "^5.1"
 
 [tool.poetry.dev-dependencies]
-mypy = ">=0.991, <0.1000"
+mypy = "^1.0"
 pre-commit = "^2.21"
 pytest = "^7.2"
 pytest-cov = "^4.0"
