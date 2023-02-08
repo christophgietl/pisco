@@ -13,6 +13,10 @@
 
   tasks:
 
+    - name: Set default locale
+      become: true
+      command: raspi-config nonint do_change_locale en_US.UTF-8
+
     - name: Upgrade packages
       become: true
       apt:
@@ -32,10 +36,6 @@
           - python3-tk
           - xserver-xorg
 
-    - name: Set default locale
-      become: true
-      command: raspi-config nonint do_change_locale en_US.UTF-8
-
     - name: Download setup script for display
       become: true
       git:
@@ -47,12 +47,19 @@
       command:
         chdir: /opt/github.com/pimoroni/hyperpixel4/
         cmd: ./install.sh
+    - name: Disable DRM VC4 V3D driver
+      # cf. https://github.com/pimoroni/hyperpixel4/issues/177#issuecomment-1182557545
+      become: true
+      lineinfile:
+        line: "# dtoverlay=vc4-kms-v3d"
+        path: /boot/config.txt
+        regexp: ^dtoverlay=vc4-kms-v3d
     - name: Set display rotation to 180°
       become: true
       lineinfile:
         line: display_rotate=2
         path: /boot/config.txt
-        regexp: '^display_rotate='
+        regexp: ^display_rotate=
     - name: Disable screen blanking
       become: true
       command: raspi-config nonint do_blanking 1
