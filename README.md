@@ -14,7 +14,7 @@ media remotes (e.g. [Satechi Bluetooth Multi-Media Remote](https://satechi.net/p
 
 Proceed as follows to set up Pisco on an ordinary Linux or macOS machine:
 
-1. Make sure you are using Python 3.7 or newer.
+1. Make sure you are using Python 3.9 or newer.
 2. Create a virtual environment if you do not want to clutter up your default environment.
 3. Install Pisco:
     ```shell

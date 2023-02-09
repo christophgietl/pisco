@@ -3,7 +3,7 @@ requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.black]
-target-version = ["py37", "py38", "py39", "py310", "py311"]
+target-version = ["py39", "py310", "py311"]
 
 [tool.flakeheaven]
 max-complexity = 10
@@ -41,7 +41,7 @@ readme = "README.md"
 repository = "https://github.com/christophgietl/pisco"
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.9"
 click = "^8.1"
 Pillow = "^9.4"
 python-json-logger = "^2.0"
