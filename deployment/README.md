@@ -16,7 +16,7 @@ In addition to your Pi hardware you are going to need a Linux or macOS machine r
 ## Setting up the operating system for the Pi Zero
 
 [Use the Raspberry Pi Imager to create an SD card containing the operating system
-*Raspberry Pi OS Lite (Legacy)*.](https://www.raspberrypi.com/documentation/computers/getting-started.html#using-raspberry-pi-imager)
+*Raspberry Pi OS Lite (32-bit)*.](https://www.raspberrypi.com/documentation/computers/getting-started.html#using-raspberry-pi-imager)
 Use the *Advanced options* menu to configure the operating system as follows:
 1. Set the hostname to `pisco.local`.
 2. Enable SSH.
@@ -34,5 +34,5 @@ to install the display drivers and Pisco:
 ansible-playbook pisco.playbook.ansible.yml
 ```
 
-When the playbook has finished, you can manually
-[set up your Bluetooth devices](https://howchoo.com/pi/bluetooth-raspberry-pi#setting-up-bluetooth-using-a-terminal-or-ssh-connection).
+When the playbook has finished, you can
+[manually set up your Bluetooth devices](https://howchoo.com/pi/bluetooth-raspberry-pi#setting-up-bluetooth-using-a-terminal-or-ssh-connection).
