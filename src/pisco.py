@@ -20,10 +20,10 @@ import soco.events
 import soco.events_base
 import xdg
 
-log_directory = xdg.XDG_DATA_HOME / "pisco" / "logs"
-log_directory.mkdir(exist_ok=True, parents=True)
 log_format = "%(asctime)s %(name)s %(levelname)s %(message)s %(thread)s %(threadName)s"
-logging_configuration = {
+log_file = xdg.XDG_DATA_HOME / "pisco" / "logs" / "pisco.jsonl"
+log_file.parent.mkdir(exist_ok=True, parents=True)
+log_configuration = {
     "disable_existing_loggers": False,
     "formatters": {
         "json_formatter": {
@@ -35,7 +35,7 @@ logging_configuration = {
         "rot_file_handler": {
             "backupCount": 9,
             "class": "logging.handlers.RotatingFileHandler",
-            "filename": log_directory / "pisco.jsonl",
+            "filename": log_file,
             "formatter": "json_formatter",
             "maxBytes": 1_000_000,
         }
@@ -43,7 +43,7 @@ logging_configuration = {
     "root": {"handlers": ["rot_file_handler"], "level": "DEBUG"},
     "version": 1,
 }
-logging.config.dictConfig(logging_configuration)
+logging.config.dictConfig(log_configuration)
 logger = logging.getLogger(__name__)
 
 
