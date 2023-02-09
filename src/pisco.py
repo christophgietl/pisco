@@ -1,15 +1,16 @@
 from __future__ import annotations
 
 import _thread
+import contextlib
 import functools
 import io
 import logging.config
+import pathlib
 import queue
 import signal
 import tkinter
-from pathlib import Path
 from types import TracebackType
-from typing import Any, ContextManager, Optional, Type
+from typing import Any, Optional
 
 import click
 import PIL.Image
@@ -19,10 +20,10 @@ import soco.events
 import soco.events_base
 import xdg
 
-log_directory = xdg.XDG_DATA_HOME / "pisco" / "logs"
-log_directory.mkdir(exist_ok=True, parents=True)
 log_format = "%(asctime)s %(name)s %(levelname)s %(message)s %(thread)s %(threadName)s"
-logging_configuration = {
+log_file = xdg.XDG_DATA_HOME / "pisco" / "logs" / "pisco.jsonl"
+log_file.parent.mkdir(exist_ok=True, parents=True)
+log_configuration = {
     "disable_existing_loggers": False,
     "formatters": {
         "json_formatter": {
@@ -34,7 +35,7 @@ logging_configuration = {
         "rot_file_handler": {
             "backupCount": 9,
             "class": "logging.handlers.RotatingFileHandler",
-            "filename": log_directory / "pisco.jsonl",
+            "filename": log_file,
             "formatter": "json_formatter",
             "maxBytes": 1_000_000,
         }
@@ -42,14 +43,14 @@ logging_configuration = {
     "root": {"handlers": ["rot_file_handler"], "level": "DEBUG"},
     "version": 1,
 }
-logging.config.dictConfig(logging_configuration)
+logging.config.dictConfig(log_configuration)
 logger = logging.getLogger(__name__)
 
 
-class Backlight(ContextManager["Backlight"]):
+class Backlight(contextlib.AbstractContextManager["Backlight"]):
     def __exit__(
         self,
-        exc_type: Optional[Type[BaseException]],
+        exc_type: Optional[type[BaseException]],
         exc_value: Optional[BaseException],
         traceback: Optional[TracebackType],
     ) -> None:
@@ -71,7 +72,7 @@ class Backlight(ContextManager["Backlight"]):
                 "Initializing interface to backlight ...",
                 extra={"backlight_directory": backlight_directory},
             )
-            self._backlight_directory = Path(backlight_directory)
+            self._backlight_directory = pathlib.Path(backlight_directory)
             self._brightness = self._backlight_directory / "brightness"
             self._max_brightness = self._backlight_directory / "max_brightness"
             logger.info(
@@ -249,10 +250,10 @@ class PlaybackInformationLabel(tkinter.Label):
         logger.info("Album art updated.", extra={"URI": absolute_uri})
 
 
-class SonosDevice(ContextManager["SonosDevice"]):
+class SonosDevice(contextlib.AbstractContextManager["SonosDevice"]):
     def __exit__(
         self,
-        exc_type: Optional[Type[BaseException]],
+        exc_type: Optional[type[BaseException]],
         exc_value: Optional[BaseException],
         traceback: Optional[TracebackType],
     ) -> None:
