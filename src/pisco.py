@@ -10,7 +10,7 @@ import queue
 import signal
 import tkinter
 from types import TracebackType
-from typing import Any, Optional
+from typing import Optional
 
 import click
 import PIL.Image
@@ -184,14 +184,14 @@ class PlaybackInformationLabel(tkinter.Label):
     def __init__(
         self,
         av_transport_event_queue: queue.Queue[soco.events_base.Event],
+        background: str,
         backlight: Backlight,
+        master: tkinter.Tk,
         max_width: int,
         max_height: int,
         refresh_interval: int,
-        *args: Any,
-        **kwargs: Any,
     ) -> None:
-        super().__init__(*args, **kwargs)
+        super().__init__(background=background, master=master)
         self._av_transport_event_queue = av_transport_event_queue
         self._backlight = backlight
         self._album_art_image_manager = HttpPhotoImageManager(max_width, max_height)
@@ -333,10 +333,8 @@ class UserInterface(tkinter.Tk):
         sonos_device: SonosDevice,
         window_width: int,
         window_height: int,
-        *args: Any,
-        **kwargs: Any,
     ) -> None:
-        super().__init__(*args, **kwargs)
+        super().__init__()
         self._sonos_device = sonos_device
         self.geometry(f"{window_width}x{window_height}")
         self.title("Pisco")
