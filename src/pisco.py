@@ -131,7 +131,7 @@ class HttpPhotoImageManager:
     @staticmethod
     def _download_resource(absolute_uri: str) -> bytes:
         logger.debug("Downloading resource ...", extra={"URI": absolute_uri})
-        r = requests.get(absolute_uri)
+        r = requests.get(absolute_uri, timeout=10)
         content = r.content
         logger.debug("Resource downloaded.", extra={"URI": absolute_uri})
         return content
