@@ -16,6 +16,8 @@ import click
 import PIL.Image
 import PIL.ImageTk
 import requests
+import soco.core
+import soco.data_structures
 import soco.events
 import soco.events_base
 import xdg
@@ -302,15 +304,27 @@ class SonosDevice(contextlib.AbstractContextManager["SonosDevice"]):
         logger.debug("AV transport subscription initialized.")
         return subscription
 
-    def play_sonos_favorite(self, favorite_index: int) -> None:
+    def _play_sonos_favorite(self, favorite: soco.data_structures.DidlObject) -> None:
+        if hasattr(favorite, "resource_meta_data"):
+            self.controller.play_uri(
+                uri=favorite.resources[0].uri,
+                meta=favorite.resource_meta_data,
+            )
+            return
+
+        logger.warning(
+            "Favorite does not have attribute resource_meta_data.",
+            extra={"favorite": favorite.__dict__},
+        )
+        self.controller.play_uri(uri=favorite.resources[0].uri)
+
+    def play_sonos_favorite_by_index(self, favorite_index: int) -> None:
         logger.info(
             "Starting to play Sonos favorite ...",
             extra={"sonos_favorite_index": favorite_index},
         )
         favorite = self.controller.music_library.get_sonos_favorites()[favorite_index]
-        favorite_uri = favorite.resources[0].uri
-        favorite_meta_data = favorite.resource_meta_data
-        self.controller.play_uri(favorite_uri, favorite_meta_data)
+        self._play_sonos_favorite(favorite)
         logger.info(
             "Started to play Sonos favorite.",
             extra={"sonos_favorite_index": favorite_index},
@@ -352,7 +366,7 @@ class UserInterface(tkinter.Tk):
         key_symbol = event.keysym
         device = self._sonos_device
         if key_symbol.isdigit():
-            device.play_sonos_favorite(int(key_symbol))
+            device.play_sonos_favorite_by_index(int(key_symbol))
         elif key_symbol in ("Left", "XF86AudioRewind"):
             device.controller.previous()
         elif key_symbol in ("Right", "XF86AudioForward"):
