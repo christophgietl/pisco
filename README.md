@@ -9,7 +9,7 @@ It is particularly well-suited for usage with
 small displays (e.g. [Pimoroni HyperPixel 4.0 Square](https://shop.pimoroni.com/products/hyperpixel-4-square?variant=30138251477075)) and
 media remotes (e.g. [Satechi Bluetooth Multi-Media Remote](https://satechi.net/products/satechi-bluetooth-multi-media-remote?variant=27129644617)).
 
-<img src="https://raw.githubusercontent.com/christophgietl/pisco/main/images/pisco-on-pi-zero.jpg" width="250" alt="Pisco running on a Raspberry Pi Zero attached to a Pimoroni HyperPixel 4.0 Square surrounded by a Satechi Bluetooth Multi-Media Remote and a Sonos speaker" title="Pisco running on a Raspberry Pi Zero attached to a Pimoroni HyperPixel 4.0 Square surrounded by a Satechi Bluetooth Multi-Media Remote and a Sonos speaker"/>
+<img src="https://raw.githubusercontent.com/christophgietl/pisco/main/images/pisco-on-pi-zero.jpg" width="250" height="339" alt="Pisco running on a Raspberry Pi Zero attached to a Pimoroni HyperPixel 4.0 Square surrounded by a Satechi Bluetooth Multi-Media Remote and a Sonos speaker" title="Pisco running on a Raspberry Pi Zero attached to a Pimoroni HyperPixel 4.0 Square surrounded by a Satechi Bluetooth Multi-Media Remote and a Sonos speaker"/>
 
 ## Setup
 
