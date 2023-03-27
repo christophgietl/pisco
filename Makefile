@@ -16,5 +16,8 @@ set_up_dev_environment:	## Install dependencies and dev-dependencies specified i
 set_up_pre_commit:	## Install git hooks for formatting and linting
 	poetry run pre-commit install
 
-test:	## Run tests
+test_soco_stubs: ## Run stubtest for module soco
+	cd stubs && poetry run stubtest soco --ignore-missing-stub --mypy-config-file ../pyproject.toml
+
+test_source:	## Run tests
 	poetry run pytest --cov=src --cov-report term-missing

@@ -27,10 +27,6 @@ verbose = true
 [tool.mypy]
 strict = true
 
-[[tool.mypy.overrides]]
-module = "soco.*"
-ignore_missing_imports = true
-
 [tool.poetry]
 name = "pisco"
 version = "0.0.0"   # Version will be set by CI workflow based on git tag.
