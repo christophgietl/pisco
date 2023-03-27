@@ -4,6 +4,9 @@ help:	## Display this help message
 build:	## Build package
 	poetry build
 
+check_types:	## Run mypy for static type checking
+	poetry run mypy .
+
 lint:	## Run git hooks on all files
 	poetry run pre-commit run --all-files
 
@@ -15,6 +18,3 @@ set_up_pre_commit:	## Install git hooks for formatting and linting
 
 test:	## Run tests
 	poetry run pytest --cov=src --cov-report term-missing
-
-type_check:	## Run mypy for static type checking
-	poetry run mypy .
