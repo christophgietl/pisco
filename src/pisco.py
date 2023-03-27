@@ -324,6 +324,15 @@ class SonosDevice(contextlib.AbstractContextManager["SonosDevice"]):
             extra={"sonos_favorite_index": favorite_index},
         )
         favorite = self.controller.music_library.get_sonos_favorites()[favorite_index]
+        if not isinstance(favorite, soco.data_structures.DidlObject):
+            logger.error(
+                "Could not play Sonos favorite.",
+                extra={
+                    "favorite": favorite.__dict__,
+                    "sonos_favorite_index": favorite_index,
+                },
+            )
+            return
         self._play_sonos_favorite(favorite)
         logger.info(
             "Started to play Sonos favorite.",
