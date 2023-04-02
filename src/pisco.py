@@ -402,6 +402,8 @@ class SonosDevice(contextlib.AbstractContextManager["SonosDevice"]):
 
 
 class UserInterface(tkinter.Tk):
+    _sonos_device: SonosDevice
+
     def __init__(
         self,
         sonos_device: SonosDevice,
