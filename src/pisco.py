@@ -162,6 +162,9 @@ class BacklightManager(contextlib.AbstractContextManager["BacklightManager"]):
 
 
 class HttpPhotoImageManager:
+    _max_width: int
+    _max_height: int
+
     def __init__(self, max_width: int, max_height: int) -> None:
         self._max_width = max_width
         self._max_height = max_height
