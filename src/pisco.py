@@ -225,6 +225,11 @@ class HttpPhotoImageManager:
 
 
 class PlaybackInformationLabel(tkinter.Label):
+    _album_art_image_manager: HttpPhotoImageManager
+    _av_transport_event_queue: queue.Queue[soco.events_base.Event]
+    _backlight_manager: BacklightManager
+    _refresh_interval: int
+
     def __init__(
         self,
         av_transport_event_queue: queue.Queue[soco.events_base.Event],
