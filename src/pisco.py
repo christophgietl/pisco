@@ -253,6 +253,9 @@ class PlaybackInformationLabel(tkinter.Label):
 
 
 class SonosDevice(contextlib.AbstractContextManager["SonosDevice"]):
+    av_transport_event_queue: queue.Queue[soco.events_base.Event]
+    controller: soco.core.SoCo
+
     def __exit__(
         self,
         exc_type: Optional[type[BaseException]],
