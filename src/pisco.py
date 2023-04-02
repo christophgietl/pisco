@@ -22,30 +22,31 @@ import soco.events
 import soco.events_base
 import xdg
 
-log_format = "%(asctime)s %(name)s %(levelname)s %(message)s %(thread)s %(threadName)s"
-log_file = xdg.XDG_DATA_HOME / "pisco" / "logs" / "pisco.jsonl"
-log_file.parent.mkdir(exist_ok=True, parents=True)
-log_configuration = {
-    "disable_existing_loggers": False,
-    "formatters": {
-        "json_formatter": {
-            "class": "pythonjsonlogger.jsonlogger.JsonFormatter",
-            "format": log_format,
-        }
-    },
-    "handlers": {
-        "rot_file_handler": {
-            "backupCount": 9,
-            "class": "logging.handlers.RotatingFileHandler",
-            "filename": log_file,
-            "formatter": "json_formatter",
-            "maxBytes": 1_000_000,
-        }
-    },
-    "root": {"handlers": ["rot_file_handler"], "level": "DEBUG"},
-    "version": 1,
-}
-logging.config.dictConfig(log_configuration)
+_log_file = xdg.XDG_DATA_HOME / "pisco" / "logs" / "pisco.jsonl"
+_log_file.parent.mkdir(exist_ok=True, parents=True)
+_log_format = "%(asctime)s %(name)s %(levelname)s %(message)s %(thread)s %(threadName)s"
+logging.config.dictConfig(
+    {
+        "disable_existing_loggers": False,
+        "formatters": {
+            "json_formatter": {
+                "class": "pythonjsonlogger.jsonlogger.JsonFormatter",
+                "format": _log_format,
+            }
+        },
+        "handlers": {
+            "rot_file_handler": {
+                "backupCount": 9,
+                "class": "logging.handlers.RotatingFileHandler",
+                "filename": _log_file,
+                "formatter": "json_formatter",
+                "maxBytes": 1_000_000,
+            }
+        },
+        "root": {"handlers": ["rot_file_handler"], "level": "DEBUG"},
+        "version": 1,
+    }
+)
 logger = logging.getLogger(__name__)
 
 
