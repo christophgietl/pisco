@@ -5,12 +5,12 @@ def test_pytest() -> None:
     pass
 
 
-class TestBacklight:
-    def test_activate_passes_on_dummy_backlight(self) -> None:
-        from pisco import Backlight
+class TestBacklightManager:
+    def test_activate_passes_on_dummy_backlight_manager(self) -> None:
+        from pisco import BacklightManager
 
-        backlight = Backlight(backlight_directory=None)
-        backlight.activate()
+        backlight_manager = BacklightManager(backlight_directory=None)
+        backlight_manager.activate()
 
     def test_activate_sets_brightness_to_max_brightness(
         self, tmp_path: pathlib.Path
@@ -20,24 +20,26 @@ class TestBacklight:
         max_brightness_file_path = tmp_path / "max_brightness"
         max_brightness_file_path.write_text("50")
 
-        from pisco import Backlight
+        from pisco import BacklightManager
 
-        backlight = Backlight(backlight_directory=str(tmp_path))
-        backlight.activate()
+        backlight_manager = BacklightManager(backlight_directory=tmp_path)
+        backlight_manager.activate()
         assert brightness_file_path.read_text() == max_brightness_file_path.read_text()
 
-    def test_deactivate_passes_on_dummy_backlight(self) -> None:
-        from pisco import Backlight
+    def test_deactivate_passes_on_dummy_backlight_manager(self) -> None:
+        from pisco import BacklightManager
 
-        backlight = Backlight(backlight_directory=None)
-        backlight.deactivate()
+        backlight_manager = BacklightManager(backlight_directory=None)
+        backlight_manager.deactivate()
 
     def test_deactivate_sets_brightness_to_0(self, tmp_path: pathlib.Path) -> None:
         brightness_file_path = tmp_path / "brightness"
         brightness_file_path.write_text("19")
+        max_brightness_file_path = tmp_path / "max_brightness"
+        max_brightness_file_path.write_text("50")
 
-        from pisco import Backlight
+        from pisco import BacklightManager
 
-        backlight = Backlight(backlight_directory=str(tmp_path))
-        backlight.deactivate()
+        backlight_manager = BacklightManager(backlight_directory=tmp_path)
+        backlight_manager.deactivate()
         assert brightness_file_path.read_text() == "0"
