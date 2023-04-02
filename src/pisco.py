@@ -49,77 +49,116 @@ logging.config.dictConfig(log_configuration)
 logger = logging.getLogger(__name__)
 
 
-class Backlight(contextlib.AbstractContextManager["Backlight"]):
+class Backlight:
+    _directory: pathlib.Path
+
+    def __init__(self, directory: pathlib.Path) -> None:
+        self._directory = directory
+        self._assert_backlight_directory()
+
+    def _assert_backlight_directory(self) -> None:
+        self._assert_directory_existence(self._directory)
+        self._assert_file_existence(self._brightness)
+        self._assert_file_existence(self._max_brightness)
+
+    @staticmethod
+    def _assert_directory_existence(path: pathlib.Path) -> None:
+        if not path.is_dir():
+            raise click.FileError(
+                filename=str(path), hint="Does not exist or is not a directory."
+            )
+
+    @staticmethod
+    def _assert_file_existence(path: pathlib.Path) -> None:
+        if not path.is_file():
+            raise click.FileError(
+                filename=str(path), hint="Does not exist or is not a file."
+            )
+
+    @property
+    def _brightness(self) -> pathlib.Path:
+        return self._directory / "brightness"
+
+    @property
+    def _max_brightness(self) -> pathlib.Path:
+        return self._directory / "max_brightness"
+
+    def activate(self) -> None:
+        logger.info(
+            "Activating backlight ...", extra={"backlight_directory": self._directory}
+        )
+        try:
+            max_brightness_value = self._max_brightness.read_text()
+            self._brightness.write_text(max_brightness_value)
+        except OSError:
+            logger.exception(
+                "Could not activate backlight.",
+                extra={"backlight_directory": self._directory},
+            )
+        else:
+            logger.info(
+                "Backlight activated.", extra={"backlight_directory": self._directory}
+            )
+
+    def deactivate(self) -> None:
+        logger.info(
+            "Deactivating backlight ...", extra={"backlight_directory": self._directory}
+        )
+        try:
+            self._brightness.write_text("0")
+        except OSError:
+            logger.exception(
+                "Could not deactivate backlight.",
+                extra={"backlight_directory": self._directory},
+            )
+        else:
+            logger.info(
+                "Backlight deactivated.", extra={"backlight_directory": self._directory}
+            )
+
+
+class BacklightManager(contextlib.AbstractContextManager["BacklightManager"]):
+    _backlight: Optional[Backlight]
+
     def __exit__(
         self,
         exc_type: Optional[type[BaseException]],
         exc_value: Optional[BaseException],
         traceback: Optional[TracebackType],
     ) -> None:
-        if self._backlight_directory:
-            logger.info(
-                "Tearing down interface to backlight ...",
-                extra={"backlight_directory": self._backlight_directory},
-            )
-            self.activate()
-            logger.info(
-                "Interface to backlight torn down.",
-                extra={"backlight_directory": self._backlight_directory},
-            )
+        logger.info(
+            "Tearing down interface to optional backlight ...",
+            extra={"backlight": self._backlight.__dict__ if self._backlight else None},
+        )
+        self.activate()
+        logger.info(
+            "Interface to optional backlight torn down.",
+            extra={"backlight": self._backlight.__dict__ if self._backlight else None},
+        )
 
-    def __init__(self, backlight_directory: Optional[str]) -> None:
-        self._backlight_directory = None
-        if backlight_directory:
-            logger.info(
-                "Initializing interface to backlight ...",
-                extra={"backlight_directory": backlight_directory},
-            )
-            self._backlight_directory = pathlib.Path(backlight_directory)
-            self._brightness = self._backlight_directory / "brightness"
-            self._max_brightness = self._backlight_directory / "max_brightness"
-            logger.info(
-                "Interface to backlight initialized.",
-                extra={"backlight_directory": backlight_directory},
-            )
+    def __init__(self, backlight_directory: Optional[pathlib.Path]) -> None:
+        logger.info(
+            "Initializing interface to optional backlight ...",
+            extra={"backlight_directory": backlight_directory},
+        )
+        self._backlight = (
+            Backlight(backlight_directory) if backlight_directory else None
+        )
+        logger.info(
+            "Interface to optional backlight initialized.",
+            extra={
+                "backlight": self._backlight.__dict__ if self._backlight else None,
+                "backlight_directory": backlight_directory,
+            },
+        )
 
     def activate(self) -> None:
-        if self._backlight_directory:
-            logger.info(
-                "Activating backlight ...",
-                extra={"backlight_directory": self._backlight_directory},
-            )
-            try:
-                max_brightness_value = self._max_brightness.read_text()
-                self._brightness.write_text(max_brightness_value)
-            except OSError:
-                logger.exception(
-                    "Could not activate backlight.",
-                    extra={"backlight_directory": self._backlight_directory},
-                )
-            else:
-                logger.info(
-                    "Backlight activated.",
-                    extra={"backlight_directory": self._backlight_directory},
-                )
+        if self._backlight:
+            self._backlight.activate()
 
     def deactivate(self) -> None:
-        if self._backlight_directory:
-            logger.info(
-                "Deactivating backlight ...",
-                extra={"backlight_directory": self._backlight_directory},
-            )
-            try:
-                self._brightness.write_text("0")
-            except OSError:
-                logger.exception(
-                    "Could not deactivate backlight.",
-                    extra={"backlight_directory": self._backlight_directory},
-                )
-            else:
-                logger.info(
-                    "Backlight deactivated.",
-                    extra={"backlight_directory": self._backlight_directory},
-                )
+        if self._backlight:
+            self._backlight.deactivate()
 
 
 class HttpPhotoImageManager:
@@ -187,7 +226,7 @@ class PlaybackInformationLabel(tkinter.Label):
         self,
         av_transport_event_queue: queue.Queue[soco.events_base.Event],
         background: str,
-        backlight: Backlight,
+        backlight_manager: BacklightManager,
         master: tkinter.Tk,
         max_width: int,
         max_height: int,
@@ -195,7 +234,7 @@ class PlaybackInformationLabel(tkinter.Label):
     ) -> None:
         super().__init__(background=background, master=master)
         self._av_transport_event_queue = av_transport_event_queue
-        self._backlight = backlight
+        self._backlight_manager = backlight_manager
         self._album_art_image_manager = HttpPhotoImageManager(max_width, max_height)
         self._refresh_interval = refresh_interval
         self.after(self._refresh_interval, self._process_av_transport_event_queue)
@@ -207,9 +246,9 @@ class PlaybackInformationLabel(tkinter.Label):
         )
         if event.variables["transport_state"] in ("PLAYING", "TRANSITIONING"):
             self._process_track_meta_data(event)
-            self._backlight.activate()
+            self._backlight_manager.activate()
         else:
-            self._backlight.deactivate()
+            self._backlight_manager.deactivate()
             self._update_album_art(None)
         logger.info("AV transport event processed.", extra={"event": event.__dict__})
 
@@ -469,10 +508,12 @@ def run_application(
     playback_information_refresh_interval: int,
 ) -> None:
     with SonosDevice(sonos_device_name) as sonos_device:
-        with Backlight(backlight_directory) as backlight:
+        with BacklightManager(
+            pathlib.Path(backlight_directory) if backlight_directory else None
+        ) as backlight_manager:
             run_user_interface(
                 sonos_device,
-                backlight,
+                backlight_manager,
                 window_width,
                 window_height,
                 playback_information_refresh_interval,
@@ -481,7 +522,7 @@ def run_application(
 
 def run_user_interface(
     sonos_device: SonosDevice,
-    backlight: Backlight,
+    backlight_manager: BacklightManager,
     window_width: int,
     window_height: int,
     playback_information_refresh_interval: int,
@@ -492,7 +533,7 @@ def run_user_interface(
         master=user_interface,
         background="black",
         av_transport_event_queue=sonos_device.av_transport_event_queue,
-        backlight=backlight,
+        backlight_manager=backlight_manager,
         max_width=window_width,
         max_height=window_height,
         refresh_interval=playback_information_refresh_interval,
