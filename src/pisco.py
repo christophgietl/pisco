@@ -47,7 +47,7 @@ logging.config.dictConfig(
         "version": 1,
     }
 )
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 class Backlight:
@@ -85,35 +85,35 @@ class Backlight:
         return self._directory / "max_brightness"
 
     def activate(self) -> None:
-        logger.info(
+        _logger.info(
             "Activating backlight ...", extra={"backlight_directory": self._directory}
         )
         try:
             max_brightness_value = self._max_brightness.read_text()
             self._brightness.write_text(max_brightness_value)
         except OSError:
-            logger.exception(
+            _logger.exception(
                 "Could not activate backlight.",
                 extra={"backlight_directory": self._directory},
             )
         else:
-            logger.info(
+            _logger.info(
                 "Backlight activated.", extra={"backlight_directory": self._directory}
             )
 
     def deactivate(self) -> None:
-        logger.info(
+        _logger.info(
             "Deactivating backlight ...", extra={"backlight_directory": self._directory}
         )
         try:
             self._brightness.write_text("0")
         except OSError:
-            logger.exception(
+            _logger.exception(
                 "Could not deactivate backlight.",
                 extra={"backlight_directory": self._directory},
             )
         else:
-            logger.info(
+            _logger.info(
                 "Backlight deactivated.", extra={"backlight_directory": self._directory}
             )
 
@@ -127,25 +127,25 @@ class BacklightManager(contextlib.AbstractContextManager["BacklightManager"]):
         exc_value: Optional[BaseException],
         traceback: Optional[TracebackType],
     ) -> None:
-        logger.info(
+        _logger.info(
             "Tearing down interface to optional backlight ...",
             extra={"backlight": self._backlight.__dict__ if self._backlight else None},
         )
         self.activate()
-        logger.info(
+        _logger.info(
             "Interface to optional backlight torn down.",
             extra={"backlight": self._backlight.__dict__ if self._backlight else None},
         )
 
     def __init__(self, backlight_directory: Optional[pathlib.Path]) -> None:
-        logger.info(
+        _logger.info(
             "Initializing interface to optional backlight ...",
             extra={"backlight_directory": backlight_directory},
         )
         self._backlight = (
             Backlight(backlight_directory) if backlight_directory else None
         )
-        logger.info(
+        _logger.info(
             "Interface to optional backlight initialized.",
             extra={
                 "backlight": self._backlight.__dict__ if self._backlight else None,
@@ -175,16 +175,16 @@ class HttpPhotoImageManager:
 
     @staticmethod
     def _download_resource(absolute_uri: str) -> bytes:
-        logger.debug("Downloading resource ...", extra={"URI": absolute_uri})
+        _logger.debug("Downloading resource ...", extra={"URI": absolute_uri})
         r = requests.get(absolute_uri, timeout=10)
         content = r.content
-        logger.debug("Resource downloaded.", extra={"URI": absolute_uri})
+        _logger.debug("Resource downloaded.", extra={"URI": absolute_uri})
         return content
 
     def _get_photo_image_without_caching(
         self, absolute_uri: str
     ) -> PIL.ImageTk.PhotoImage:
-        logger.debug(
+        _logger.debug(
             "Creating Tkinter-compatible photo image ...",
             extra={"URI": absolute_uri},
         )
@@ -193,7 +193,7 @@ class HttpPhotoImageManager:
         image_wo_alpha = self._remove_alpha_channel(image)
         resized_image = self._resize_image(image_wo_alpha)
         photo_image = PIL.ImageTk.PhotoImage(resized_image)
-        logger.debug(
+        _logger.debug(
             "Tkinter-compatible photo image created.",
             extra={"URI": absolute_uri},
         )
@@ -201,19 +201,19 @@ class HttpPhotoImageManager:
 
     @staticmethod
     def _remove_alpha_channel(image: PIL.Image.Image) -> PIL.Image.Image:
-        logger.debug("Removing alpha channel ...")
+        _logger.debug("Removing alpha channel ...")
         if image.mode != "RGBA":
-            logger.debug(
+            _logger.debug(
                 "Cannot remove alpha channel: Image does not have an alpha channel."
             )
             return image
         rgb_image = PIL.Image.new("RGB", image.size, "white")
         rgb_image.paste(image, mask=image.getchannel("A"))
-        logger.debug("Alpha channel removed.")
+        _logger.debug("Alpha channel removed.")
         return rgb_image
 
     def _resize_image(self, image: PIL.Image.Image) -> PIL.Image.Image:
-        logger.debug("Resizing image ...")
+        _logger.debug("Resizing image ...")
         if self._max_width * image.height <= self._max_height * image.width:
             new_width = self._max_width
             new_height = round(image.height * self._max_width / image.width)
@@ -221,7 +221,7 @@ class HttpPhotoImageManager:
             new_width = round(image.width * self._max_height / image.height)
             new_height = self._max_height
         resized_image = image.resize(size=(new_width, new_height))
-        logger.debug("Image resized.")
+        _logger.debug("Image resized.")
         return resized_image
 
 
@@ -249,7 +249,7 @@ class PlaybackInformationLabel(tkinter.Label):
         self.after(self._refresh_interval, self._process_av_transport_event_queue)
 
     def _process_av_transport_event(self, event: soco.events_base.Event) -> None:
-        logger.info(
+        _logger.info(
             "Processing AV transport event ...",
             extra={"event": event.__dict__},
         )
@@ -259,7 +259,7 @@ class PlaybackInformationLabel(tkinter.Label):
         else:
             self._backlight_manager.deactivate()
             self._update_album_art(None)
-        logger.info("AV transport event processed.", extra={"event": event.__dict__})
+        _logger.info("AV transport event processed.", extra={"event": event.__dict__})
 
     def _process_av_transport_event_queue(self) -> None:
         try:
@@ -273,7 +273,7 @@ class PlaybackInformationLabel(tkinter.Label):
 
     def _process_track_meta_data(self, event: soco.events_base.Event) -> None:
         track_meta_data = event.variables["current_track_meta_data"]
-        logger.info(
+        _logger.info(
             "Processing track meta data ...",
             extra={"track_meta_data": track_meta_data.__dict__},
         )
@@ -283,13 +283,13 @@ class PlaybackInformationLabel(tkinter.Label):
                 event.service.soco.music_library.build_album_art_full_uri(album_art_uri)
             )
             self._update_album_art(album_art_absolute_uri)
-        logger.info(
+        _logger.info(
             "Track meta data processed.",
             extra={"track_meta_data": track_meta_data.__dict__},
         )
 
     def _update_album_art(self, absolute_uri: Optional[str]) -> None:
-        logger.info("Updating album art ...", extra={"URI": absolute_uri})
+        _logger.info("Updating album art ...", extra={"URI": absolute_uri})
         if absolute_uri:
             album_art_photo_image = self._album_art_image_manager.get_photo_image(
                 absolute_uri
@@ -297,7 +297,7 @@ class PlaybackInformationLabel(tkinter.Label):
             self.config(image=album_art_photo_image)
         else:
             self.config(image="")  # removes image if present
-        logger.info("Album art updated.", extra={"URI": absolute_uri})
+        _logger.info("Album art updated.", extra={"URI": absolute_uri})
 
 
 class SonosDevice(contextlib.AbstractContextManager["SonosDevice"]):
@@ -311,26 +311,26 @@ class SonosDevice(contextlib.AbstractContextManager["SonosDevice"]):
         exc_value: Optional[BaseException],
         traceback: Optional[TracebackType],
     ) -> None:
-        logger.info(
+        _logger.info(
             "Tearing down interface to Sonos device ...",
             extra={"sonos_device_name": self.controller.player_name},
         )
         self._av_transport_subscription.unsubscribe()
         self._av_transport_subscription.event_listener.stop()
-        logger.info(
+        _logger.info(
             "Interface to Sonos device torn down.",
             extra={"sonos_device_name": self.controller.player_name},
         )
 
     def __init__(self, name: str) -> None:
-        logger.info(
+        _logger.info(
             "Initializing interface to Sonos device ...",
             extra={"sonos_device_name": name},
         )
         self.controller = self._discover_controller(name)
         self._av_transport_subscription = self._initialize_av_transport_subscription()
         self.av_transport_event_queue = self._av_transport_subscription.events
-        logger.info(
+        _logger.info(
             "Interface to Sonos device initialized.",
             extra={"sonos_device_name": name},
         )
@@ -344,16 +344,16 @@ class SonosDevice(contextlib.AbstractContextManager["SonosDevice"]):
 
     def _initialize_av_transport_subscription(self) -> soco.events.Subscription:
         def handle_autorenew_failure(_: Exception) -> None:
-            logger.info("Handling autorenew failure ...")
-            logger.info("Raising a KeyboardInterrupt in the main thread ...")
+            _logger.info("Handling autorenew failure ...")
+            _logger.info("Raising a KeyboardInterrupt in the main thread ...")
             _thread.interrupt_main()
-            logger.info("KeyboardInterrupt raised in the main thread.")
-            logger.info("Autorenew failure handled.")
+            _logger.info("KeyboardInterrupt raised in the main thread.")
+            _logger.info("Autorenew failure handled.")
 
-        logger.debug("Initializing AV transport subscription ...")
+        _logger.debug("Initializing AV transport subscription ...")
         subscription = self.controller.avTransport.subscribe(auto_renew=True)
         subscription.auto_renew_fail = handle_autorenew_failure
-        logger.debug("AV transport subscription initialized.")
+        _logger.debug("AV transport subscription initialized.")
         return subscription
 
     def _play_sonos_favorite(self, favorite: soco.data_structures.DidlObject) -> None:
@@ -364,20 +364,20 @@ class SonosDevice(contextlib.AbstractContextManager["SonosDevice"]):
             )
             return
 
-        logger.warning(
+        _logger.warning(
             "Favorite does not have attribute resource_meta_data.",
             extra={"favorite": favorite.__dict__},
         )
         self.controller.play_uri(uri=favorite.resources[0].uri)
 
     def play_sonos_favorite_by_index(self, favorite_index: int) -> None:
-        logger.info(
+        _logger.info(
             "Starting to play Sonos favorite ...",
             extra={"sonos_favorite_index": favorite_index},
         )
         favorite = self.controller.music_library.get_sonos_favorites()[favorite_index]
         if not isinstance(favorite, soco.data_structures.DidlObject):
-            logger.error(
+            _logger.error(
                 "Could not play Sonos favorite.",
                 extra={
                     "favorite": favorite.__dict__,
@@ -386,20 +386,20 @@ class SonosDevice(contextlib.AbstractContextManager["SonosDevice"]):
             )
             return
         self._play_sonos_favorite(favorite)
-        logger.info(
+        _logger.info(
             "Started to play Sonos favorite.",
             extra={"sonos_favorite_index": favorite_index},
         )
 
     def toggle_current_transport_state(self) -> None:
-        logger.info("Toggling current transport state ...")
+        _logger.info("Toggling current transport state ...")
         transport = self.controller.get_current_transport_info()
         state = transport["current_transport_state"]
         if state == "PLAYING":
             self.controller.pause()
         else:
             self.controller.play()
-        logger.info("Toggled current transport state.")
+        _logger.info("Toggled current transport state.")
 
 
 class UserInterface(tkinter.Tk):
@@ -420,12 +420,12 @@ class UserInterface(tkinter.Tk):
         signal.signal(signal.SIGTERM, self._handle_int_or_term_signal)
 
     def _handle_int_or_term_signal(self, signal_number: int, _: object) -> None:
-        logger.info("Handling signal ...", extra={"signal_number": signal_number})
+        _logger.info("Handling signal ...", extra={"signal_number": signal_number})
         self.destroy()
-        logger.info("Signal handled.", extra={"signal_number": signal_number})
+        _logger.info("Signal handled.", extra={"signal_number": signal_number})
 
     def _handle_key_press_event(self, event: tkinter.Event[tkinter.Misc]) -> None:
-        logger.info("Handling key press event ...", extra={"key_press_event": event})
+        _logger.info("Handling key press event ...", extra={"key_press_event": event})
         key_symbol = event.keysym
         device = self._sonos_device
         if key_symbol.isdigit():
@@ -445,11 +445,11 @@ class UserInterface(tkinter.Tk):
         elif key_symbol in ("Down", "XF86AudioLowerVolume"):
             device.controller.set_relative_volume(-5)
         else:
-            logger.info(
+            _logger.info(
                 "No action defined for key press.",
                 extra={"key_press_event": event},
             )
-        logger.info("Key press event handled.")
+        _logger.info("Key press event handled.")
 
 
 @click.command()
@@ -508,7 +508,7 @@ def main(
             playback_information_refresh_interval,
         )
     except Exception as e:
-        logger.exception(str(e))
+        _logger.exception(str(e))
         raise
 
 
@@ -539,7 +539,7 @@ def run_user_interface(
     window_height: int,
     playback_information_refresh_interval: int,
 ) -> None:
-    logger.info("Running pisco user interface ...")
+    _logger.info("Running pisco user interface ...")
     user_interface = UserInterface(sonos_device, window_width, window_height)
     playback_information_label = PlaybackInformationLabel(
         master=user_interface,
@@ -552,7 +552,7 @@ def run_user_interface(
     )
     playback_information_label.pack(expand=True, fill="both")
     user_interface.mainloop()
-    logger.info("Pisco user interface run.")
+    _logger.info("Pisco user interface run.")
 
 
 if __name__ == "__main__":
