@@ -28,6 +28,6 @@ repos:
     hooks:
       - id: flakeheaven
         additional_dependencies:
-          - flake8-bandit~=3.0  # 4.1.1 is incompatible with flakeheaven 3.3.0
-          - flake8-bugbear~=23.3
-          - pep8-naming~=0.13.2 # 0.13.3 is incompatible with flakeheaven 3.3.0
+          - flake8-bandit~=3.0    # 4.1.1 is incompatible with flakeheaven 3.3.0
+          - flake8-bugbear~=23.3  # 23.5.9 is incompatible with flakeheaven 3.3.0
+          - pep8-naming~=0.13.2   # 0.13.3 is incompatible with flakeheaven 3.3.0
