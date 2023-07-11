@@ -4,6 +4,16 @@ Pisco is a keyboard only controller for Sonos speakers.
 While Pisco's graphical interface displays the album art of the currently running track,
 you can control playback with your keyboard.
 
+<p>
+   <img
+      src="./images/pisco-on-mac.png"
+      width="432"
+      height="460"
+      alt="Pisco running on macOS"
+      title="Pisco running on macOS"
+   />
+</p>
+
 Pisco has been tested on Linux and on macOS.
 It is particularly well-suited for usage with
 small displays (e.g. [Pimoroni HyperPixel 4.0 Square](https://shop.pimoroni.com/products/hyperpixel-4-square?variant=30138251477075)) and
