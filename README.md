@@ -6,7 +6,7 @@ you can control playback with your keyboard.
 
 <p>
    <img
-      src="./images/pisco-on-mac.png"
+      src="https://raw.githubusercontent.com/christophgietl/pisco/main/images/pisco-on-mac.png"
       width="432"
       height="460"
       alt="Pisco running on macOS"
