@@ -42,7 +42,8 @@ Proceed as follows to set up Pisco on an ordinary Linux or macOS machine:
 
 For a clean and minimalistic deployment
 on a [Raspberry Pi Zero](https://www.raspberrypi.com/products/raspberry-pi-zero/),
-please check the directory `deployment`.
+please check
+[the directory `deployment`](https://github.com/christophgietl/pisco/tree/main/deployment).
 
 
 ## Usage
