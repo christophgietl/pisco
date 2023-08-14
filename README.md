@@ -7,8 +7,6 @@ you can control playback with your keyboard.
 <p>
    <img
       src="https://raw.githubusercontent.com/christophgietl/pisco/main/images/pisco-on-mac.png"
-      width="432"
-      height="460"
       alt="Pisco running on macOS"
       title="Pisco running on macOS"
    />
@@ -22,8 +20,6 @@ media remotes (e.g. [Satechi Bluetooth Multi-Media Remote](https://satechi.net/p
 <p>
    <img
       src="https://raw.githubusercontent.com/christophgietl/pisco/main/images/pisco-on-pi-zero.jpg"
-      width="250"
-      height="339"
       alt="Pisco running on a Raspberry Pi Zero attached to a Pimoroni HyperPixel 4.0 Square surrounded by a Satechi Bluetooth Multi-Media Remote and a Sonos speaker"
       title="Pisco running on a Raspberry Pi Zero attached to a Pimoroni HyperPixel 4.0 Square surrounded by a Satechi Bluetooth Multi-Media Remote and a Sonos speaker"
    />
