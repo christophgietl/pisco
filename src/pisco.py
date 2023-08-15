@@ -10,7 +10,7 @@ import queue
 import signal
 import tkinter
 from types import TracebackType
-from typing import Optional
+from typing import Final, Optional
 
 import click
 import PIL.Image
@@ -22,23 +22,27 @@ import soco.events
 import soco.events_base
 import xdg
 
-_log_file = xdg.XDG_DATA_HOME / "pisco" / "logs" / "pisco.jsonl"
-_log_file.parent.mkdir(exist_ok=True, parents=True)
-_log_format = "%(asctime)s %(name)s %(levelname)s %(message)s %(thread)s %(threadName)s"
+_LOG_FILE: Final[pathlib.Path] = xdg.XDG_DATA_HOME / "pisco" / "logs" / "pisco.jsonl"
+_LOG_FILE.parent.mkdir(exist_ok=True, parents=True)
+
+_LOG_FORMAT: Final[
+    str
+] = "%(asctime)s %(name)s %(levelname)s %(message)s %(thread)s %(threadName)s"
+
 logging.config.dictConfig(
     {
         "disable_existing_loggers": False,
         "formatters": {
             "json_formatter": {
                 "class": "pythonjsonlogger.jsonlogger.JsonFormatter",
-                "format": _log_format,
+                "format": _LOG_FORMAT,
             }
         },
         "handlers": {
             "rot_file_handler": {
                 "backupCount": 9,
                 "class": "logging.handlers.RotatingFileHandler",
-                "filename": _log_file,
+                "filename": _LOG_FILE,
                 "formatter": "json_formatter",
                 "maxBytes": 1_000_000,
             }
@@ -47,6 +51,7 @@ logging.config.dictConfig(
         "version": 1,
     }
 )
+
 _logger = logging.getLogger(__name__)
 
 
