@@ -9,6 +9,11 @@ repos:
         language: system
         name: mypy
         pass_filenames: false
+      - id: pytest
+        entry: poetry run pytest --cov=src --cov-report term-missing
+        language: system
+        name: pytest
+        pass_filenames: false
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.4.0
     hooks:
