@@ -2,6 +2,15 @@ default_install_hook_types:
   - pre-commit
   - pre-push
 repos:
+  - repo: local
+    hooks:
+      - id: mypy
+        entry: poetry run mypy .
+        language: system
+        name: mypy
+        pass_filenames: false
+        types:
+          - python
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.4.0
     hooks:

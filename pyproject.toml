@@ -26,6 +26,7 @@ verbose = true
 
 [tool.mypy]
 strict = true
+verbosity = 1
 
 [[tool.mypy.overrides]]
 module = "soco.*"
