@@ -4,9 +4,6 @@ help:	## Display this help message
 build:	## Build package
 	poetry build
 
-check_types:	## Run mypy for static type checking
-	poetry run mypy .
-
 lint:	## Run git hooks on all files
 	poetry run pre-commit run --all-files
 

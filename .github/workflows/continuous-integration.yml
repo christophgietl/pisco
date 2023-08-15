@@ -18,15 +18,7 @@ jobs:
           path: |
             dist/
             pyproject.toml
-  lint:
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v3
-      - uses: ./.github/actions/set-up-python-environment
-        with:
-          install-dependencies: true
-      - run: poetry run pre-commit run --all-files
-  test:
+  lint-and-test:
     strategy:
       fail-fast: false
       matrix:
@@ -45,30 +37,13 @@ jobs:
         with:
           install-dependencies: true
           python-version: ${{ matrix.python-version }}
+      - run: poetry run pre-commit run --all-files
       - run: poetry run pytest --cov=src --cov-report term-missing
-  type_check:
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v3
-      - uses: ./.github/actions/set-up-python-environment
-        with:
-          install-dependencies: true
-      - run: poetry run mypy . --platform darwin --python-version 3.9
-      - run: poetry run mypy . --platform darwin --python-version 3.10
-      - run: poetry run mypy . --platform darwin --python-version 3.11
-      - run: poetry run mypy . --platform linux --python-version 3.9
-      - run: poetry run mypy . --platform linux --python-version 3.10
-      - run: poetry run mypy . --platform linux --python-version 3.11
-      - run: poetry run mypy . --platform win32 --python-version 3.9
-      - run: poetry run mypy . --platform win32 --python-version 3.10
-      - run: poetry run mypy . --platform win32 --python-version 3.11
   publish:
     if: github.ref_type == 'tag'
     needs:
       - build
-      - lint
-      - test
-      - type_check
+      - lint-and-test
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
