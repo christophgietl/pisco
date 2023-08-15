@@ -467,7 +467,7 @@ class UserInterface(tkinter.Tk):
         sysfs directory of the backlight that should be deactivated
         when the device is not playing
     """,
-    type=click.Path(exists=True, file_okay=False),
+    type=click.Path(exists=True, file_okay=False, path_type=pathlib.Path),
 )
 @click.option(
     "-w",
@@ -498,7 +498,7 @@ class UserInterface(tkinter.Tk):
 )
 def main(
     sonos_device_name: str,
-    backlight_directory: Optional[str],
+    backlight_directory: Optional[pathlib.Path],
     window_width: int,
     window_height: int,
     playback_information_refresh_interval: int,
@@ -519,15 +519,13 @@ def main(
 
 def run_application(
     sonos_device_name: str,
-    backlight_directory: Optional[str],
+    backlight_directory: Optional[pathlib.Path],
     window_width: int,
     window_height: int,
     playback_information_refresh_interval: int,
 ) -> None:
     with SonosDeviceManager(sonos_device_name) as sonos_device_manager:
-        with BacklightManager(
-            pathlib.Path(backlight_directory) if backlight_directory else None
-        ) as backlight_manager:
+        with BacklightManager(backlight_directory) as backlight_manager:
             run_user_interface(
                 sonos_device_manager,
                 backlight_manager,
