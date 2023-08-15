@@ -133,25 +133,25 @@ class BacklightManager(contextlib.AbstractContextManager["BacklightManager"]):
         traceback: Optional[TracebackType],
     ) -> None:
         _logger.info(
-            "Tearing down interface to optional backlight ...",
+            "Tearing down manager for optional backlight ...",
             extra={"backlight": self._backlight.__dict__ if self._backlight else None},
         )
         self.activate()
         _logger.info(
-            "Interface to optional backlight torn down.",
+            "Manager for optional backlight torn down.",
             extra={"backlight": self._backlight.__dict__ if self._backlight else None},
         )
 
     def __init__(self, backlight_directory: Optional[pathlib.Path]) -> None:
         _logger.info(
-            "Initializing interface to optional backlight ...",
+            "Initializing manager for optional backlight ...",
             extra={"backlight_directory": backlight_directory},
         )
         self._backlight = (
             Backlight(backlight_directory) if backlight_directory else None
         )
         _logger.info(
-            "Interface to optional backlight initialized.",
+            "Manager for optional backlight initialized.",
             extra={
                 "backlight": self._backlight.__dict__ if self._backlight else None,
                 "backlight_directory": backlight_directory,
@@ -305,7 +305,7 @@ class PlaybackInformationLabel(tkinter.Label):
         _logger.info("Album art updated.", extra={"URI": absolute_uri})
 
 
-class SonosDevice(contextlib.AbstractContextManager["SonosDevice"]):
+class SonosDeviceManager(contextlib.AbstractContextManager["SonosDeviceManager"]):
     _av_transport_subscription: soco.events.Subscription
     av_transport_event_queue: queue.Queue[soco.events_base.Event]
     controller: soco.core.SoCo
@@ -317,26 +317,26 @@ class SonosDevice(contextlib.AbstractContextManager["SonosDevice"]):
         traceback: Optional[TracebackType],
     ) -> None:
         _logger.info(
-            "Tearing down interface to Sonos device ...",
+            "Tearing down manager for Sonos device ...",
             extra={"sonos_device_name": self.controller.player_name},
         )
         self._av_transport_subscription.unsubscribe()
         self._av_transport_subscription.event_listener.stop()
         _logger.info(
-            "Interface to Sonos device torn down.",
+            "Manager for Sonos device torn down.",
             extra={"sonos_device_name": self.controller.player_name},
         )
 
     def __init__(self, name: str) -> None:
         _logger.info(
-            "Initializing interface to Sonos device ...",
+            "Initializing manager for Sonos device ...",
             extra={"sonos_device_name": name},
         )
         self.controller = self._discover_controller(name)
         self._av_transport_subscription = self._initialize_av_transport_subscription()
         self.av_transport_event_queue = self._av_transport_subscription.events
         _logger.info(
-            "Interface to Sonos device initialized.",
+            "Manager for Sonos device initialized.",
             extra={"sonos_device_name": name},
         )
 
@@ -408,16 +408,16 @@ class SonosDevice(contextlib.AbstractContextManager["SonosDevice"]):
 
 
 class UserInterface(tkinter.Tk):
-    _sonos_device: SonosDevice
+    _sonos_device_manager: SonosDeviceManager
 
     def __init__(
         self,
-        sonos_device: SonosDevice,
+        sonos_device_manager: SonosDeviceManager,
         window_width: int,
         window_height: int,
     ) -> None:
         super().__init__()
-        self._sonos_device = sonos_device
+        self._sonos_device_manager = sonos_device_manager
         self.geometry(f"{window_width}x{window_height}")
         self.title("Pisco")
         self.bind_all("<KeyPress>", self._handle_key_press_event)
@@ -432,23 +432,23 @@ class UserInterface(tkinter.Tk):
     def _handle_key_press_event(self, event: tkinter.Event[tkinter.Misc]) -> None:
         _logger.info("Handling key press event ...", extra={"key_press_event": event})
         key_symbol = event.keysym
-        device = self._sonos_device
+        device_manager = self._sonos_device_manager
         if key_symbol.isdigit():
-            device.play_sonos_favorite_by_index(int(key_symbol))
+            device_manager.play_sonos_favorite_by_index(int(key_symbol))
         elif key_symbol in ("Left", "XF86AudioRewind"):
-            device.controller.previous()
+            device_manager.controller.previous()
         elif key_symbol in ("Right", "XF86AudioForward"):
-            device.controller.next()
+            device_manager.controller.next()
         elif key_symbol in ("Return", "XF86AudioPlay"):
-            device.toggle_current_transport_state()
+            device_manager.toggle_current_transport_state()
         elif key_symbol == "XF86AudioStop":  # not supported by Rii MX6
-            device.controller.stop()
+            device_manager.controller.stop()
         elif key_symbol == "XF86AudioMute":
-            device.controller.mute = not device.controller.mute
+            device_manager.controller.mute = not device_manager.controller.mute
         elif key_symbol in ("Up", "XF86AudioRaiseVolume"):
-            device.controller.set_relative_volume(+5)
+            device_manager.controller.set_relative_volume(+5)
         elif key_symbol in ("Down", "XF86AudioLowerVolume"):
-            device.controller.set_relative_volume(-5)
+            device_manager.controller.set_relative_volume(-5)
         else:
             _logger.info(
                 "No action defined for key press.",
@@ -524,12 +524,12 @@ def run_application(
     window_height: int,
     playback_information_refresh_interval: int,
 ) -> None:
-    with SonosDevice(sonos_device_name) as sonos_device:
+    with SonosDeviceManager(sonos_device_name) as sonos_device_manager:
         with BacklightManager(
             pathlib.Path(backlight_directory) if backlight_directory else None
         ) as backlight_manager:
             run_user_interface(
-                sonos_device,
+                sonos_device_manager,
                 backlight_manager,
                 window_width,
                 window_height,
@@ -538,18 +538,18 @@ def run_application(
 
 
 def run_user_interface(
-    sonos_device: SonosDevice,
+    sonos_device_manager: SonosDeviceManager,
     backlight_manager: BacklightManager,
     window_width: int,
     window_height: int,
     playback_information_refresh_interval: int,
 ) -> None:
     _logger.info("Running pisco user interface ...")
-    user_interface = UserInterface(sonos_device, window_width, window_height)
+    user_interface = UserInterface(sonos_device_manager, window_width, window_height)
     playback_information_label = PlaybackInformationLabel(
         master=user_interface,
         background="black",
-        av_transport_event_queue=sonos_device.av_transport_event_queue,
+        av_transport_event_queue=sonos_device_manager.av_transport_event_queue,
         backlight_manager=backlight_manager,
         max_width=window_width,
         max_height=window_height,
