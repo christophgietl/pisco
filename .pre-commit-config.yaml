@@ -9,8 +9,6 @@ repos:
         language: system
         name: mypy
         pass_filenames: false
-        types:
-          - python
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.4.0
     hooks:
