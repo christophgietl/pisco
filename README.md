@@ -1,8 +1,8 @@
 # Pisco
 
-Pisco is a keyboard only controller for Sonos speakers.
-While Pisco's graphical interface displays the album art of the currently running track,
-you can control playback with your keyboard.
+Pisco is a keyboard-only controller for Sonos speakers.
+While Pisco's graphical interface displays the album art of the track currently playing,
+you can control playback using your keyboard.
 
 <p>
    <img
@@ -13,10 +13,10 @@ you can control playback with your keyboard.
    />
 </p>
 
-Pisco has been tested on Linux and on macOS.
-It is particularly well-suited for usage with
+Pisco has been tested on Linux and macOS.
+It is especially well suited for use with
 small displays (e.g. [Pimoroni HyperPixel 4.0 Square](https://shop.pimoroni.com/products/hyperpixel-4-square?variant=30138251477075)) and
-media remotes (e.g. [Satechi Bluetooth Multi-Media Remote](https://satechi.net/products/satechi-bluetooth-multi-media-remote?variant=27129644617)).
+media remote controls (e.g. [Satechi Bluetooth Multi-Media Remote](https://satechi.net/products/satechi-bluetooth-multi-media-remote?variant=27129644617)).
 
 <p>
    <img
@@ -29,28 +29,28 @@ media remotes (e.g. [Satechi Bluetooth Multi-Media Remote](https://satechi.net/p
 
 ## Setup
 
-Proceed as follows to set up Pisco on an ordinary Linux or macOS machine:
+To set up Pisco on a regular Linux or macOS machine, follow these steps:
 
-1. Make sure you are using Python 3.9 or newer.
+1. Make sure you are using Python 3.9 or higher.
 2. Create a virtual environment if you do not want to clutter up your default environment.
 3. Install Pisco:
     ```shell
     pip3 install pisco
     ```
 
-For a clean and minimalistic deployment
+For a clean and minimalist deployment
 on a [Raspberry Pi Zero](https://www.raspberrypi.com/products/raspberry-pi-zero/),
-please check
+please see
 [the directory `deployment`](https://github.com/christophgietl/pisco/tree/main/deployment).
 
 
 ## Usage
 
 When starting Pisco,
-you need to provide the name of the Sonos device (i.e. Sonos room) you want to control:
+you need to specify the name of the Sonos device (i.e. Sonos room) you want to control:
 
 ```shell
-pisco Leseecke  # Replace 'Leseecke' by the name of your Sonos device.
+pisco Leseecke  # Replace 'Leseecke' with the name of your Sonos device.
 ```
 
 You can use the option `--help` to find additional options:
@@ -71,10 +71,10 @@ Options:
   --help                       Show this message and exit.
 ```
 
-As soon as Pisco is running, you can use the following keys to control playback:
+Once Pisco is running, you can use the following keys to control playback:
 - ⏯ (or return) to pause or resume playback
 - ⏹ to stop playback
-- ⏮ and ⏭ (or left and right arrow) to play previous or next track
+- ⏮ and ⏭ (or left and right arrow) to play the previous or next track
 - 0️⃣ to 9️⃣ to play the top 10 tracks (or radio stations) of your Sonos favorites
-- ➕ and ➖ (or up and down arrow) to raise or lower volume
+- ➕ and ➖ (or up and down arrow) to increase or decrease volume
 - 🔇 to mute or unmute

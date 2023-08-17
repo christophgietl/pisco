@@ -35,7 +35,7 @@ ignore_missing_imports = true
 [tool.poetry]
 name = "pisco"
 version = "0.0.0"   # Version will be set by CI workflow based on git tag.
-description = "Keyboard only controller for Sonos speakers"
+description = "Keyboard-only controller for Sonos speakers"
 authors = ["Christoph Gietl <christophgietl@users.noreply.github.com>"]
 license = "MIT"
 readme = "README.md"
