@@ -1,3 +1,6 @@
+"""Keyboard-only controller for Sonos speakers."""
+
+
 from __future__ import annotations
 
 import _thread
