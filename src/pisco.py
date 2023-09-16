@@ -525,15 +525,17 @@ def run_application(
     window_height: int,
     playback_information_refresh_interval: int,
 ) -> None:
-    with SonosDeviceManager(sonos_device_name) as sonos_device_manager:
-        with BacklightManager(backlight_directory) as backlight_manager:
-            run_user_interface(
-                sonos_device_manager,
-                backlight_manager,
-                window_width,
-                window_height,
-                playback_information_refresh_interval,
-            )
+    with (
+        SonosDeviceManager(sonos_device_name) as sonos_device_manager,
+        BacklightManager(backlight_directory) as backlight_manager,
+    ):
+        run_user_interface(
+            sonos_device_manager,
+            backlight_manager,
+            window_width,
+            window_height,
+            playback_information_refresh_interval,
+        )
 
 
 def run_user_interface(
