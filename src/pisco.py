@@ -513,8 +513,8 @@ def main(
             window_height,
             playback_information_refresh_interval,
         )
-    except Exception as e:
-        _logger.exception(str(e))
+    except Exception:
+        _logger.exception("Caught unhandled exception.")
         raise
 
 
