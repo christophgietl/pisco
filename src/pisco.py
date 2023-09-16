@@ -66,6 +66,10 @@ class Backlight:
     _directory: pathlib.Path
 
     def __init__(self, directory: pathlib.Path) -> None:
+        """Initialize helper for activating and deactivating a sysfs backlight.
+
+        If `directory` is not a sysfs backlight, a Click file error is raised.
+        """
         self._directory = directory
         self._assert_backlight_directory()
 
@@ -155,6 +159,10 @@ class BacklightManager(contextlib.AbstractContextManager["BacklightManager"]):
         )
 
     def __init__(self, backlight_directory: pathlib.Path | None) -> None:
+        """Initialize optional helper for activating and deactivating a sysfs backlight.
+
+        If `backlight_directory` is None, no helper is initialized.
+        """
         _logger.info(
             "Initializing manager for optional backlight ...",
             extra={"backlight_directory": backlight_directory},
@@ -188,6 +196,7 @@ class HttpPhotoImageManager:
     _max_height: int
 
     def __init__(self, max_width: int, max_height: int) -> None:
+        """Initialize helper for image handling."""
         self._max_width = max_width
         self._max_height = max_height
         self.get_photo_image = functools.lru_cache(maxsize=1)(
@@ -267,6 +276,7 @@ class PlaybackInformationLabel(tk.Label):
         max_height: int,
         refresh_interval: int,
     ) -> None:
+        """Initialize label for displaying album art."""
         super().__init__(background=background, master=master)
         self._av_transport_event_queue = av_transport_event_queue
         self._backlight_manager = backlight_manager
@@ -352,6 +362,10 @@ class SonosDeviceManager(contextlib.AbstractContextManager["SonosDeviceManager"]
         )
 
     def __init__(self, name: str) -> None:
+        """Discovers a device and creates a controller and a transport event queue.
+
+        If no device named `name` is found, a Click exception is raised.
+        """
         _logger.info(
             "Initializing manager for Sonos device ...",
             extra={"sonos_device_name": name},
@@ -443,6 +457,7 @@ class UserInterface(tk.Tk):
         window_width: int,
         window_height: int,
     ) -> None:
+        """Initialize the graphical user interface and keypress and signal handlers."""
         super().__init__()
         self._sonos_device_manager = sonos_device_manager
         self.geometry(f"{window_width}x{window_height}")
