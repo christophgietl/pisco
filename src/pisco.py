@@ -538,7 +538,7 @@ def main(
             playback_information_refresh_interval,
         )
     except Exception:
-        _logger.exception("Caught unhandled exception.")
+        _logger.exception("Exception has not been handled.")
         raise
 
 
@@ -549,6 +549,7 @@ def run_application(
     window_height: int,
     playback_information_refresh_interval: int,
 ) -> None:
+    """Manages a Sonos device and an optional backlight and runs the user interface."""
     with (
         SonosDeviceManager(sonos_device_name) as sonos_device_manager,
         BacklightManager(backlight_directory) as backlight_manager,
@@ -569,6 +570,7 @@ def run_user_interface(
     window_height: int,
     playback_information_refresh_interval: int,
 ) -> None:
+    """Builds the user interface and runs its main loop."""
     _logger.info("Running pisco user interface ...")
     user_interface = UserInterface(sonos_device_manager, window_width, window_height)
     playback_information_label = PlaybackInformationLabel(
