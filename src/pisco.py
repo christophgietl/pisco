@@ -344,7 +344,8 @@ class SonosDeviceManager(contextlib.AbstractContextManager["SonosDeviceManager"]
     def _discover_controller(name: str) -> soco.core.SoCo:
         controller = soco.discovery.by_name(name)
         if controller is None:
-            raise click.ClickException(f"Could not find Sonos device named {name}.")
+            msg = f"Could not find Sonos device named {name}."
+            raise click.ClickException(msg)
         return controller
 
     def _initialize_av_transport_subscription(self) -> soco.events.Subscription:
