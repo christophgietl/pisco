@@ -55,7 +55,7 @@ target-version = "py39"
 
 [tool.ruff.per-file-ignores]
 "tasks.py" = ["D100"]
-"tests/*" = ["D100", "D101", "D102", "D103", "INP001", "S101"]
+"tests/*" = ["D", "INP001", "S101"]
 
 [tool.ruff.pydocstyle]
 convention = "google"
