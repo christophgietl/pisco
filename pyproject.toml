@@ -5,21 +5,6 @@ build-backend = "poetry.core.masonry.api"
 [tool.black]
 target-version = ["py39", "py310", "py311"]
 
-[tool.flakeheaven]
-max-complexity = 10
-max-line-length = 88
-
-[tool.flakeheaven.exceptions."tests/"]
-flake8-bandit = ["-S101"]
-
-[tool.flakeheaven.plugins]
-flake8-bandit = ["+*"]
-flake8-bugbear = ["+*"]
-mccabe = ["+*"]
-pep8-naming = ["+*"]
-pycodestyle = ["+*", "-E203"] # https://black.readthedocs.io/en/stable/guides/using_black_with_other_tools.html?highlight=flake#flake8
-pyflakes = ["+*"]
-
 [tool.isort]
 profile = "black"
 verbose = true
@@ -61,3 +46,12 @@ types-requests = "^2.28"
 
 [tool.poetry.scripts]
 pisco = "pisco:main"
+
+[tool.ruff]
+select = ["B", "C", "E", "F", "N", "S", "W"]
+ignore = ["E203"] # https://black.readthedocs.io/en/stable/guides/using_black_with_other_tools.html?highlight=flake#flake8
+src = ["src", "test"]
+target-version = "py39"
+
+[tool.ruff.per-file-ignores]
+"tests/*" = ["S101"]
