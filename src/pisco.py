@@ -68,7 +68,11 @@ class Backlight:
     def __init__(self, directory: pathlib.Path) -> None:
         """Initialize helper for activating and deactivating a sysfs backlight.
 
-        If `directory` is not a sysfs backlight, a Click file error is raised.
+        Args:
+            directory: Sysfs directory of the backlight that should be controlled.
+
+        Raises:
+            click.FileError: If `directory` is not a sysfs backlight.
         """
         self._directory = directory
         self._assert_backlight_directory()
