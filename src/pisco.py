@@ -8,7 +8,7 @@ import logging.config
 import pathlib
 import queue
 import signal
-import tkinter
+import tkinter as tk
 from types import TracebackType
 from typing import Final
 
@@ -230,7 +230,7 @@ class HttpPhotoImageManager:
         return resized_image
 
 
-class PlaybackInformationLabel(tkinter.Label):
+class PlaybackInformationLabel(tk.Label):
     _album_art_image_manager: HttpPhotoImageManager
     _av_transport_event_queue: queue.Queue[soco.events_base.Event]
     _backlight_manager: BacklightManager
@@ -241,7 +241,7 @@ class PlaybackInformationLabel(tkinter.Label):
         av_transport_event_queue: queue.Queue[soco.events_base.Event],
         background: str,
         backlight_manager: BacklightManager,
-        master: tkinter.Tk,
+        master: tk.Tk,
         max_width: int,
         max_height: int,
         refresh_interval: int,
@@ -408,7 +408,7 @@ class SonosDeviceManager(contextlib.AbstractContextManager["SonosDeviceManager"]
         _logger.info("Toggled current transport state.")
 
 
-class UserInterface(tkinter.Tk):
+class UserInterface(tk.Tk):
     _sonos_device_manager: SonosDeviceManager
 
     def __init__(
@@ -430,7 +430,7 @@ class UserInterface(tkinter.Tk):
         self.destroy()
         _logger.info("Signal handled.", extra={"signal_number": signal_number})
 
-    def _handle_key_press_event(self, event: tkinter.Event[tkinter.Misc]) -> None:
+    def _handle_key_press_event(self, event: tk.Event[tk.Misc]) -> None:
         _logger.info("Handling key press event ...", extra={"key_press_event": event})
         key_symbol = event.keysym
         device_manager = self._sonos_device_manager
