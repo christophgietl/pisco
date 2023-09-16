@@ -9,8 +9,7 @@ import pathlib
 import queue
 import signal
 import tkinter as tk
-from types import TracebackType
-from typing import Final
+from typing import TYPE_CHECKING, Final
 
 import click
 import PIL.Image
@@ -21,6 +20,9 @@ import soco.data_structures
 import soco.events
 import soco.events_base
 import xdg
+
+if TYPE_CHECKING:
+    from types import TracebackType
 
 _LOG_FILE: Final[pathlib.Path] = xdg.XDG_DATA_HOME / "pisco" / "logs" / "pisco.jsonl"
 _LOG_FILE.parent.mkdir(exist_ok=True, parents=True)
@@ -236,7 +238,7 @@ class PlaybackInformationLabel(tk.Label):
     _backlight_manager: BacklightManager
     _refresh_interval: int
 
-    def __init__(
+    def __init__(  # noqa: PLR0913
         self,
         av_transport_event_queue: queue.Queue[soco.events_base.Event],
         background: str,
@@ -504,7 +506,7 @@ def main(
     window_height: int,
     playback_information_refresh_interval: int,
 ) -> None:
-    """Control your Sonos device with your keyboard"""
+    """Control your Sonos device with your keyboard."""
     try:
         run_application(
             sonos_device_name,
