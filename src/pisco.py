@@ -204,7 +204,12 @@ class HttpPhotoImageManager:
     _max_height: int
 
     def __init__(self, max_width: int, max_height: int) -> None:
-        """Initialize helper for image handling."""
+        """Initializes helper for image handling.
+
+        Args:
+            max_width: Maximum width of the images returned by `get_photo_image`.
+            max_height: Maximum height of the image returned by `get_photo_image`.
+        """
         self._max_width = max_width
         self._max_height = max_height
         self.get_photo_image = functools.lru_cache(maxsize=1)(
@@ -214,10 +219,9 @@ class HttpPhotoImageManager:
     @staticmethod
     def _download_resource(absolute_uri: str) -> bytes:
         _logger.debug("Downloading resource ...", extra={"URI": absolute_uri})
-        r = requests.get(absolute_uri, timeout=10)
-        content = r.content
+        response = requests.get(absolute_uri, timeout=10)
         _logger.debug("Resource downloaded.", extra={"URI": absolute_uri})
-        return content
+        return response.content
 
     def _get_photo_image_without_caching(
         self, absolute_uri: str
@@ -284,7 +288,7 @@ class PlaybackInformationLabel(tk.Label):
         max_height: int,
         refresh_interval: int,
     ) -> None:
-        """Initialize label for displaying album art."""
+        """Initializes label for displaying album art."""
         super().__init__(background=background, master=master)
         self._av_transport_event_queue = av_transport_event_queue
         self._backlight_manager = backlight_manager
@@ -465,7 +469,7 @@ class UserInterface(tk.Tk):
         window_width: int,
         window_height: int,
     ) -> None:
-        """Initialize the graphical user interface and keypress and signal handlers."""
+        """Initializes the graphical user interface and keypress and signal handlers."""
         super().__init__()
         self._sonos_device_manager = sonos_device_manager
         self.geometry(f"{window_width}x{window_height}")
