@@ -10,7 +10,7 @@ import queue
 import signal
 import tkinter
 from types import TracebackType
-from typing import Final, Optional
+from typing import Final
 
 import click
 import PIL.Image
@@ -124,13 +124,13 @@ class Backlight:
 
 
 class BacklightManager(contextlib.AbstractContextManager["BacklightManager"]):
-    _backlight: Optional[Backlight]
+    _backlight: Backlight | None
 
     def __exit__(
         self,
-        exc_type: Optional[type[BaseException]],
-        exc_value: Optional[BaseException],
-        traceback: Optional[TracebackType],
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        traceback: TracebackType | None,
     ) -> None:
         _logger.info(
             "Tearing down manager for optional backlight ...",
@@ -142,7 +142,7 @@ class BacklightManager(contextlib.AbstractContextManager["BacklightManager"]):
             extra={"backlight": self._backlight.__dict__ if self._backlight else None},
         )
 
-    def __init__(self, backlight_directory: Optional[pathlib.Path]) -> None:
+    def __init__(self, backlight_directory: pathlib.Path | None) -> None:
         _logger.info(
             "Initializing manager for optional backlight ...",
             extra={"backlight_directory": backlight_directory},
@@ -293,7 +293,7 @@ class PlaybackInformationLabel(tkinter.Label):
             extra={"track_meta_data": track_meta_data.__dict__},
         )
 
-    def _update_album_art(self, absolute_uri: Optional[str]) -> None:
+    def _update_album_art(self, absolute_uri: str | None) -> None:
         _logger.info("Updating album art ...", extra={"URI": absolute_uri})
         if absolute_uri:
             album_art_photo_image = self._album_art_image_manager.get_photo_image(
@@ -312,9 +312,9 @@ class SonosDeviceManager(contextlib.AbstractContextManager["SonosDeviceManager"]
 
     def __exit__(
         self,
-        exc_type: Optional[type[BaseException]],
-        exc_value: Optional[BaseException],
-        traceback: Optional[TracebackType],
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        traceback: TracebackType | None,
     ) -> None:
         _logger.info(
             "Tearing down manager for Sonos device ...",
@@ -498,7 +498,7 @@ class UserInterface(tkinter.Tk):
 )
 def main(
     sonos_device_name: str,
-    backlight_directory: Optional[pathlib.Path],
+    backlight_directory: pathlib.Path | None,
     window_width: int,
     window_height: int,
     playback_information_refresh_interval: int,
@@ -519,7 +519,7 @@ def main(
 
 def run_application(
     sonos_device_name: str,
-    backlight_directory: Optional[pathlib.Path],
+    backlight_directory: pathlib.Path | None,
     window_width: int,
     window_height: int,
     playback_information_refresh_interval: int,
