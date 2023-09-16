@@ -6,7 +6,7 @@ inputs:
     description: whether to install the dependencies specified in pyproject.toml
     required: true
   poetry-version:
-    default: 1.6.0
+    default: 1.6.1
     description: poetry version to be installed
     required: true
   python-version:
