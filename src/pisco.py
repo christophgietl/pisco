@@ -61,6 +61,8 @@ _logger = logging.getLogger(__name__)
 
 
 class Backlight:
+    """Helper for activating and deactivating a sysfs backlight."""
+
     _directory: pathlib.Path
 
     def __init__(self, directory: pathlib.Path) -> None:
@@ -129,6 +131,8 @@ class Backlight:
 
 
 class BacklightManager(contextlib.AbstractContextManager["BacklightManager"]):
+    """Context manager for activating and deactivating an optional backlight."""
+
     _backlight: Backlight | None
 
     def __exit__(
@@ -173,6 +177,8 @@ class BacklightManager(contextlib.AbstractContextManager["BacklightManager"]):
 
 
 class HttpPhotoImageManager:
+    """Helper for cached downloading of images and scaling them to the desired size."""
+
     _max_width: int
     _max_height: int
 
@@ -236,6 +242,11 @@ class HttpPhotoImageManager:
 
 
 class PlaybackInformationLabel(tk.Label):
+    """Label that displays the album art of the currently playing track.
+
+    The album art is automatically updated whenever a new track starts playing.
+    """
+
     _album_art_image_manager: HttpPhotoImageManager
     _av_transport_event_queue: queue.Queue[soco.events_base.Event]
     _backlight_manager: BacklightManager
@@ -311,6 +322,8 @@ class PlaybackInformationLabel(tk.Label):
 
 
 class SonosDeviceManager(contextlib.AbstractContextManager["SonosDeviceManager"]):
+    """Helper for discovering and controlling a Sonos device."""
+
     _av_transport_subscription: soco.events.Subscription
     av_transport_event_queue: queue.Queue[soco.events_base.Event]
     controller: soco.core.SoCo
@@ -414,6 +427,11 @@ class SonosDeviceManager(contextlib.AbstractContextManager["SonosDeviceManager"]
 
 
 class UserInterface(tk.Tk):
+    """Pisco's graphical user interface.
+
+    Handles keypress events and signals.
+    """
+
     _sonos_device_manager: SonosDeviceManager
 
     def __init__(
