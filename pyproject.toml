@@ -48,7 +48,7 @@ types-requests = "^2.28"
 pisco = "pisco:main"
 
 [tool.ruff]
-select = ["B", "C", "E", "F", "N", "S", "W"]
+select = ["B", "C", "E", "F", "N", "S", "UP", "W"]
 ignore = ["E203"] # https://black.readthedocs.io/en/stable/guides/using_black_with_other_tools.html?highlight=flake#flake8
 src = ["src", "test"]
 target-version = "py39"
