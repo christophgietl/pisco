@@ -97,6 +97,7 @@ class Backlight:
         return self._directory / "max_brightness"
 
     def activate(self) -> None:
+        """Sets the brightness to the maximum value."""
         _logger.info(
             "Activating backlight ...", extra={"backlight_directory": self._directory}
         )
@@ -114,6 +115,7 @@ class Backlight:
             )
 
     def deactivate(self) -> None:
+        """Sets the brightness to zero."""
         _logger.info(
             "Deactivating backlight ...", extra={"backlight_directory": self._directory}
         )
@@ -131,7 +133,7 @@ class Backlight:
 
 
 class BacklightManager(contextlib.AbstractContextManager["BacklightManager"]):
-    """Context manager for activating and deactivating an optional backlight."""
+    """Context manager for activating and deactivating an optional sysfs backlight."""
 
     _backlight: Backlight | None
 
@@ -168,10 +170,12 @@ class BacklightManager(contextlib.AbstractContextManager["BacklightManager"]):
         )
 
     def activate(self) -> None:
+        """Sets the brightness to the maximum value if the backlight is present."""
         if self._backlight:
             self._backlight.activate()
 
     def deactivate(self) -> None:
+        """Sets the brightness to zero if the backlight is present."""
         if self._backlight:
             self._backlight.deactivate()
 
@@ -394,28 +398,25 @@ class SonosDeviceManager(contextlib.AbstractContextManager["SonosDeviceManager"]
         )
         self.controller.play_uri(uri=favorite.resources[0].uri)
 
-    def play_sonos_favorite_by_index(self, favorite_index: int) -> None:
+    def play_sonos_favorite_by_index(self, index: int) -> None:
+        """Plays a track or station from the list of Sonos favorites."""
         _logger.info(
-            "Starting to play Sonos favorite ...",
-            extra={"sonos_favorite_index": favorite_index},
+            "Starting to play Sonos favorite ...", extra={"sonos_favorite_index": index}
         )
-        favorite = self.controller.music_library.get_sonos_favorites()[favorite_index]
+        favorite = self.controller.music_library.get_sonos_favorites()[index]
         if not isinstance(favorite, soco.data_structures.DidlObject):
             _logger.error(
                 "Could not play Sonos favorite.",
-                extra={
-                    "favorite": favorite.__dict__,
-                    "sonos_favorite_index": favorite_index,
-                },
+                extra={"favorite": favorite.__dict__, "sonos_favorite_index": index},
             )
             return
         self._play_sonos_favorite(favorite)
         _logger.info(
-            "Started to play Sonos favorite.",
-            extra={"sonos_favorite_index": favorite_index},
+            "Started to play Sonos favorite.", extra={"sonos_favorite_index": index}
         )
 
     def toggle_current_transport_state(self) -> None:
+        """Pauses the track if it is playing and plays the track if it is paused."""
         _logger.info("Toggling current transport state ...")
         transport = self.controller.get_current_transport_info()
         state = transport["current_transport_state"]
