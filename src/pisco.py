@@ -66,7 +66,7 @@ class Backlight:
     _directory: pathlib.Path
 
     def __init__(self, directory: pathlib.Path) -> None:
-        """Initialize helper for activating and deactivating a sysfs backlight.
+        """Initializes helper for activating and deactivating a sysfs backlight.
 
         Args:
             directory: Sysfs directory of the backlight that should be controlled.
@@ -162,23 +162,27 @@ class BacklightManager(contextlib.AbstractContextManager["BacklightManager"]):
             extra={"backlight": self._backlight.__dict__ if self._backlight else None},
         )
 
-    def __init__(self, backlight_directory: pathlib.Path | None) -> None:
-        """Initialize optional helper for activating and deactivating a sysfs backlight.
+    def __init__(self, directory: pathlib.Path | None) -> None:
+        """Initializes optional helper for (de-)activating a sysfs backlight.
 
-        If `backlight_directory` is None, no helper is initialized.
+        If `backlight_directory` is `None`, a dummy helper is initialized.
+
+        Args:
+            directory: Sysfs directory of the backlight that should be controlled.
+
+        Raises:
+            click.FileError: If `directory` is neither `None` nor a sysfs backlight.
         """
         _logger.info(
             "Initializing manager for optional backlight ...",
-            extra={"backlight_directory": backlight_directory},
+            extra={"backlight_directory": directory},
         )
-        self._backlight = (
-            Backlight(backlight_directory) if backlight_directory else None
-        )
+        self._backlight = Backlight(directory) if directory else None
         _logger.info(
             "Manager for optional backlight initialized.",
             extra={
                 "backlight": self._backlight.__dict__ if self._backlight else None,
-                "backlight_directory": backlight_directory,
+                "backlight_directory": directory,
             },
         )
 
