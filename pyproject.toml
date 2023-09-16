@@ -49,7 +49,7 @@ pisco = "pisco:main"
 
 [tool.ruff]
 select = ["ALL"]
-ignore = ["ANN101", "COM812", "D105", "D107"]
+ignore = ["ANN101", "COM812", "D107"]
 src = ["src", "test"]
 target-version = "py39"
 

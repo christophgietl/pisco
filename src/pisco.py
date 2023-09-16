@@ -143,6 +143,7 @@ class BacklightManager(contextlib.AbstractContextManager["BacklightManager"]):
         exc_value: BaseException | None,
         traceback: TracebackType | None,
     ) -> None:
+        """Activates the backlight if it is present."""
         _logger.info(
             "Tearing down manager for optional backlight ...",
             extra={"backlight": self._backlight.__dict__ if self._backlight else None},
@@ -338,6 +339,7 @@ class SonosDeviceManager(contextlib.AbstractContextManager["SonosDeviceManager"]
         exc_value: BaseException | None,
         traceback: TracebackType | None,
     ) -> None:
+        """Unsubscribes from the AV transport events and stops the event listener."""
         _logger.info(
             "Tearing down manager for Sonos device ...",
             extra={"sonos_device_name": self.controller.player_name},
