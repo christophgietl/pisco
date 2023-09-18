@@ -9,7 +9,7 @@ import click
 
 from pisco import application
 
-_logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 @click.command()
@@ -68,5 +68,5 @@ def cli(
             playback_information_refresh_interval,
         )
     except Exception:
-        _logger.exception("Exception has not been handled.")
+        logger.exception("Exception has not been handled.")
         raise

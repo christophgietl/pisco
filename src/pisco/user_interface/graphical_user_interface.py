@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 
     from pisco.input_output import backlight, sonos_device
 
-_logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class PlaybackInformationLabel(tk.Label):
@@ -66,7 +66,7 @@ class PlaybackInformationLabel(tk.Label):
         self.after(self._refresh_interval_in_ms, self._process_av_transport_event_queue)
 
     def _process_av_transport_event(self, event: soco.events_base.Event) -> None:
-        _logger.info(
+        logger.info(
             "Processing AV transport event ...",
             extra={"event": event.__dict__},
         )
@@ -76,7 +76,7 @@ class PlaybackInformationLabel(tk.Label):
         else:
             self._backlight_manager.deactivate()
             self._update_album_art(None)
-        _logger.info("AV transport event processed.", extra={"event": event.__dict__})
+        logger.info("AV transport event processed.", extra={"event": event.__dict__})
 
     def _process_av_transport_event_queue(self) -> None:
         try:
@@ -92,7 +92,7 @@ class PlaybackInformationLabel(tk.Label):
 
     def _process_track_meta_data(self, event: soco.events_base.Event) -> None:
         track_meta_data = event.variables["current_track_meta_data"]
-        _logger.info(
+        logger.info(
             "Processing track meta data ...",
             extra={"track_meta_data": track_meta_data.__dict__},
         )
@@ -103,20 +103,20 @@ class PlaybackInformationLabel(tk.Label):
                 )
             )
             self._update_album_art(album_art_full_uri)
-        _logger.info(
+        logger.info(
             "Track meta data processed.",
             extra={"track_meta_data": track_meta_data.__dict__},
         )
 
     def _update_album_art(self, absolute_uri: str | None) -> None:
-        _logger.info("Updating album art ...", extra={"URI": absolute_uri})
+        logger.info("Updating album art ...", extra={"URI": absolute_uri})
         image: PIL.ImageTk.PhotoImage | Literal[""] = (
             self._album_art_image_manager.get_photo_image(absolute_uri)
             if absolute_uri
             else ""  # Empty string means no image.
         )
         self.config(image=image)
-        _logger.info("Album art updated.", extra={"URI": absolute_uri})
+        logger.info("Album art updated.", extra={"URI": absolute_uri})
 
 
 class GraphicalUserInterface(tk.Tk):
@@ -149,12 +149,12 @@ class GraphicalUserInterface(tk.Tk):
         signal.signal(signal.SIGTERM, self._handle_int_or_term_signal)
 
     def _handle_int_or_term_signal(self, signal_number: int, _: object) -> None:
-        _logger.info("Handling signal ...", extra={"signal_number": signal_number})
+        logger.info("Handling signal ...", extra={"signal_number": signal_number})
         self.destroy()
-        _logger.info("Signal handled.", extra={"signal_number": signal_number})
+        logger.info("Signal handled.", extra={"signal_number": signal_number})
 
     def _handle_key_press_event(self, event: tk.Event[tk.Misc]) -> None:
-        _logger.info("Handling key press event ...", extra={"key_press_event": event})
+        logger.info("Handling key press event ...", extra={"key_press_event": event})
         key_symbol = event.keysym
         device_manager = self._sonos_device_manager
         if key_symbol.isdigit():
@@ -174,11 +174,11 @@ class GraphicalUserInterface(tk.Tk):
         elif key_symbol in ("Down", "XF86AudioLowerVolume"):
             device_manager.controller.set_relative_volume(-5)
         else:
-            _logger.info(
+            logger.info(
                 "No action defined for key press.",
                 extra={"key_press_event": event},
             )
-        _logger.info("Key press event handled.")
+        logger.info("Key press event handled.")
 
 
 def run_user_interface(
@@ -200,7 +200,7 @@ def run_user_interface(
             Time in milliseconds after which the playback information is updated
             according to playback information from `sonos_device_manager`.
     """
-    _logger.info("Running pisco user interface ...")
+    logger.info("Running pisco user interface ...")
     graphical_user_interface = GraphicalUserInterface(
         sonos_device_manager, window_width, window_height
     )
@@ -215,4 +215,4 @@ def run_user_interface(
     )
     playback_information_label.pack(expand=True, fill="both")
     graphical_user_interface.mainloop()
-    _logger.info("Pisco user interface run.")
+    logger.info("Pisco user interface run.")

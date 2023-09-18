@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     import pathlib
     from types import TracebackType
 
-_logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class Backlight:
@@ -59,36 +59,36 @@ class Backlight:
 
     def activate(self) -> None:
         """Sets the brightness to the maximum value."""
-        _logger.info(
+        logger.info(
             "Activating backlight ...", extra={"backlight_directory": self._directory}
         )
         try:
             max_brightness_value = self._max_brightness.read_text()
             self._brightness.write_text(max_brightness_value)
         except OSError:
-            _logger.exception(
+            logger.exception(
                 "Could not activate backlight.",
                 extra={"backlight_directory": self._directory},
             )
         else:
-            _logger.info(
+            logger.info(
                 "Backlight activated.", extra={"backlight_directory": self._directory}
             )
 
     def deactivate(self) -> None:
         """Sets the brightness to zero."""
-        _logger.info(
+        logger.info(
             "Deactivating backlight ...", extra={"backlight_directory": self._directory}
         )
         try:
             self._brightness.write_text("0")
         except OSError:
-            _logger.exception(
+            logger.exception(
                 "Could not deactivate backlight.",
                 extra={"backlight_directory": self._directory},
             )
         else:
-            _logger.info(
+            logger.info(
                 "Backlight deactivated.", extra={"backlight_directory": self._directory}
             )
 
@@ -105,12 +105,12 @@ class BacklightManager(contextlib.AbstractContextManager["BacklightManager"]):
         traceback: TracebackType | None,
     ) -> None:
         """Activates the backlight if it is present."""
-        _logger.info(
+        logger.info(
             "Tearing down manager for optional backlight ...",
             extra={"backlight": self._backlight.__dict__ if self._backlight else None},
         )
         self.activate()
-        _logger.info(
+        logger.info(
             "Manager for optional backlight torn down.",
             extra={"backlight": self._backlight.__dict__ if self._backlight else None},
         )
@@ -123,12 +123,12 @@ class BacklightManager(contextlib.AbstractContextManager["BacklightManager"]):
                 Sysfs directory of the backlight to be controlled.
                 If `None`, a dummy helper is initialized.
         """
-        _logger.info(
+        logger.info(
             "Initializing manager for optional backlight ...",
             extra={"backlight_directory": directory},
         )
         self._backlight = Backlight(directory) if directory else None
-        _logger.info(
+        logger.info(
             "Manager for optional backlight initialized.",
             extra={
                 "backlight": self._backlight.__dict__ if self._backlight else None,

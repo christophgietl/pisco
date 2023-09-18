@@ -3,7 +3,6 @@
 
 from __future__ import annotations
 
-import logging
 from typing import TYPE_CHECKING
 
 from pisco.input_output import backlight, sonos_device
@@ -11,8 +10,6 @@ from pisco.user_interface import graphical_user_interface
 
 if TYPE_CHECKING:
     import pathlib
-
-_logger = logging.getLogger(__name__)
 
 
 def run_application(
