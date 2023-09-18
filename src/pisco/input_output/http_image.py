@@ -31,13 +31,6 @@ class HttpPhotoImageManager:
             self._get_photo_image_without_caching
         )
 
-    @staticmethod
-    def _download_resource(absolute_uri: str) -> bytes:
-        logger.debug("Downloading resource ...", extra={"URI": absolute_uri})
-        response = requests.get(absolute_uri, timeout=10)
-        logger.debug("Resource downloaded.", extra={"URI": absolute_uri})
-        return response.content
-
     def _get_photo_image_without_caching(
         self, absolute_uri: str
     ) -> PIL.ImageTk.PhotoImage:
@@ -45,9 +38,9 @@ class HttpPhotoImageManager:
             "Creating Tkinter-compatible photo image ...",
             extra={"URI": absolute_uri},
         )
-        content = self._download_resource(absolute_uri)
+        content = _download_resource(absolute_uri)
         image = PIL.Image.open(io.BytesIO(content))
-        image_wo_alpha = self._remove_alpha_channel(image)
+        image_wo_alpha = _remove_alpha_channel(image)
         resized_image = self._resize_image(image_wo_alpha)
         photo_image = PIL.ImageTk.PhotoImage(resized_image)
         logger.debug(
@@ -55,19 +48,6 @@ class HttpPhotoImageManager:
             extra={"URI": absolute_uri},
         )
         return photo_image
-
-    @staticmethod
-    def _remove_alpha_channel(image: PIL.Image.Image) -> PIL.Image.Image:
-        logger.debug("Removing alpha channel ...")
-        if image.mode != "RGBA":
-            logger.debug(
-                "Cannot remove alpha channel: Image does not have an alpha channel."
-            )
-            return image
-        rgb_image = PIL.Image.new("RGB", image.size, "white")
-        rgb_image.paste(image, mask=image.getchannel("A"))
-        logger.debug("Alpha channel removed.")
-        return rgb_image
 
     def _resize_image(self, image: PIL.Image.Image) -> PIL.Image.Image:
         logger.debug("Resizing image ...")
@@ -80,3 +60,23 @@ class HttpPhotoImageManager:
         resized_image = image.resize(size=(new_width, new_height))
         logger.debug("Image resized.")
         return resized_image
+
+
+def _download_resource(absolute_uri: str) -> bytes:
+    logger.debug("Downloading resource ...", extra={"URI": absolute_uri})
+    response = requests.get(absolute_uri, timeout=10)
+    logger.debug("Resource downloaded.", extra={"URI": absolute_uri})
+    return response.content
+
+
+def _remove_alpha_channel(image: PIL.Image.Image) -> PIL.Image.Image:
+    logger.debug("Removing alpha channel ...")
+    if image.mode != "RGBA":
+        logger.debug(
+            "Cannot remove alpha channel: Image does not have an alpha channel."
+        )
+        return image
+    rgb_image = PIL.Image.new("RGB", image.size, "white")
+    rgb_image.paste(image, mask=image.getchannel("A"))
+    logger.debug("Alpha channel removed.")
+    return rgb_image
