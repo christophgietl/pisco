@@ -1,3 +1,6 @@
+"""Central application logic of pisco."""
+
+
 from __future__ import annotations
 
 import logging

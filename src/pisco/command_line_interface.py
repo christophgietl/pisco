@@ -7,7 +7,7 @@ import pathlib
 
 import click
 
-from pisco import _application
+from pisco import application
 
 _logger = logging.getLogger(__name__)
 
@@ -60,7 +60,7 @@ def cli(
 ) -> None:
     """Control your Sonos device with your keyboard."""
     try:
-        _application.run_application(
+        application.run_application(
             sonos_device_name,
             backlight_directory,
             window_width,
