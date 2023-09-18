@@ -9,13 +9,13 @@ import signal
 import tkinter as tk
 from typing import TYPE_CHECKING, Literal
 
-from pisco import image as pisco_image
+from pisco.input_output import http_image
 
 if TYPE_CHECKING:
     import PIL.ImageTk
     import soco.events_base
 
-    from pisco.hardware import backlight, sonos_device
+    from pisco.input_output import backlight, sonos_device
 
 _logger = logging.getLogger(__name__)
 
@@ -26,7 +26,7 @@ class PlaybackInformationLabel(tk.Label):
     The album art is automatically updated whenever a new track starts playing.
     """
 
-    _album_art_image_manager: pisco_image.HttpPhotoImageManager
+    _album_art_image_manager: http_image.HttpPhotoImageManager
     _av_transport_event_queue: queue.Queue[soco.events_base.Event]
     _backlight_manager: backlight.BacklightManager
     _refresh_interval_in_ms: int
@@ -59,7 +59,7 @@ class PlaybackInformationLabel(tk.Label):
         super().__init__(background=background, master=master)
         self._av_transport_event_queue = av_transport_event_queue
         self._backlight_manager = backlight_manager
-        self._album_art_image_manager = pisco_image.HttpPhotoImageManager(
+        self._album_art_image_manager = http_image.HttpPhotoImageManager(
             max_width, max_height
         )
         self._refresh_interval_in_ms = refresh_interval_in_ms

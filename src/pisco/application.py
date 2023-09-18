@@ -6,7 +6,7 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING
 
-from pisco.hardware import backlight, sonos_device
+from pisco.input_output import backlight, sonos_device
 from pisco.user_interface import graphical_user_interface
 
 if TYPE_CHECKING:
