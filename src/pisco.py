@@ -12,7 +12,7 @@ import pathlib
 import queue
 import signal
 import tkinter as tk
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING, Final, Literal
 
 import click
 import PIL.Image
@@ -276,7 +276,7 @@ class PlaybackInformationLabel(tk.Label):
     _album_art_image_manager: HttpPhotoImageManager
     _av_transport_event_queue: queue.Queue[soco.events_base.Event]
     _backlight_manager: BacklightManager
-    _refresh_interval: int
+    _refresh_interval_in_ms: int
 
     def __init__(  # noqa: PLR0913
         self,
@@ -286,15 +286,29 @@ class PlaybackInformationLabel(tk.Label):
         master: tk.Tk,
         max_width: int,
         max_height: int,
-        refresh_interval: int,
+        refresh_interval_in_ms: int,
     ) -> None:
-        """Initializes label for displaying album art."""
+        """Initializes label for displaying album art.
+
+        Args:
+            av_transport_event_queue:
+                Events used to update the album art on a regular basis.
+            background: Background color of the label.
+            backlight_manager:
+                Manager for activating and deactivating an optional sysfs backlight.
+            master: Tk master widget of the label.
+            max_width: Maximum width of the album art.
+            max_height: Maximum height of the album art.
+            refresh_interval_in_ms:
+                Time in milliseconds after which the album art is updated
+                according to `av_transport_event_queue`.
+        """
         super().__init__(background=background, master=master)
         self._av_transport_event_queue = av_transport_event_queue
         self._backlight_manager = backlight_manager
         self._album_art_image_manager = HttpPhotoImageManager(max_width, max_height)
-        self._refresh_interval = refresh_interval
-        self.after(self._refresh_interval, self._process_av_transport_event_queue)
+        self._refresh_interval_in_ms = refresh_interval_in_ms
+        self.after(self._refresh_interval_in_ms, self._process_av_transport_event_queue)
 
     def _process_av_transport_event(self, event: soco.events_base.Event) -> None:
         _logger.info(
@@ -317,7 +331,9 @@ class PlaybackInformationLabel(tk.Label):
         else:
             self._process_av_transport_event(event)
         finally:
-            self.after(self._refresh_interval, self._process_av_transport_event_queue)
+            self.after(
+                self._refresh_interval_in_ms, self._process_av_transport_event_queue
+            )
 
     def _process_track_meta_data(self, event: soco.events_base.Event) -> None:
         track_meta_data = event.variables["current_track_meta_data"]
@@ -326,11 +342,12 @@ class PlaybackInformationLabel(tk.Label):
             extra={"track_meta_data": track_meta_data.__dict__},
         )
         if hasattr(track_meta_data, "album_art_uri"):
-            album_art_uri = track_meta_data.album_art_uri
-            album_art_absolute_uri = (
-                event.service.soco.music_library.build_album_art_full_uri(album_art_uri)
+            album_art_full_uri = (
+                event.service.soco.music_library.build_album_art_full_uri(
+                    track_meta_data.album_art_uri
+                )
             )
-            self._update_album_art(album_art_absolute_uri)
+            self._update_album_art(album_art_full_uri)
         _logger.info(
             "Track meta data processed.",
             extra={"track_meta_data": track_meta_data.__dict__},
@@ -338,13 +355,12 @@ class PlaybackInformationLabel(tk.Label):
 
     def _update_album_art(self, absolute_uri: str | None) -> None:
         _logger.info("Updating album art ...", extra={"URI": absolute_uri})
-        if absolute_uri:
-            album_art_photo_image = self._album_art_image_manager.get_photo_image(
-                absolute_uri
-            )
-            self.config(image=album_art_photo_image)
-        else:
-            self.config(image="")  # removes image if present
+        image: PIL.ImageTk.PhotoImage | Literal[""] = (
+            self._album_art_image_manager.get_photo_image(absolute_uri)
+            if absolute_uri
+            else ""  # Empty string means no image.
+        )
+        self.config(image=image)
         _logger.info("Album art updated.", extra={"URI": absolute_uri})
 
 
@@ -609,7 +625,7 @@ def run_user_interface(
         backlight_manager=backlight_manager,
         max_width=window_width,
         max_height=window_height,
-        refresh_interval=playback_information_refresh_interval,
+        refresh_interval_in_ms=playback_information_refresh_interval,
     )
     playback_information_label.pack(expand=True, fill="both")
     user_interface.mainloop()
