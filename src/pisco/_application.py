@@ -1,6 +1,3 @@
-"""Keyboard-only controller for Sonos speakers."""
-
-
 from __future__ import annotations
 
 import _thread
@@ -8,11 +5,10 @@ import contextlib
 import functools
 import io
 import logging.config
-import pathlib
 import queue
 import signal
 import tkinter as tk
-from typing import TYPE_CHECKING, Final, Literal
+from typing import TYPE_CHECKING, Literal
 
 import click
 import PIL.Image
@@ -22,40 +18,11 @@ import soco.core
 import soco.data_structures
 import soco.events
 import soco.events_base
-import xdg
 
 if TYPE_CHECKING:
+    import pathlib
     from types import TracebackType
 
-_LOG_FILE: Final[pathlib.Path] = xdg.XDG_DATA_HOME / "pisco" / "logs" / "pisco.jsonl"
-_LOG_FILE.parent.mkdir(exist_ok=True, parents=True)
-
-_LOG_FORMAT: Final[
-    str
-] = "%(asctime)s %(name)s %(levelname)s %(message)s %(thread)s %(threadName)s"
-
-logging.config.dictConfig(
-    {
-        "disable_existing_loggers": False,
-        "formatters": {
-            "json_formatter": {
-                "class": "pythonjsonlogger.jsonlogger.JsonFormatter",
-                "format": _LOG_FORMAT,
-            }
-        },
-        "handlers": {
-            "rot_file_handler": {
-                "backupCount": 9,
-                "class": "logging.handlers.RotatingFileHandler",
-                "filename": _LOG_FILE,
-                "formatter": "json_formatter",
-                "maxBytes": 1_000_000,
-            }
-        },
-        "root": {"handlers": ["rot_file_handler"], "level": "DEBUG"},
-        "version": 1,
-    }
-)
 
 _logger = logging.getLogger(__name__)
 
@@ -544,66 +511,6 @@ class UserInterface(tk.Tk):
         _logger.info("Key press event handled.")
 
 
-@click.command()
-@click.argument("sonos_device_name")
-@click.option(
-    "-b",
-    "--backlight",
-    "backlight_directory",
-    help="""
-        sysfs directory of the backlight that should be deactivated
-        when the device is not playing
-    """,
-    type=click.Path(exists=True, file_okay=False, path_type=pathlib.Path),
-)
-@click.option(
-    "-w",
-    "--width",
-    "window_width",
-    help="width of the Pisco window",
-    type=click.IntRange(min=0),
-    default=320,
-    show_default=True,
-)
-@click.option(
-    "-h",
-    "--height",
-    "window_height",
-    help="height of the Pisco window",
-    type=click.IntRange(min=0),
-    default=320,
-    show_default=True,
-)
-@click.option(
-    "-r",
-    "--refresh",
-    "playback_information_refresh_interval",
-    help="time in milliseconds after which playback information is updated",
-    type=click.IntRange(min=1),
-    default=40,
-    show_default=True,
-)
-def main(
-    sonos_device_name: str,
-    backlight_directory: pathlib.Path | None,
-    window_width: int,
-    window_height: int,
-    playback_information_refresh_interval: int,
-) -> None:
-    """Control your Sonos device with your keyboard."""
-    try:
-        run_application(
-            sonos_device_name,
-            backlight_directory,
-            window_width,
-            window_height,
-            playback_information_refresh_interval,
-        )
-    except Exception:
-        _logger.exception("Exception has not been handled.")
-        raise
-
-
 def run_application(
     sonos_device_name: str,
     backlight_directory: pathlib.Path | None,
@@ -668,7 +575,3 @@ def run_user_interface(
     playback_information_label.pack(expand=True, fill="both")
     user_interface.mainloop()
     _logger.info("Pisco user interface run.")
-
-
-if __name__ == "__main__":
-    main()
