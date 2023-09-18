@@ -4,7 +4,7 @@ import _thread
 import contextlib
 import functools
 import io
-import logging.config
+import logging
 import queue
 import signal
 import tkinter as tk
