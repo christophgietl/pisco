@@ -45,7 +45,7 @@ types-Pillow = "^10.0"
 types-requests = "^2.28"
 
 [tool.poetry.scripts]
-pisco = "pisco.command_line_interface:cli"
+pisco = "pisco.user_interface.command_line_interface:cli"
 
 [tool.ruff]
 select = ["ALL"]
