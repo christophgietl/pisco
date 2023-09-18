@@ -365,7 +365,14 @@ class PlaybackInformationLabel(tk.Label):
 
 
 class SonosDeviceManager(contextlib.AbstractContextManager["SonosDeviceManager"]):
-    """Helper for discovering and controlling a Sonos device."""
+    """Helper for discovering and controlling a Sonos device.
+
+    Attributes:
+        av_transport_event_queue:
+            Events emitted by the discovered Sonos device
+            whenever the transport state changes.
+        controller: Controller for the discovered Sonos device.
+    """
 
     _av_transport_subscription: soco.events.Subscription
     av_transport_event_queue: queue.Queue[soco.events_base.Event]
@@ -392,7 +399,11 @@ class SonosDeviceManager(contextlib.AbstractContextManager["SonosDeviceManager"]
     def __init__(self, name: str) -> None:
         """Discovers a device and creates a controller and a transport event queue.
 
-        If no device named `name` is found, a Click exception is raised.
+        Args:
+            name: Name of the Sonos device to be discovered.
+
+        Raises:
+            click.ClickException: Found no device named `name`.
         """
         _logger.info(
             "Initializing manager for Sonos device ...",
@@ -443,7 +454,13 @@ class SonosDeviceManager(contextlib.AbstractContextManager["SonosDeviceManager"]
         self.controller.play_uri(uri=favorite.resources[0].uri)
 
     def play_sonos_favorite_by_index(self, index: int) -> None:
-        """Plays a track or station from the list of Sonos favorites."""
+        """Plays a track or station from Sonos favorites.
+
+        Args:
+            index:
+                Position of the track or station to be played
+                in the list of Sonos favorites.
+        """
         _logger.info(
             "Starting to play Sonos favorite ...", extra={"sonos_favorite_index": index}
         )
