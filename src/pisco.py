@@ -70,9 +70,6 @@ class Backlight:
 
         Args:
             directory: Sysfs directory of the backlight that should be controlled.
-
-        Raises:
-            click.FileError: If `directory` is not a sysfs backlight.
         """
         self._directory = directory
         self._assert_backlight_directory()
@@ -163,15 +160,12 @@ class BacklightManager(contextlib.AbstractContextManager["BacklightManager"]):
         )
 
     def __init__(self, directory: pathlib.Path | None) -> None:
-        """Initializes optional helper for (de-)activating a sysfs backlight.
-
-        If `backlight_directory` is `None`, a dummy helper is initialized.
+        """Initializes helper for (de-)activating a sysfs backlight.
 
         Args:
-            directory: Sysfs directory of the backlight that should be controlled.
-
-        Raises:
-            click.FileError: If `directory` is neither `None` nor a sysfs backlight.
+            directory:
+                Sysfs directory of the backlight to be controlled.
+                If `None`, a dummy helper is initialized.
         """
         _logger.info(
             "Initializing manager for optional backlight ...",
