@@ -19,143 +19,14 @@ import soco.data_structures
 import soco.events
 import soco.events_base
 
+from pisco import backlight
+
 if TYPE_CHECKING:
     import pathlib
     from types import TracebackType
 
 
 _logger = logging.getLogger(__name__)
-
-
-class Backlight:
-    """Helper for activating and deactivating a sysfs backlight."""
-
-    _directory: pathlib.Path
-
-    def __init__(self, directory: pathlib.Path) -> None:
-        """Initializes helper for activating and deactivating a sysfs backlight.
-
-        Args:
-            directory: Sysfs directory of the backlight that should be controlled.
-        """
-        self._directory = directory
-        self._assert_backlight_directory()
-
-    def _assert_backlight_directory(self) -> None:
-        self._assert_directory_existence(self._directory)
-        self._assert_file_existence(self._brightness)
-        self._assert_file_existence(self._max_brightness)
-
-    @staticmethod
-    def _assert_directory_existence(path: pathlib.Path) -> None:
-        if not path.is_dir():
-            raise click.FileError(
-                filename=str(path), hint="Does not exist or is not a directory."
-            )
-
-    @staticmethod
-    def _assert_file_existence(path: pathlib.Path) -> None:
-        if not path.is_file():
-            raise click.FileError(
-                filename=str(path), hint="Does not exist or is not a file."
-            )
-
-    @property
-    def _brightness(self) -> pathlib.Path:
-        return self._directory / "brightness"
-
-    @property
-    def _max_brightness(self) -> pathlib.Path:
-        return self._directory / "max_brightness"
-
-    def activate(self) -> None:
-        """Sets the brightness to the maximum value."""
-        _logger.info(
-            "Activating backlight ...", extra={"backlight_directory": self._directory}
-        )
-        try:
-            max_brightness_value = self._max_brightness.read_text()
-            self._brightness.write_text(max_brightness_value)
-        except OSError:
-            _logger.exception(
-                "Could not activate backlight.",
-                extra={"backlight_directory": self._directory},
-            )
-        else:
-            _logger.info(
-                "Backlight activated.", extra={"backlight_directory": self._directory}
-            )
-
-    def deactivate(self) -> None:
-        """Sets the brightness to zero."""
-        _logger.info(
-            "Deactivating backlight ...", extra={"backlight_directory": self._directory}
-        )
-        try:
-            self._brightness.write_text("0")
-        except OSError:
-            _logger.exception(
-                "Could not deactivate backlight.",
-                extra={"backlight_directory": self._directory},
-            )
-        else:
-            _logger.info(
-                "Backlight deactivated.", extra={"backlight_directory": self._directory}
-            )
-
-
-class BacklightManager(contextlib.AbstractContextManager["BacklightManager"]):
-    """Context manager for activating and deactivating an optional sysfs backlight."""
-
-    _backlight: Backlight | None
-
-    def __exit__(
-        self,
-        exc_type: type[BaseException] | None,
-        exc_value: BaseException | None,
-        traceback: TracebackType | None,
-    ) -> None:
-        """Activates the backlight if it is present."""
-        _logger.info(
-            "Tearing down manager for optional backlight ...",
-            extra={"backlight": self._backlight.__dict__ if self._backlight else None},
-        )
-        self.activate()
-        _logger.info(
-            "Manager for optional backlight torn down.",
-            extra={"backlight": self._backlight.__dict__ if self._backlight else None},
-        )
-
-    def __init__(self, directory: pathlib.Path | None) -> None:
-        """Initializes helper for (de-)activating a sysfs backlight.
-
-        Args:
-            directory:
-                Sysfs directory of the backlight to be controlled.
-                If `None`, a dummy helper is initialized.
-        """
-        _logger.info(
-            "Initializing manager for optional backlight ...",
-            extra={"backlight_directory": directory},
-        )
-        self._backlight = Backlight(directory) if directory else None
-        _logger.info(
-            "Manager for optional backlight initialized.",
-            extra={
-                "backlight": self._backlight.__dict__ if self._backlight else None,
-                "backlight_directory": directory,
-            },
-        )
-
-    def activate(self) -> None:
-        """Sets the brightness to the maximum value if the backlight is present."""
-        if self._backlight:
-            self._backlight.activate()
-
-    def deactivate(self) -> None:
-        """Sets the brightness to zero if the backlight is present."""
-        if self._backlight:
-            self._backlight.deactivate()
 
 
 class HttpPhotoImageManager:
@@ -236,14 +107,14 @@ class PlaybackInformationLabel(tk.Label):
 
     _album_art_image_manager: HttpPhotoImageManager
     _av_transport_event_queue: queue.Queue[soco.events_base.Event]
-    _backlight_manager: BacklightManager
+    _backlight_manager: backlight.BacklightManager
     _refresh_interval_in_ms: int
 
     def __init__(  # noqa: PLR0913
         self,
         av_transport_event_queue: queue.Queue[soco.events_base.Event],
         background: str,
-        backlight_manager: BacklightManager,
+        backlight_manager: backlight.BacklightManager,
         master: tk.Tk,
         max_width: int,
         max_height: int,
@@ -531,7 +402,7 @@ def run_application(
     """
     with (
         SonosDeviceManager(sonos_device_name) as sonos_device_manager,
-        BacklightManager(backlight_directory) as backlight_manager,
+        backlight.BacklightManager(backlight_directory) as backlight_manager,
     ):
         run_user_interface(
             sonos_device_manager,
@@ -544,7 +415,7 @@ def run_application(
 
 def run_user_interface(
     sonos_device_manager: SonosDeviceManager,
-    backlight_manager: BacklightManager,
+    backlight_manager: backlight.BacklightManager,
     window_width: int,
     window_height: int,
     playback_information_refresh_interval_in_ms: int,
