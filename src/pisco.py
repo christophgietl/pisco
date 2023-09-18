@@ -502,7 +502,13 @@ class UserInterface(tk.Tk):
         window_width: int,
         window_height: int,
     ) -> None:
-        """Initializes the graphical user interface and keypress and signal handlers."""
+        """Initializes the graphical user interface and keypress and signal handlers.
+
+        Args:
+            sonos_device_manager: Manager for the Sonos device to be controlled.
+            window_width: Width of the graphical user interface.
+            window_height: Height of the graphical user interface.
+        """
         super().__init__()
         self._sonos_device_manager = sonos_device_manager
         self.geometry(f"{window_width}x{window_height}")
