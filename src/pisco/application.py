@@ -6,8 +6,8 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING
 
-from pisco import backlight, sonos_device
-from pisco.graphical_user_interface import run_user_interface
+from pisco import graphical_user_interface
+from pisco.hardware import backlight, sonos_device
 
 if TYPE_CHECKING:
     import pathlib
@@ -37,7 +37,7 @@ def run_application(
         sonos_device.SonosDeviceManager(sonos_device_name) as sonos_device_manager,
         backlight.BacklightManager(backlight_directory) as backlight_manager,
     ):
-        run_user_interface(
+        graphical_user_interface.run_user_interface(
             sonos_device_manager,
             backlight_manager,
             window_width,

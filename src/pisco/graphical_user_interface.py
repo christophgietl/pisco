@@ -9,12 +9,13 @@ import signal
 import tkinter as tk
 from typing import TYPE_CHECKING, Literal
 
-from pisco import backlight, sonos_device
 from pisco import image as pisco_image
 
 if TYPE_CHECKING:
     import PIL.ImageTk
     import soco.events_base
+
+    from pisco.hardware import backlight, sonos_device
 
 _logger = logging.getLogger(__name__)
 
