@@ -31,11 +31,11 @@ def run(
             according to playback information from `sonos_device_name`.
     """
     with (
-        sonos_device.SonosDeviceManager(sonos_device_name) as sonos_device_manager,
+        sonos_device.SonosDevice(sonos_device_name) as sonos_device_,
         backlight.get_backlight(backlight_directory) as backlight_,
     ):
         graphical_user_interface.run(
-            sonos_device_manager,
+            sonos_device_,
             backlight_,
             window_width,
             window_height,

@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class SonosDeviceManager(contextlib.AbstractContextManager["SonosDeviceManager"]):
+class SonosDevice(contextlib.AbstractContextManager["SonosDevice"]):
     """Helper for discovering and controlling a Sonos device."""
 
     _av_transport_subscription: soco.events.Subscription

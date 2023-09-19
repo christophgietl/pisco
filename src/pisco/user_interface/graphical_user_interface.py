@@ -125,23 +125,23 @@ class TopLevelWidget(tk.Tk):
     Handles keypress events and signals.
     """
 
-    _sonos_device_manager: sonos_device.SonosDeviceManager
+    _sonos_device: sonos_device.SonosDevice
 
     def __init__(
         self,
-        sonos_device_manager: sonos_device.SonosDeviceManager,
+        sonos_device_: sonos_device.SonosDevice,
         window_width: int,
         window_height: int,
     ) -> None:
         """Initializes the graphical user interface and keypress and signal handlers.
 
         Args:
-            sonos_device_manager: Manager for the Sonos device to be controlled.
+            sonos_device_: Context manager for the Sonos device to be controlled.
             window_width: Width of the graphical user interface.
             window_height: Height of the graphical user interface.
         """
         super().__init__()
-        self._sonos_device_manager = sonos_device_manager
+        self._sonos_device = sonos_device_
         self.geometry(f"{window_width}x{window_height}")
         self.title("Pisco")
         self.bind_all("<KeyPress>", self._handle_key_press_event)
@@ -156,23 +156,23 @@ class TopLevelWidget(tk.Tk):
     def _handle_key_press_event(self, event: tk.Event[tk.Misc]) -> None:
         logger.info("Handling key press event ...", extra={"key_press_event": event})
         key_symbol = event.keysym
-        device_manager = self._sonos_device_manager
+        device = self._sonos_device
         if key_symbol.isdigit():
-            device_manager.play_sonos_favorite_by_index(int(key_symbol))
+            device.play_sonos_favorite_by_index(int(key_symbol))
         elif key_symbol in ("Left", "XF86AudioRewind"):
-            device_manager.controller.previous()
+            device.controller.previous()
         elif key_symbol in ("Right", "XF86AudioForward"):
-            device_manager.controller.next()
+            device.controller.next()
         elif key_symbol in ("Return", "XF86AudioPlay"):
-            device_manager.toggle_current_transport_state()
+            device.toggle_current_transport_state()
         elif key_symbol == "XF86AudioStop":  # not supported by Rii MX6
-            device_manager.controller.stop()
+            device.controller.stop()
         elif key_symbol == "XF86AudioMute":
-            device_manager.controller.mute = not device_manager.controller.mute
+            device.controller.mute = not device.controller.mute
         elif key_symbol in ("Up", "XF86AudioRaiseVolume"):
-            device_manager.controller.set_relative_volume(+5)
+            device.controller.set_relative_volume(+5)
         elif key_symbol in ("Down", "XF86AudioLowerVolume"):
-            device_manager.controller.set_relative_volume(-5)
+            device.controller.set_relative_volume(-5)
         else:
             logger.info(
                 "No action defined for key press.",
@@ -182,7 +182,7 @@ class TopLevelWidget(tk.Tk):
 
 
 def run(
-    sonos_device_manager: sonos_device.SonosDeviceManager,
+    sonos_device_: sonos_device.SonosDevice,
     backlight_: backlight.AbstractBacklight,
     window_width: int,
     window_height: int,
@@ -191,20 +191,20 @@ def run(
     """Builds the graphical user interface and runs its main loop.
 
     Args:
-        sonos_device_manager: Manager for the Sonos device to be controlled.
+        sonos_device_: Context manager for the Sonos device to be controlled.
         backlight_: Context manager for activating and deactivating a backlight.
         window_width: Width of the graphical user interface.
         window_height: Height of the graphical user interface.
         playback_information_refresh_interval_in_ms:
             Time in milliseconds after which the playback information is updated
-            according to playback information from `sonos_device_manager`.
+            according to playback information from `sonos_device_`.
     """
     logger.info("Running pisco user interface ...")
-    top_level_widget = TopLevelWidget(sonos_device_manager, window_width, window_height)
+    top_level_widget = TopLevelWidget(sonos_device_, window_width, window_height)
     playback_information_label = PlaybackInformationLabel(
         master=top_level_widget,
         background="black",
-        av_transport_event_queue=sonos_device_manager.av_transport_subscription.events,
+        av_transport_event_queue=sonos_device_.av_transport_subscription.events,
         backlight_=backlight_,
         max_width=window_width,
         max_height=window_height,
