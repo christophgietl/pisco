@@ -31,23 +31,9 @@ class Backlight:
         self._assert_backlight_directory()
 
     def _assert_backlight_directory(self) -> None:
-        self._assert_directory_existence(self._directory)
-        self._assert_file_existence(self._brightness)
-        self._assert_file_existence(self._max_brightness)
-
-    @staticmethod
-    def _assert_directory_existence(path: pathlib.Path) -> None:
-        if not path.is_dir():
-            raise click.FileError(
-                filename=str(path), hint="Does not exist or is not a directory."
-            )
-
-    @staticmethod
-    def _assert_file_existence(path: pathlib.Path) -> None:
-        if not path.is_file():
-            raise click.FileError(
-                filename=str(path), hint="Does not exist or is not a file."
-            )
+        _assert_directory_existence(self._directory)
+        _assert_file_existence(self._brightness)
+        _assert_file_existence(self._max_brightness)
 
     @property
     def _brightness(self) -> pathlib.Path:
@@ -145,3 +131,17 @@ class BacklightManager(contextlib.AbstractContextManager["BacklightManager"]):
         """Sets the brightness to zero if the backlight is present."""
         if self._backlight:
             self._backlight.deactivate()
+
+
+def _assert_directory_existence(path: pathlib.Path) -> None:
+    if not path.is_dir():
+        raise click.FileError(
+            filename=str(path), hint="Does not exist or is not a directory."
+        )
+
+
+def _assert_file_existence(path: pathlib.Path) -> None:
+    if not path.is_file():
+        raise click.FileError(
+            filename=str(path), hint="Does not exist or is not a file."
+        )
