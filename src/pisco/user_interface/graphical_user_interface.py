@@ -27,7 +27,7 @@ class PlaybackInformationLabel(tk.Label):
     """
 
     _av_transport_event_queue: queue.Queue[soco.events_base.Event]
-    _backlight_manager: backlight.BacklightManager
+    _backlight: backlight.AbstractBacklight
     _max_width: int
     _max_height: int
     _refresh_interval_in_ms: int
@@ -36,7 +36,7 @@ class PlaybackInformationLabel(tk.Label):
         self,
         av_transport_event_queue: queue.Queue[soco.events_base.Event],
         background: str,
-        backlight_manager: backlight.BacklightManager,
+        backlight_: backlight.AbstractBacklight,
         master: tk.Tk,
         max_width: int,
         max_height: int,
@@ -48,8 +48,7 @@ class PlaybackInformationLabel(tk.Label):
             av_transport_event_queue:
                 Events used to update the album art on a regular basis.
             background: Background color of the label.
-            backlight_manager:
-                Manager for activating and deactivating an optional sysfs backlight.
+            backlight_: Context manager for activating and deactivating a backlight.
             master: Tk master widget of the label.
             max_width: Maximum width of the album art.
             max_height: Maximum height of the album art.
@@ -59,7 +58,7 @@ class PlaybackInformationLabel(tk.Label):
         """
         super().__init__(background=background, master=master)
         self._av_transport_event_queue = av_transport_event_queue
-        self._backlight_manager = backlight_manager
+        self._backlight = backlight_
         self._max_width = max_width
         self._max_height = max_height
         self._refresh_interval_in_ms = refresh_interval_in_ms
@@ -72,9 +71,9 @@ class PlaybackInformationLabel(tk.Label):
         )
         if event.variables["transport_state"] in ("PLAYING", "TRANSITIONING"):
             self._process_track_meta_data(event)
-            self._backlight_manager.activate()
+            self._backlight.activate()
         else:
-            self._backlight_manager.deactivate()
+            self._backlight.deactivate()
             self._update_album_art(None)
         logger.info("AV transport event processed.", extra={"event": event.__dict__})
 
@@ -184,7 +183,7 @@ class TopLevelWidget(tk.Tk):
 
 def run(
     sonos_device_manager: sonos_device.SonosDeviceManager,
-    backlight_manager: backlight.BacklightManager,
+    backlight_: backlight.AbstractBacklight,
     window_width: int,
     window_height: int,
     playback_information_refresh_interval_in_ms: int,
@@ -193,8 +192,7 @@ def run(
 
     Args:
         sonos_device_manager: Manager for the Sonos device to be controlled.
-        backlight_manager:
-            Manager for activating and deactivating an optional sysfs backlight.
+        backlight_: Context manager for activating and deactivating a backlight.
         window_width: Width of the graphical user interface.
         window_height: Height of the graphical user interface.
         playback_information_refresh_interval_in_ms:
@@ -207,7 +205,7 @@ def run(
         master=top_level_widget,
         background="black",
         av_transport_event_queue=sonos_device_manager.av_transport_subscription.events,
-        backlight_manager=backlight_manager,
+        backlight_=backlight_,
         max_width=window_width,
         max_height=window_height,
         refresh_interval_in_ms=playback_information_refresh_interval_in_ms,

@@ -32,11 +32,11 @@ def run(
     """
     with (
         sonos_device.SonosDeviceManager(sonos_device_name) as sonos_device_manager,
-        backlight.BacklightManager(backlight_directory) as backlight_manager,
+        backlight.get_backlight(backlight_directory) as backlight_,
     ):
         graphical_user_interface.run(
             sonos_device_manager,
-            backlight_manager,
+            backlight_,
             window_width,
             window_height,
             playback_information_refresh_interval_in_ms,
