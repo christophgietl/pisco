@@ -68,21 +68,13 @@ class SonosDeviceManager(contextlib.AbstractContextManager["SonosDeviceManager"]
             "Initializing manager for Sonos device ...",
             extra={"sonos_device_name": name},
         )
-        self.controller = self._discover_controller(name)
+        self.controller = _discover_controller(name)
         self._av_transport_subscription = self._initialize_av_transport_subscription()
         self.av_transport_event_queue = self._av_transport_subscription.events
         logger.info(
             "Manager for Sonos device initialized.",
             extra={"sonos_device_name": name},
         )
-
-    @staticmethod
-    def _discover_controller(name: str) -> soco.core.SoCo:
-        controller = soco.discovery.by_name(name)
-        if controller is None:
-            msg = f"Could not find Sonos device named {name}."
-            raise click.ClickException(msg)
-        return controller
 
     def _initialize_av_transport_subscription(self) -> soco.events.Subscription:
         def handle_autorenew_failure(_: Exception) -> None:
@@ -145,3 +137,11 @@ class SonosDeviceManager(contextlib.AbstractContextManager["SonosDeviceManager"]
         else:
             self.controller.play()
         logger.info("Toggled current transport state.")
+
+
+def _discover_controller(name: str) -> soco.core.SoCo:
+    controller = soco.discovery.by_name(name)
+    if controller is None:
+        msg = f"Could not find Sonos device named {name}."
+        raise click.ClickException(msg)
+    return controller
