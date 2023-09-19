@@ -207,7 +207,7 @@ def run_user_interface(
     playback_information_label = PlaybackInformationLabel(
         master=graphical_user_interface,
         background="black",
-        av_transport_event_queue=sonos_device_manager.av_transport_event_queue,
+        av_transport_event_queue=sonos_device_manager.av_transport_subscription.events,
         backlight_manager=backlight_manager,
         max_width=window_width,
         max_height=window_height,

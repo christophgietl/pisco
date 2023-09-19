@@ -16,7 +16,6 @@ import soco.events
 import soco.events_base
 
 if TYPE_CHECKING:
-    import queue
     from types import TracebackType
 
 
@@ -24,18 +23,10 @@ logger = logging.getLogger(__name__)
 
 
 class SonosDeviceManager(contextlib.AbstractContextManager["SonosDeviceManager"]):
-    """Helper for discovering and controlling a Sonos device.
-
-    Attributes:
-        av_transport_event_queue:
-            Events emitted by the discovered Sonos device
-            whenever the transport state changes.
-        controller: Controller for the discovered Sonos device.
-    """
+    """Helper for discovering and controlling a Sonos device."""
 
     _av_transport_subscription: soco.events.Subscription
-    av_transport_event_queue: queue.Queue[soco.events_base.Event]
-    controller: soco.core.SoCo
+    _controller: soco.core.SoCo
 
     def __exit__(
         self,
@@ -43,7 +34,7 @@ class SonosDeviceManager(contextlib.AbstractContextManager["SonosDeviceManager"]
         exc_value: BaseException | None,
         traceback: TracebackType | None,
     ) -> None:
-        """Unsubscribes from the AV transport events and stops the event listener."""
+        """Unsubscribes from the transport subscription and stops the event listener."""
         logger.info(
             "Tearing down manager for Sonos device ...",
             extra={"sonos_device_name": self.controller.player_name},
@@ -56,7 +47,7 @@ class SonosDeviceManager(contextlib.AbstractContextManager["SonosDeviceManager"]
         )
 
     def __init__(self, name: str) -> None:
-        """Discovers a device and creates a controller and a transport event queue.
+        """Discovers a device and creates a controller and an AV transport subscription.
 
         Args:
             name: Name of the Sonos device to be discovered.
@@ -68,9 +59,8 @@ class SonosDeviceManager(contextlib.AbstractContextManager["SonosDeviceManager"]
             "Initializing manager for Sonos device ...",
             extra={"sonos_device_name": name},
         )
-        self.controller = _discover_controller(name)
+        self._controller = _discover_controller(name)
         self._av_transport_subscription = self._initialize_av_transport_subscription()
-        self.av_transport_event_queue = self._av_transport_subscription.events
         logger.info(
             "Manager for Sonos device initialized.",
             extra={"sonos_device_name": name},
@@ -104,6 +94,16 @@ class SonosDeviceManager(contextlib.AbstractContextManager["SonosDeviceManager"]
         )
         self.controller.play_uri(uri=favorite.resources[0].uri)
 
+    @property
+    def av_transport_subscription(self) -> soco.events.Subscription:
+        """Subscription to transport state changes of the Sonos device."""
+        return self._av_transport_subscription
+
+    @property
+    def controller(self) -> soco.core.SoCo:
+        """Controller for the discovered Sonos device."""
+        return self._controller
+
     def play_sonos_favorite_by_index(self, index: int) -> None:
         """Plays a track or station from Sonos favorites.
 
@@ -128,7 +128,10 @@ class SonosDeviceManager(contextlib.AbstractContextManager["SonosDeviceManager"]
         )
 
     def toggle_current_transport_state(self) -> None:
-        """Pauses the track if it is playing and plays the track if it is paused."""
+        """Pauses the track if it is playing and plays the track if it is paused.
+
+        Other transport states (e.g. "STOPPED") are treated similar to paused state.
+        """
         logger.info("Toggling current transport state ...")
         transport = self.controller.get_current_transport_info()
         if transport["current_transport_state"] == "PLAYING":
