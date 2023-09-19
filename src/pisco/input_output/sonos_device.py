@@ -131,8 +131,7 @@ class SonosDeviceManager(contextlib.AbstractContextManager["SonosDeviceManager"]
         """Pauses the track if it is playing and plays the track if it is paused."""
         logger.info("Toggling current transport state ...")
         transport = self.controller.get_current_transport_info()
-        state = transport["current_transport_state"]
-        if state == "PLAYING":
+        if transport["current_transport_state"] == "PLAYING":
             self.controller.pause()
         else:
             self.controller.play()
