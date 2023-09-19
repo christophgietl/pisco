@@ -51,7 +51,7 @@ logger = logging.getLogger(__name__)
     default=40,
     show_default=True,
 )
-def cli(
+def run(
     sonos_device_name: str,
     backlight_directory: pathlib.Path | None,
     window_width: int,
@@ -60,7 +60,7 @@ def cli(
 ) -> None:
     """Control your Sonos device with your keyboard."""
     try:
-        application.run_application(
+        application.run(
             sonos_device_name,
             backlight_directory,
             window_width,

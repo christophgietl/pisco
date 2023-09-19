@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     import pathlib
 
 
-def run_application(
+def run(
     sonos_device_name: str,
     backlight_directory: pathlib.Path | None,
     window_width: int,
