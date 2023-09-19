@@ -34,7 +34,7 @@ def run_application(
         sonos_device.SonosDeviceManager(sonos_device_name) as sonos_device_manager,
         backlight.BacklightManager(backlight_directory) as backlight_manager,
     ):
-        graphical_user_interface.run_user_interface(
+        graphical_user_interface.run(
             sonos_device_manager,
             backlight_manager,
             window_width,

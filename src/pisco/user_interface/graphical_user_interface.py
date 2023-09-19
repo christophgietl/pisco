@@ -119,9 +119,10 @@ class PlaybackInformationLabel(tk.Label):
         logger.info("Album art updated.", extra={"URI": absolute_uri})
 
 
-class GraphicalUserInterface(tk.Tk):
-    """Pisco's graphical user interface.
+class TopLevelWidget(tk.Tk):
+    """Pisco's toplevel widget.
 
+    Represents pisco's main window.
     Handles keypress events and signals.
     """
 
@@ -181,14 +182,14 @@ class GraphicalUserInterface(tk.Tk):
         logger.info("Key press event handled.")
 
 
-def run_user_interface(
+def run(
     sonos_device_manager: sonos_device.SonosDeviceManager,
     backlight_manager: backlight.BacklightManager,
     window_width: int,
     window_height: int,
     playback_information_refresh_interval_in_ms: int,
 ) -> None:
-    """Builds the user interface and runs its main loop.
+    """Builds the graphical user interface and runs its main loop.
 
     Args:
         sonos_device_manager: Manager for the Sonos device to be controlled.
@@ -201,11 +202,9 @@ def run_user_interface(
             according to playback information from `sonos_device_manager`.
     """
     logger.info("Running pisco user interface ...")
-    graphical_user_interface = GraphicalUserInterface(
-        sonos_device_manager, window_width, window_height
-    )
+    top_level_widget = TopLevelWidget(sonos_device_manager, window_width, window_height)
     playback_information_label = PlaybackInformationLabel(
-        master=graphical_user_interface,
+        master=top_level_widget,
         background="black",
         av_transport_event_queue=sonos_device_manager.av_transport_subscription.events,
         backlight_manager=backlight_manager,
@@ -214,5 +213,5 @@ def run_user_interface(
         refresh_interval_in_ms=playback_information_refresh_interval_in_ms,
     )
     playback_information_label.pack(expand=True, fill="both")
-    graphical_user_interface.mainloop()
+    top_level_widget.mainloop()
     logger.info("Pisco user interface run.")
