@@ -26,9 +26,10 @@ class PlaybackInformationLabel(tk.Label):
     The album art is automatically updated whenever a new track starts playing.
     """
 
-    _album_art_image_manager: http_image.HttpPhotoImageManager
     _av_transport_event_queue: queue.Queue[soco.events_base.Event]
     _backlight_manager: backlight.BacklightManager
+    _max_width: int
+    _max_height: int
     _refresh_interval_in_ms: int
 
     def __init__(  # noqa: PLR0913
@@ -59,9 +60,8 @@ class PlaybackInformationLabel(tk.Label):
         super().__init__(background=background, master=master)
         self._av_transport_event_queue = av_transport_event_queue
         self._backlight_manager = backlight_manager
-        self._album_art_image_manager = http_image.HttpPhotoImageManager(
-            max_width, max_height
-        )
+        self._max_width = max_width
+        self._max_height = max_height
         self._refresh_interval_in_ms = refresh_interval_in_ms
         self.after(self._refresh_interval_in_ms, self._process_av_transport_event_queue)
 
@@ -111,7 +111,7 @@ class PlaybackInformationLabel(tk.Label):
     def _update_album_art(self, absolute_uri: str | None) -> None:
         logger.info("Updating album art ...", extra={"URI": absolute_uri})
         image: PIL.ImageTk.PhotoImage | Literal[""] = (
-            self._album_art_image_manager.get_photo_image(absolute_uri)
+            http_image.get_photo_image(absolute_uri, self._max_width, self._max_height)
             if absolute_uri
             else ""  # Empty string means no image.
         )

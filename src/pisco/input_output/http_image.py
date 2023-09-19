@@ -1,4 +1,4 @@
-"""Helper for cached downloading and scaling of images."""
+"""Functions for cached downloading and scaling of images."""
 
 
 import functools
@@ -12,54 +12,40 @@ import requests
 logger = logging.getLogger(__name__)
 
 
-class HttpPhotoImageManager:
-    """Helper for cached downloading of images and scaling them to the desired size."""
+@functools.lru_cache(maxsize=1)
+def get_photo_image(
+    absolute_uri: str, max_width: int, max_height: int
+) -> PIL.ImageTk.PhotoImage:
+    """Downloads image and converts it to a Tkinter-compatible photo image.
 
-    _max_width: int
-    _max_height: int
+    The image is resized so that it fits into an `max_width` x `max_height` frame
+    while keeping its original aspect ratio.
+    If an alpha channel is present, it is removed.
 
-    def __init__(self, max_width: int, max_height: int) -> None:
-        """Initializes helper for image handling.
+    Args:
+        absolute_uri: Absolute URI of the image to download.
+        max_width: Maximum width of the image.
+        max_height: Maximum height of the image.
 
-        Args:
-            max_width: Maximum width of the images returned by `get_photo_image`.
-            max_height: Maximum height of the image returned by `get_photo_image`.
-        """
-        self._max_width = max_width
-        self._max_height = max_height
-        self.get_photo_image = functools.lru_cache(maxsize=1)(
-            self._get_photo_image_without_caching
-        )
-
-    def _get_photo_image_without_caching(
-        self, absolute_uri: str
-    ) -> PIL.ImageTk.PhotoImage:
-        logger.debug(
-            "Creating Tkinter-compatible photo image ...",
-            extra={"URI": absolute_uri},
-        )
-        content = _download_resource(absolute_uri)
-        image = PIL.Image.open(io.BytesIO(content))
-        image_wo_alpha = _remove_alpha_channel(image)
-        resized_image = self._resize_image(image_wo_alpha)
-        photo_image = PIL.ImageTk.PhotoImage(resized_image)
-        logger.debug(
-            "Tkinter-compatible photo image created.",
-            extra={"URI": absolute_uri},
-        )
-        return photo_image
-
-    def _resize_image(self, image: PIL.Image.Image) -> PIL.Image.Image:
-        logger.debug("Resizing image ...")
-        if self._max_width * image.height <= self._max_height * image.width:
-            new_width = self._max_width
-            new_height = round(image.height * self._max_width / image.width)
-        else:
-            new_width = round(image.width * self._max_height / image.height)
-            new_height = self._max_height
-        resized_image = image.resize(size=(new_width, new_height))
-        logger.debug("Image resized.")
-        return resized_image
+    Returns:
+        Tkinter-compatible photo image with
+        `width==max_width & height<=max_height` or
+        `width<=max_width & height==max_height`.
+    """
+    logger.debug(
+        "Creating Tkinter-compatible photo image ...",
+        extra={"URI": absolute_uri},
+    )
+    content = _download_resource(absolute_uri)
+    image = _to_image(content)
+    image_wo_alpha = _remove_alpha_channel(image)
+    resized_image = _resize_image(image_wo_alpha, max_width, max_height)
+    photo_image = PIL.ImageTk.PhotoImage(resized_image)
+    logger.debug(
+        "Tkinter-compatible photo image created.",
+        extra={"URI": absolute_uri},
+    )
+    return photo_image
 
 
 def _download_resource(absolute_uri: str) -> bytes:
@@ -80,3 +66,23 @@ def _remove_alpha_channel(image: PIL.Image.Image) -> PIL.Image.Image:
     rgb_image.paste(image, mask=image.getchannel("A"))
     logger.debug("Alpha channel removed.")
     return rgb_image
+
+
+def _resize_image(
+    image: PIL.Image.Image, max_width: int, max_height: int
+) -> PIL.Image.Image:
+    logger.debug("Resizing image ...")
+    if max_width * image.height <= max_height * image.width:
+        new_width = max_width
+        new_height = round(image.height * max_width / image.width)
+    else:
+        new_width = round(image.width * max_height / image.height)
+        new_height = max_height
+    resized_image = image.resize(size=(new_width, new_height))
+    logger.debug("Image resized.")
+    return resized_image
+
+
+def _to_image(content: bytes) -> PIL.Image.Image:
+    bytes_io = io.BytesIO(content)
+    return PIL.Image.open(bytes_io)
