@@ -5,10 +5,6 @@ build-backend = "poetry.core.masonry.api"
 [tool.black]
 target-version = ["py39", "py310", "py311"]
 
-[tool.isort]
-profile = "black"
-verbose = true
-
 [tool.mypy]
 strict = true
 verbosity = 1
