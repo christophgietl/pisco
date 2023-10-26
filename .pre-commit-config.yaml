@@ -17,7 +17,7 @@ repos:
         name: poetry-lock
         pass_filenames: false
       - id: mypy
-        entry: poetry run mypy .
+        entry: poetry run mypy . --verbose
         language: system
         name: mypy
         pass_filenames: false

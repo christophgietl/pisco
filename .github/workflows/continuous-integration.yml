@@ -40,7 +40,7 @@ jobs:
         with:
           install-dependencies: true
           python-version: ${{ matrix.python-version }}
-      - run: poetry run invoke run-git-hooks
+      - run: poetry run pre-commit run --all-files
   publish:
     if: github.ref_type == 'tag'
     needs:
