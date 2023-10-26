@@ -26,7 +26,7 @@ python = "^3.9"
 click = "^8.1"
 Pillow = "^10.1"
 python-json-logger = "^2.0"
-requests = "^2.28"
+requests = "^2.31"
 soco = "^0.29.0"
 xdg = "^6.0"
 
@@ -44,11 +44,10 @@ pisco = "pisco.user_interface.command_line_interface:run"
 [tool.ruff]
 select = ["ALL"]
 ignore = ["ANN101", "COM812"]
-src = ["src", "test"]
+src = ["src", "tests"]
 target-version = "py39"
 
 [tool.ruff.per-file-ignores]
-"tasks.py" = ["D100"]
 "tests/*" = ["D", "INP001", "S101"]
 
 [tool.ruff.pydocstyle]
