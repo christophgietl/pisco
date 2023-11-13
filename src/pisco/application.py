@@ -11,6 +11,10 @@ from pisco.user_interface import graphical_user_interface
 if TYPE_CHECKING:
     import pathlib
 
+BacklightPathIsNotADirectoryError = backlight.BacklightPathIsNotADirectoryError
+BacklightPathIsNotAFileError = backlight.BacklightPathIsNotAFileError
+SonosDeviceNotFoundError = sonos_device.SonosDeviceNotFoundError
+
 
 def run(
     sonos_device_name: str,
@@ -29,6 +33,14 @@ def run(
         playback_information_refresh_interval_in_ms:
             Time in milliseconds after which the playback information is updated
             according to playback information from `sonos_device_name`.
+
+    Raises:
+        BacklightPathIsNotADirectoryError:
+            `backlight_directory` is not a directory.
+        BacklightPathIsNotAFileError:
+            `backlight_directory` does not contain the required files.
+        SonosDeviceNotFoundError:
+            Found no device named `sonos_device_name`.
     """
     with (
         sonos_device.SonosDevice(sonos_device_name) as sonos_device_,

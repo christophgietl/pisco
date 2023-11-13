@@ -8,7 +8,6 @@ import contextlib
 import logging
 from typing import TYPE_CHECKING
 
-import click
 import soco.core
 import soco.data_structures
 import soco.discovery
@@ -53,7 +52,7 @@ class SonosDevice(contextlib.AbstractContextManager["SonosDevice"]):
             name: Name of the Sonos device to be discovered.
 
         Raises:
-            click.ClickException: Found no device named `name`.
+            SonosDeviceNotFoundError: Found no device named `name`.
         """
         logger.info(
             "Initializing manager for Sonos device ...",
@@ -141,9 +140,27 @@ class SonosDevice(contextlib.AbstractContextManager["SonosDevice"]):
         logger.info("Toggled current transport state.")
 
 
+class SonosDeviceNotFoundError(Exception):
+    """Raised when no Sonos device with a given name is found."""
+
+    _name: str
+
+    def __init__(self, name: str) -> None:
+        """Initializes exception with the name of the Sonos device.
+
+        Args:
+            name: Name of the Sonos device that was not found.
+        """
+        self._name = name
+
+    @property
+    def name(self) -> str:
+        """Name of the Sonos device that was not found."""
+        return self._name
+
+
 def _discover_controller(name: str) -> soco.core.SoCo:
     controller = soco.discovery.by_name(name)
     if controller is None:
-        msg = f"Could not find Sonos device named {name}."
-        raise click.ClickException(msg)
+        raise SonosDeviceNotFoundError(name)
     return controller

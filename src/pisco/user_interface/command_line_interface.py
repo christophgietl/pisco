@@ -67,6 +67,17 @@ def run(
             window_height,
             playback_information_refresh_interval,
         )
+    except application.BacklightPathIsNotADirectoryError as e:
+        raise click.FileError(
+            filename=str(e.path), hint="Does not exist or is not a directory."
+        ) from e
+    except application.BacklightPathIsNotAFileError as e:
+        raise click.FileError(
+            filename=str(e.path), hint="Does not exist or is not a file."
+        ) from e
+    except application.SonosDeviceNotFoundError as e:
+        msg = f"Sonos device '{e.name}' not found."
+        raise click.ClickException(msg) from e
     except Exception:
         logger.exception("Exception has not been handled.")
         raise
