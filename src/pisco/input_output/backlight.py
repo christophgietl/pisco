@@ -15,6 +15,17 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
+class _BacklightPathError(Exception):
+    _path: pathlib.Path
+
+    def __init__(self, path: pathlib.Path) -> None:
+        self._path = path
+
+    @property
+    def path(self) -> pathlib.Path:
+        return self._path
+
+
 class AbstractBacklight(contextlib.AbstractContextManager["AbstractBacklight"]):
     """Context manager for activating and deactivating a backlight.
 
@@ -41,42 +52,12 @@ class AbstractBacklight(contextlib.AbstractContextManager["AbstractBacklight"]):
         """Sets backlight brightness to zero."""
 
 
-class BacklightPathIsNotADirectoryError(Exception):
+class BacklightPathIsNotADirectoryError(_BacklightPathError):
     """Raised when a path is not a directory."""
 
-    _path: pathlib.Path
 
-    def __init__(self, path: pathlib.Path) -> None:
-        """Initializes exception with the path.
-
-        Args:
-            path: Path that is not a directory.
-        """
-        self._path = path
-
-    @property
-    def path(self) -> pathlib.Path:
-        """Path that is not a directory."""
-        return self._path
-
-
-class BacklightPathIsNotAFileError(Exception):
+class BacklightPathIsNotAFileError(_BacklightPathError):
     """Raised when a path is not a file."""
-
-    _path: pathlib.Path
-
-    def __init__(self, path: pathlib.Path) -> None:
-        """Initializes exception with the path.
-
-        Args:
-            path: Path that is not a file.
-        """
-        self._path = path
-
-    @property
-    def path(self) -> pathlib.Path:
-        """Path that is not a file."""
-        return self._path
 
 
 class DummyBacklight(AbstractBacklight):
