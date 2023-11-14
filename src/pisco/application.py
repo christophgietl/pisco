@@ -11,8 +11,7 @@ from pisco.user_interface import graphical_user_interface
 if TYPE_CHECKING:
     import pathlib
 
-BacklightPathIsNotADirectoryError = backlight.BacklightPathIsNotADirectoryError
-BacklightPathIsNotAFileError = backlight.BacklightPathIsNotAFileError
+BacklightPathError = backlight.BacklightPathError
 SonosDeviceNotFoundError = sonos_device.SonosDeviceNotFoundError
 
 

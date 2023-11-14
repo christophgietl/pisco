@@ -6,7 +6,7 @@ from __future__ import annotations
 import abc
 import contextlib
 import logging
-from typing import TYPE_CHECKING, overload
+from typing import TYPE_CHECKING, Literal, overload
 
 if TYPE_CHECKING:
     import pathlib
@@ -15,15 +15,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class _BacklightPathError(Exception):
-    _path: pathlib.Path
-
-    def __init__(self, path: pathlib.Path) -> None:
-        self._path = path
-
-    @property
-    def path(self) -> pathlib.Path:
-        return self._path
+_Kind_Of_Path = Literal["directory", "file"]
 
 
 class AbstractBacklight(contextlib.AbstractContextManager["AbstractBacklight"]):
@@ -52,12 +44,33 @@ class AbstractBacklight(contextlib.AbstractContextManager["AbstractBacklight"]):
         """Sets backlight brightness to zero."""
 
 
-class BacklightPathIsNotADirectoryError(_BacklightPathError):
-    """Raised when a path is not a directory."""
+class BacklightPathError(Exception):
+    """Raised when a backlight path is not a directory or file."""
 
+    _expected_kind_of_path: _Kind_Of_Path
+    _path: pathlib.Path
 
-class BacklightPathIsNotAFileError(_BacklightPathError):
-    """Raised when a path is not a file."""
+    def __init__(
+        self, path: pathlib.Path, expected_kind_of_path: _Kind_Of_Path
+    ) -> None:
+        """Initializes backlight path error.
+
+        Args:
+            path: Path that is not the `expected_kind_of_path`.
+            expected_kind_of_path: Expected kind of path.
+        """
+        self._expected_kind_of_path = expected_kind_of_path
+        self._path = path
+
+    @property
+    def expected_kind_of_path(self) -> _Kind_Of_Path:
+        """Expected kind of path."""
+        return self._expected_kind_of_path
+
+    @property
+    def path(self) -> pathlib.Path:
+        """Path that is not the `expected_kind_of_path`."""
+        return self._path
 
 
 class DummyBacklight(AbstractBacklight):
@@ -82,10 +95,8 @@ class SysfsBacklight(AbstractBacklight):
             directory: Sysfs directory of the backlight to be controlled.
 
         Raises:
-            BacklightPathIsNotADirectoryError:
-                When the backlight directory does not exist or is not a directory.
-            BacklightPathIsNotAFileError:
-                When the backlight directory does not contain the required files.
+            BacklightPathError:
+                When `directory` does not exist or does not contain the required files.
         """
         self._directory = directory
         self._assert_backlight_directory()
@@ -94,10 +105,9 @@ class SysfsBacklight(AbstractBacklight):
         """Asserts that the backlight directory exists and contains the required files.
 
         Raises:
-            BacklightPathIsNotADirectoryError:
-                When the backlight directory does not exist or is not a directory.
-            BacklightPathIsNotAFileError:
-                When the backlight directory does not contain the required files.
+            BacklightError:
+                When the backlight directory does not exist or
+                does not contain the required files.
         """
         _assert_directory_existence(self._directory)
         _assert_file_existence(self._brightness)
@@ -151,22 +161,22 @@ def _assert_directory_existence(path: pathlib.Path) -> None:
     """Asserts that a path exists and is a directory.
 
     Raises:
-        BacklightPathIsNotADirectoryError:
+        BacklightPathError:
             When the path does not exist or is not a directory.
     """
     if not path.is_dir():
-        raise BacklightPathIsNotADirectoryError(path)
+        raise BacklightPathError(path, "directory")
 
 
 def _assert_file_existence(path: pathlib.Path) -> None:
     """Asserts that a path exists and is a file.
 
     Raises:
-        BacklightPathIsNotAFileError:
+        BacklightPathError:
             When the path does not exist or is not a file.
     """
     if not path.is_file():
-        raise BacklightPathIsNotAFileError(path)
+        raise BacklightPathError(path, "file")
 
 
 @overload
@@ -191,10 +201,9 @@ def get_backlight(
         Context manager for sysfs backlight or dummy backlight.
 
     Raises:
-        BacklightPathIsNotADirectoryError:
-            When the backlight directory does not exist or is not a directory.
-        BacklightPathIsNotAFileError:
-            When the backlight directory does not contain the required files.
+        BacklightPathError:
+            When `sysfs_directory` does not exist or
+            does not contain the required files.
     """
     if sysfs_directory is None:
         return DummyBacklight()
