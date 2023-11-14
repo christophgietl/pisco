@@ -151,6 +151,7 @@ class SonosDeviceNotFoundError(Exception):
         Args:
             name: Name of the Sonos device that was not found.
         """
+        super().__init__(f"Could not find Sonos device named {name}.")
         self._name = name
 
     @property

@@ -59,6 +59,7 @@ class BacklightPathError(Exception):
             path: Path that is not the `expected_kind_of_path`.
             expected_kind_of_path: Expected kind of path.
         """
+        super().__init__(f"Path {path} is not a {expected_kind_of_path}.")
         self._expected_kind_of_path = expected_kind_of_path
         self._path = path
 
