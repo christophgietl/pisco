@@ -73,8 +73,7 @@ def run(
             hint=f"Does not exist or is not a {e.expected_kind_of_path}.",
         ) from e
     except application.SonosDeviceNotFoundError as e:
-        msg = f"Sonos device '{e.name}' not found."
-        raise click.ClickException(msg) from e
+        raise click.ClickException(message=f"Sonos device '{e.name}' not found.") from e
     except Exception:
         logger.exception("Exception has not been handled.")
         raise
