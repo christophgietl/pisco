@@ -6,16 +6,13 @@ from __future__ import annotations
 import abc
 import contextlib
 import logging
-from typing import TYPE_CHECKING, Literal, overload
+from typing import TYPE_CHECKING, overload
 
 if TYPE_CHECKING:
     import pathlib
     from types import TracebackType
 
 logger = logging.getLogger(__name__)
-
-
-_Kind_Of_Path = Literal["directory", "file"]
 
 
 class AbstractBacklight(contextlib.AbstractContextManager["AbstractBacklight"]):
@@ -45,32 +42,22 @@ class AbstractBacklight(contextlib.AbstractContextManager["AbstractBacklight"]):
 
 
 class BacklightPathError(Exception):
-    """Raised when a backlight path is not a directory or file."""
+    """Raised when a backlight path is not a file."""
 
-    _expected_kind_of_path: _Kind_Of_Path
     _path: pathlib.Path
 
-    def __init__(
-        self, path: pathlib.Path, expected_kind_of_path: _Kind_Of_Path
-    ) -> None:
+    def __init__(self, path: pathlib.Path) -> None:
         """Initializes backlight path error.
 
         Args:
-            path: Path that is not the `expected_kind_of_path`.
-            expected_kind_of_path: Expected kind of path.
+            path: Path that is not a file.
         """
-        super().__init__(f"Path {path} is not a {expected_kind_of_path}.")
-        self._expected_kind_of_path = expected_kind_of_path
+        super().__init__(f"Path {path} is not a file.")
         self._path = path
 
     @property
-    def expected_kind_of_path(self) -> _Kind_Of_Path:
-        """Expected kind of path."""
-        return self._expected_kind_of_path
-
-    @property
     def path(self) -> pathlib.Path:
-        """Path that is not the `expected_kind_of_path`."""
+        """Path that is not a file."""
         return self._path
 
 
@@ -103,14 +90,12 @@ class SysfsBacklight(AbstractBacklight):
         self._assert_backlight_directory()
 
     def _assert_backlight_directory(self) -> None:
-        """Asserts that the backlight directory exists and contains the required files.
+        """Asserts that the backlight directory contains the required files.
 
         Raises:
             BacklightError:
-                When the backlight directory does not exist or
-                does not contain the required files.
+                When the backlight directory does not contain the required files.
         """
-        _assert_directory_existence(self._directory)
         _assert_file_existence(self._brightness)
         _assert_file_existence(self._max_brightness)
 
@@ -158,17 +143,6 @@ class SysfsBacklight(AbstractBacklight):
             )
 
 
-def _assert_directory_existence(path: pathlib.Path) -> None:
-    """Asserts that a path exists and is a directory.
-
-    Raises:
-        BacklightPathError:
-            When the path does not exist or is not a directory.
-    """
-    if not path.is_dir():
-        raise BacklightPathError(path, "directory")
-
-
 def _assert_file_existence(path: pathlib.Path) -> None:
     """Asserts that a path exists and is a file.
 
@@ -177,7 +151,7 @@ def _assert_file_existence(path: pathlib.Path) -> None:
             When the path does not exist or is not a file.
     """
     if not path.is_file():
-        raise BacklightPathError(path, "file")
+        raise BacklightPathError(path)
 
 
 @overload

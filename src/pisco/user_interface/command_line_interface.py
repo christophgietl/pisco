@@ -70,7 +70,7 @@ def run(
     except application.BacklightPathError as e:
         raise click.FileError(
             filename=str(e.path),
-            hint=f"Does not exist or is not a {e.expected_kind_of_path}.",
+            hint="Does not exist or is not a file.",
         ) from e
     except application.SonosDeviceNotFoundError as e:
         raise click.ClickException(message=f"Sonos device '{e.name}' not found.") from e
