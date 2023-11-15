@@ -67,10 +67,9 @@ def run(
             window_height,
             playback_information_refresh_interval,
         )
-    except application.BacklightPathError as e:
+    except application.SysfsBacklightFileAccessError as e:
         raise click.FileError(
-            filename=str(e.path),
-            hint="Does not exist or is not a file.",
+            filename=str(e.path), hint=f"Cannot {e.mode} file."
         ) from e
     except application.SonosDeviceNotFoundError as e:
         raise click.ClickException(message=f"Sonos device '{e.name}' not found.") from e

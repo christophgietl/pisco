@@ -11,8 +11,8 @@ from pisco.user_interface import graphical_user_interface
 if TYPE_CHECKING:
     import pathlib
 
-BacklightPathError = backlight.BacklightPathError
 SonosDeviceNotFoundError = sonos_device.SonosDeviceNotFoundError
+SysfsBacklightFileAccessError = backlight.SysfsBacklightFileAccessError
 
 
 def run(

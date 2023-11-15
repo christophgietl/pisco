@@ -6,10 +6,13 @@ from __future__ import annotations
 import abc
 import contextlib
 import logging
-from typing import TYPE_CHECKING, overload
+import os
+from typing import TYPE_CHECKING, Literal, overload
 
 if TYPE_CHECKING:
     import pathlib
+
+_File_Access_Mode = Literal["read", "write"]
 
 logger = logging.getLogger(__name__)
 
@@ -37,26 +40,6 @@ class AbstractBacklight(contextlib.AbstractContextManager["AbstractBacklight"]):
         """Sets backlight brightness to zero."""
 
 
-class BacklightPathError(Exception):
-    """Raised when a backlight path is not a file."""
-
-    _path: pathlib.Path
-
-    def __init__(self, path: pathlib.Path) -> None:
-        """Initializes backlight path error.
-
-        Args:
-            path: Path that is not a file.
-        """
-        super().__init__(f"Path {path} is not a file.")
-        self._path = path
-
-    @property
-    def path(self) -> pathlib.Path:
-        """Path that is not a file."""
-        return self._path
-
-
 class DummyBacklight(AbstractBacklight):
     """Virtual backlight that does nothing."""
 
@@ -80,13 +63,15 @@ class SysfsBacklight(AbstractBacklight):
             directory: Sysfs directory of the backlight to be controlled.
 
         Raises:
-            BacklightPathError: When `directory` does not contain the required files.
+            SysfsBacklightFileAccessError:
+                When the expected sysfs files in `directory` cannot be read or write.
         """
         self._brightness = directory / "brightness"
+        if not os.access(self._brightness, os.W_OK):
+            raise SysfsBacklightFileAccessError(self._brightness, "write")
         self._max_brightness = directory / "max_brightness"
-        for path in (self._brightness, self._max_brightness):
-            if not path.is_file():
-                raise BacklightPathError(path)
+        if not os.access(self._max_brightness, os.R_OK):
+            raise SysfsBacklightFileAccessError(self._max_brightness, "read")
 
     def activate(self) -> None:
         """Sets backlight brightness to maximum value."""
@@ -119,6 +104,34 @@ class SysfsBacklight(AbstractBacklight):
             )
 
 
+class SysfsBacklightFileAccessError(Exception):
+    """Raised when a sysfs backlight file cannot be accessed."""
+
+    _mode: _File_Access_Mode
+    _path: pathlib.Path
+
+    def __init__(self, path: pathlib.Path, mode: _File_Access_Mode) -> None:
+        """Initializes access error for a sysfs backlight file.
+
+        Args:
+            path: Sysfs file that could not be accessed.
+            mode: Mode used while accessing the file.
+        """
+        super().__init__(f"Could not {mode} file {path}.")
+        self._mode = mode
+        self._path = path
+
+    @property
+    def mode(self) -> _File_Access_Mode:
+        """Mode used while accessing the file."""
+        return self._mode
+
+    @property
+    def path(self) -> pathlib.Path:
+        """Sysfs file that could not be accessed."""
+        return self._path
+
+
 @overload
 def get_backlight(sysfs_directory: None) -> DummyBacklight:
     ...
@@ -141,9 +154,8 @@ def get_backlight(
         Context manager for sysfs backlight or dummy backlight.
 
     Raises:
-        BacklightPathError:
-            When `sysfs_directory` does not exist or
-            does not contain the required files.
+        SysfsBacklightFileAccessError:
+            When the expected sysfs files in `sysfs_directory` cannot be read or write.
     """
     if sysfs_directory is None:
         return DummyBacklight()
