@@ -74,7 +74,8 @@ class DummyBacklight(AbstractBacklight):
 class SysfsBacklight(AbstractBacklight):
     """Context manager for activating and deactivating a sysfs backlight."""
 
-    _directory: pathlib.Path
+    _brightness: pathlib.Path
+    _max_brightness: pathlib.Path
 
     def __init__(self, directory: pathlib.Path) -> None:
         """Initializes context manager for (de-)activating a sysfs backlight.
@@ -85,51 +86,39 @@ class SysfsBacklight(AbstractBacklight):
         Raises:
             BacklightPathError: When `directory` does not contain the required files.
         """
-        self._directory = directory
+        self._brightness = directory / "brightness"
+        self._max_brightness = directory / "max_brightness"
         _assert_file_existence(self._brightness)
         _assert_file_existence(self._max_brightness)
 
-    @property
-    def _brightness(self) -> pathlib.Path:
-        return self._directory / "brightness"
-
-    @property
-    def _max_brightness(self) -> pathlib.Path:
-        return self._directory / "max_brightness"
-
     def activate(self) -> None:
         """Sets backlight brightness to maximum value."""
-        logger.info(
-            "Activating backlight ...", extra={"backlight_directory": self._directory}
-        )
+        logger.info("Activating backlight ...", extra={"brightness": self._brightness})
         try:
             max_brightness_value = self._max_brightness.read_text()
             self._brightness.write_text(max_brightness_value)
         except OSError:
             logger.exception(
-                "Could not activate backlight.",
-                extra={"backlight_directory": self._directory},
+                "Could not activate backlight.", extra={"brightness": self._brightness}
             )
         else:
-            logger.info(
-                "Backlight activated.", extra={"backlight_directory": self._directory}
-            )
+            logger.info("Backlight activated.", extra={"brightness": self._brightness})
 
     def deactivate(self) -> None:
         """Sets backlight brightness to zero."""
         logger.info(
-            "Deactivating backlight ...", extra={"backlight_directory": self._directory}
+            "Deactivating backlight ...", extra={"brightness": self._brightness}
         )
         try:
             self._brightness.write_text("0")
         except OSError:
             logger.exception(
                 "Could not deactivate backlight.",
-                extra={"backlight_directory": self._directory},
+                extra={"brightness": self._brightness},
             )
         else:
             logger.info(
-                "Backlight deactivated.", extra={"backlight_directory": self._directory}
+                "Backlight deactivated.", extra={"brightness": self._brightness}
             )
 
 
