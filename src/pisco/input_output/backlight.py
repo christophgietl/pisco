@@ -10,7 +10,6 @@ from typing import TYPE_CHECKING, overload
 
 if TYPE_CHECKING:
     import pathlib
-    from types import TracebackType
 
 logger = logging.getLogger(__name__)
 
@@ -22,10 +21,7 @@ class AbstractBacklight(contextlib.AbstractContextManager["AbstractBacklight"]):
     """
 
     def __exit__(
-        self,
-        __exc_type: type[BaseException] | None,
-        __exc_value: BaseException | None,
-        __traceback: TracebackType | None,
+        self, __exc_type: object, __exc_value: object, __traceback: object
     ) -> None:
         """Activates the backlight."""
         logger.info("Exiting backlight context ...")
