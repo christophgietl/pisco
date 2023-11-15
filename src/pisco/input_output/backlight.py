@@ -88,8 +88,9 @@ class SysfsBacklight(AbstractBacklight):
         """
         self._brightness = directory / "brightness"
         self._max_brightness = directory / "max_brightness"
-        _assert_file_existence(self._brightness)
-        _assert_file_existence(self._max_brightness)
+        for path in (self._brightness, self._max_brightness):
+            if not path.is_file():
+                raise BacklightPathError(path)
 
     def activate(self) -> None:
         """Sets backlight brightness to maximum value."""
@@ -120,16 +121,6 @@ class SysfsBacklight(AbstractBacklight):
             logger.info(
                 "Backlight deactivated.", extra={"brightness": self._brightness}
             )
-
-
-def _assert_file_existence(path: pathlib.Path) -> None:
-    """Asserts that a path exists and is a file.
-
-    Raises:
-        BacklightPathError: When the path does not exist or is not a file.
-    """
-    if not path.is_file():
-        raise BacklightPathError(path)
 
 
 @overload
