@@ -83,19 +83,9 @@ class SysfsBacklight(AbstractBacklight):
             directory: Sysfs directory of the backlight to be controlled.
 
         Raises:
-            BacklightPathError:
-                When `directory` does not exist or does not contain the required files.
+            BacklightPathError: When `directory` does not contain the required files.
         """
         self._directory = directory
-        self._assert_backlight_directory()
-
-    def _assert_backlight_directory(self) -> None:
-        """Asserts that the backlight directory contains the required files.
-
-        Raises:
-            BacklightError:
-                When the backlight directory does not contain the required files.
-        """
         _assert_file_existence(self._brightness)
         _assert_file_existence(self._max_brightness)
 
@@ -147,8 +137,7 @@ def _assert_file_existence(path: pathlib.Path) -> None:
     """Asserts that a path exists and is a file.
 
     Raises:
-        BacklightPathError:
-            When the path does not exist or is not a file.
+        BacklightPathError: When the path does not exist or is not a file.
     """
     if not path.is_file():
         raise BacklightPathError(path)
