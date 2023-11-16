@@ -68,10 +68,10 @@ class SysfsBacklight(AbstractBacklight):
         """
         self._brightness = directory / "brightness"
         if not os.access(self._brightness, os.W_OK):
-            raise SysfsBacklightFileAccessError(self._brightness, "write")
+            raise SysfsBacklightFileAccessError(mode="write", path=self._brightness)
         self._max_brightness = directory / "max_brightness"
         if not os.access(self._max_brightness, os.R_OK):
-            raise SysfsBacklightFileAccessError(self._max_brightness, "read")
+            raise SysfsBacklightFileAccessError(mode="read", path=self._max_brightness)
 
     def activate(self) -> None:
         """Sets backlight brightness to maximum value."""
@@ -110,7 +110,7 @@ class SysfsBacklightFileAccessError(Exception):
     _mode: _File_Access_Mode
     _path: pathlib.Path
 
-    def __init__(self, path: pathlib.Path, mode: _File_Access_Mode) -> None:
+    def __init__(self, *, mode: _File_Access_Mode, path: pathlib.Path) -> None:
         """Initializes access error for a sysfs backlight file.
 
         Args:

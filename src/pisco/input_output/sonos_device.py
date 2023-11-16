@@ -145,7 +145,7 @@ class SonosDeviceNotFoundError(Exception):
 
     _name: str
 
-    def __init__(self, name: str) -> None:
+    def __init__(self, *, name: str) -> None:
         """Initializes exception with the name of the Sonos device.
 
         Args:
@@ -163,5 +163,5 @@ class SonosDeviceNotFoundError(Exception):
 def _discover_controller(name: str) -> soco.core.SoCo:
     controller = soco.discovery.by_name(name)
     if controller is None:
-        raise SonosDeviceNotFoundError(name)
+        raise SonosDeviceNotFoundError(name=name)
     return controller
