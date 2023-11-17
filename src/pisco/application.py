@@ -34,12 +34,11 @@ def run(
             according to playback information from `sonos_device_name`.
 
     Raises:
-        BacklightPathIsNotADirectoryError:
-            `backlight_directory` is not a directory.
-        BacklightPathIsNotAFileError:
-            `backlight_directory` does not contain the required files.
         SonosDeviceNotFoundError:
             Found no device named `sonos_device_name`.
+        SysfsBacklightFileAccessError:
+            When the expected sysfs files in `backlight_directory`
+            cannot be read or write.
     """
     with (
         sonos_device.SonosDevice(sonos_device_name) as sonos_device_,
