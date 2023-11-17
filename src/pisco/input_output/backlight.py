@@ -5,14 +5,13 @@ from __future__ import annotations
 
 import abc
 import contextlib
+import dataclasses
 import logging
 import os
 from typing import TYPE_CHECKING, Literal, overload
 
 if TYPE_CHECKING:
     import pathlib
-
-_File_Access_Mode = Literal["read", "write"]
 
 logger = logging.getLogger(__name__)
 
@@ -104,32 +103,21 @@ class SysfsBacklight(AbstractBacklight):
             )
 
 
+@dataclasses.dataclass(frozen=True, repr=False)
 class SysfsBacklightFileAccessError(Exception):
-    """Raised when a sysfs backlight file cannot be accessed."""
+    """Raised when a sysfs backlight file cannot be accessed.
 
-    _mode: _File_Access_Mode
-    _path: pathlib.Path
+    Attributes:
+        mode: Mode used while accessing the file.
+        path: Sysfs file that could not be accessed.
+    """
 
-    def __init__(self, *, mode: _File_Access_Mode, path: pathlib.Path) -> None:
-        """Initializes access error for a sysfs backlight file.
+    mode: Literal["read", "write"]
+    path: pathlib.Path
 
-        Args:
-            path: Sysfs file that could not be accessed.
-            mode: Mode used while accessing the file.
-        """
-        super().__init__(f"Could not {mode} file {path}.")
-        self._mode = mode
-        self._path = path
-
-    @property
-    def mode(self) -> _File_Access_Mode:
-        """Mode used while accessing the file."""
-        return self._mode
-
-    @property
-    def path(self) -> pathlib.Path:
-        """Sysfs file that could not be accessed."""
-        return self._path
+    def __post_init__(self) -> None:
+        """Initializes exception with access mode and file path."""
+        super().__init__(f"Could not {self.mode} file {self.path}.")
 
 
 @overload

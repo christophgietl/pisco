@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import _thread
 import contextlib
+import dataclasses
 import logging
 from typing import TYPE_CHECKING
 
@@ -140,24 +141,19 @@ class SonosDevice(contextlib.AbstractContextManager["SonosDevice"]):
         logger.info("Toggled current transport state.")
 
 
+@dataclasses.dataclass(frozen=True, repr=False)
 class SonosDeviceNotFoundError(Exception):
-    """Raised when no Sonos device with a given name is found."""
+    """Raised when no Sonos device with a given name is found.
 
-    _name: str
+    Attributes:
+        name: Sonos device that could not be found.
+    """
 
-    def __init__(self, *, name: str) -> None:
-        """Initializes exception with the name of the Sonos device.
+    name: str
 
-        Args:
-            name: Name of the Sonos device that was not found.
-        """
-        super().__init__(f"Could not find Sonos device named {name}.")
-        self._name = name
-
-    @property
-    def name(self) -> str:
-        """Name of the Sonos device that was not found."""
-        return self._name
+    def __post_init__(self) -> None:
+        """Initializes exception with the name of the Sonos device."""
+        super().__init__(f"Could not find Sonos device named {self.name}.")
 
 
 def _discover_controller(name: str) -> soco.core.SoCo:
