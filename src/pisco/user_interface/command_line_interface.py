@@ -11,45 +11,44 @@ from pisco import application
 
 logger = logging.getLogger(__name__)
 
-
-@click.command()
-@click.argument("sonos_device_name")
-@click.option(
-    "-b",
-    "--backlight",
-    "backlight_directory",
+_backlight_directory_option = click.Option(
     help="""
         sysfs directory of the backlight that should be deactivated
         when the device is not playing
     """,
+    param_decls=("-b", "--backlight", "backlight_directory"),
     type=click.Path(exists=True, file_okay=False, path_type=pathlib.Path),
 )
-@click.option(
-    "-w",
-    "--width",
-    "window_width",
-    help="width of the Pisco window",
-    type=click.IntRange(min=0),
-    default=320,
-    show_default=True,
-)
-@click.option(
-    "-h",
-    "--height",
-    "window_height",
-    help="height of the Pisco window",
-    type=click.IntRange(min=0),
-    default=320,
-    show_default=True,
-)
-@click.option(
-    "-r",
-    "--refresh",
-    "playback_information_refresh_interval",
-    help="time in milliseconds after which playback information is updated",
-    type=click.IntRange(min=1),
-    default=40,
-    show_default=True,
+
+_sonos_device_name_argument = click.Argument(param_decls=("sonos_device_name",))
+
+
+@click.command(
+    params=(
+        _sonos_device_name_argument,
+        _backlight_directory_option,
+        click.Option(
+            default=320,
+            help="width of the Pisco window",
+            param_decls=("-w", "--width", "window_width"),
+            show_default=True,
+            type=click.IntRange(min=0),
+        ),
+        click.Option(
+            default=320,
+            help="height of the Pisco window",
+            param_decls=("-h", "--height", "window_height"),
+            show_default=True,
+            type=click.IntRange(min=0),
+        ),
+        click.Option(
+            default=40,
+            help="time in milliseconds after which playback information is updated",
+            param_decls=("-r", "--refresh", "playback_information_refresh_interval"),
+            show_default=True,
+            type=click.IntRange(min=1),
+        ),
+    )
 )
 def run(
     sonos_device_name: str,
@@ -68,11 +67,15 @@ def run(
             playback_information_refresh_interval,
         )
     except application.SysfsBacklightFileAccessError as e:
-        raise click.FileError(
-            filename=str(e.path), hint=f"Cannot {e.mode} file."
+        raise click.BadParameter(
+            message=f"Cannot {e.mode} file {e.path}.",
+            param=_backlight_directory_option,
         ) from e
     except application.SonosDeviceNotFoundError as e:
-        raise click.ClickException(message=f"Sonos device '{e.name}' not found.") from e
+        raise click.BadParameter(
+            message=f"Cannot find Sonos device '{e.name}'.",
+            param=_sonos_device_name_argument,
+        ) from e
     except Exception:
         logger.exception("Exception has not been handled.")
         raise
