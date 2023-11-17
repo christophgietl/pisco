@@ -7,17 +7,12 @@ import _thread
 import contextlib
 import dataclasses
 import logging
-from typing import TYPE_CHECKING
 
 import soco.core
 import soco.data_structures
 import soco.discovery
 import soco.events
 import soco.events_base
-
-if TYPE_CHECKING:
-    from types import TracebackType
-
 
 logger = logging.getLogger(__name__)
 
@@ -28,12 +23,7 @@ class SonosDevice(contextlib.AbstractContextManager["SonosDevice"]):
     _av_transport_subscription: soco.events.Subscription
     _controller: soco.core.SoCo
 
-    def __exit__(
-        self,
-        exc_type: type[BaseException] | None,
-        exc_value: BaseException | None,
-        traceback: TracebackType | None,
-    ) -> None:
+    def __exit__(self, exc_type: object, exc_value: object, traceback: object) -> None:
         """Unsubscribes from the transport subscription and stops the event listener."""
         logger.info(
             "Tearing down manager for Sonos device ...",
