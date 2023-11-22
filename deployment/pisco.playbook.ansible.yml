@@ -34,6 +34,7 @@
           - python3-lxml    # required by Python package lxml (a dependency of soco)
           - python3-pip
           - python3-tk
+          - python3-virtualenv
           - xserver-xorg
 
     - name: Download setup script for display
@@ -76,9 +77,9 @@
     - name: Install Pisco package
       become: true
       pip:
-        executable: pip3
         name: pisco
         state: latest
+        virtualenv: /opt/pisco/
     - name: Start Pisco after login
       template:
         dest: /home/pi/.xsession
