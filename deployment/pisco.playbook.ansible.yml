@@ -1,4 +1,4 @@
-- hosts: pisco
+- hosts: pisco.local
   remote_user: pi
   collections:
 
