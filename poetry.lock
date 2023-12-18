@@ -758,13 +758,13 @@ testing-integration = ["build[virtualenv]", "filelock (>=3.4.0)", "jaraco.envs (
 
 [[package]]
 name = "soco"
-version = "0.29.1"
+version = "0.30.0"
 description = "SoCo (Sonos Controller) is a simple library to control Sonos speakers."
 optional = false
 python-versions = ">=3.6"
 files = [
-    {file = "soco-0.29.1-py2.py3-none-any.whl", hash = "sha256:9825556a92de8168b8b738943a658167d534bde92060be2a78e301817109a777"},
-    {file = "soco-0.29.1.tar.gz", hash = "sha256:6f164ab8c282d5d2e4cc382d55b7e7c1bb45f400d7e784f64b50f97a6c9f7363"},
+    {file = "soco-0.30.0-py2.py3-none-any.whl", hash = "sha256:da345c361e5db70db89fc43f9062a2834b7830d79e03571708634116ddd335ab"},
+    {file = "soco-0.30.0.tar.gz", hash = "sha256:9c5f7d2177f823be6b9ea1801be45641c0c853eed431dc4176e04c4037b12491"},
 ]
 
 [package.dependencies]
@@ -776,6 +776,7 @@ xmltodict = "*"
 
 [package.extras]
 events-asyncio = ["aiohttp"]
+testing = ["black (>=22.12.0)", "coveralls", "flake8", "graphviz", "importlib-metadata (<5)", "pylint", "pytest (>=2.5)", "pytest-cov (<2.6.0)", "requests-mock", "sphinx (==4.5.0)", "sphinx-rtd-theme", "twine", "wheel"]
 
 [[package]]
 name = "tomli"
@@ -886,4 +887,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "9ea4a1eae328bca0561137ff484004d21400892eb8560100b12319375a83e3da"
+content-hash = "1ce8606078b6ad281feed3a56c3e8557bad58e9090aeabf828a6f71c92833f26"
