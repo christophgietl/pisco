@@ -4,10 +4,10 @@
 import functools
 import io
 import logging
+import urllib.request
 
 import PIL.Image
 import PIL.ImageTk
-import requests
 
 logger = logging.getLogger(__name__)
 
@@ -50,9 +50,17 @@ def get_photo_image(
 
 def _download_resource(absolute_uri: str) -> bytes:
     logger.debug("Downloading resource ...", extra={"URI": absolute_uri})
-    response = requests.get(absolute_uri, timeout=10)
+    supported_prefixes = ("http:", "https:")
+    if not absolute_uri.startswith(supported_prefixes):
+        msg = "Cannot download resource: URI does not start with a supported prefix."
+        logger.debug(
+            msg, extra={"supported_prefixes": supported_prefixes, "URI": absolute_uri}
+        )
+        raise ValueError(msg)
+    with urllib.request.urlopen(absolute_uri, timeout=10) as response:  # noqa: S310
+        content: bytes = response.read()
     logger.debug("Resource downloaded.", extra={"URI": absolute_uri})
-    return response.content
+    return content
 
 
 def _remove_alpha_channel(image: PIL.Image.Image) -> PIL.Image.Image:
