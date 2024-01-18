@@ -55,12 +55,6 @@
         line: "# dtoverlay=vc4-kms-v3d"
         path: /boot/config.txt
         regexp: ^dtoverlay=vc4-kms-v3d
-    - name: Set display rotation to 180°
-      become: true
-      lineinfile:
-        line: display_rotate=2
-        path: /boot/config.txt
-        regexp: ^display_rotate=
     - name: Disable screen blanking
       become: true
       command: raspi-config nonint do_blanking 1
