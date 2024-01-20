@@ -37,6 +37,27 @@
           - python3-virtualenv
           - xserver-xorg
 
+    - name: Enable autologin to GUI
+      become: true
+      command: raspi-config nonint do_boot_behaviour B4
+    - name: Fix auto-re-login
+      become: true
+      copy:
+        dest: /etc/lightdm/
+        src: etc/lightdm/lightdm.conf.d
+
+    - name: Disable screen blanking
+      become: true
+      command: raspi-config nonint do_blanking 1
+
+    - name: Disable DRM VC4 V3D driver
+      # cf. https://github.com/pimoroni/hyperpixel4/issues/177#issuecomment-1182557545
+      become: true
+      lineinfile:
+        line: "# dtoverlay=vc4-kms-v3d"
+        path: /boot/config.txt
+        regexp: ^dtoverlay=vc4-kms-v3d
+
     - name: Download setup script for display
       become: true
       git:
@@ -48,25 +69,6 @@
       command:
         chdir: /opt/github.com/pimoroni/hyperpixel4/
         cmd: ./install.sh
-    - name: Disable DRM VC4 V3D driver
-      # cf. https://github.com/pimoroni/hyperpixel4/issues/177#issuecomment-1182557545
-      become: true
-      lineinfile:
-        line: "# dtoverlay=vc4-kms-v3d"
-        path: /boot/config.txt
-        regexp: ^dtoverlay=vc4-kms-v3d
-    - name: Disable screen blanking
-      become: true
-      command: raspi-config nonint do_blanking 1
-
-    - name: Enable autologin to GUI
-      become: true
-      command: raspi-config nonint do_boot_behaviour B4
-    - name: Fix auto-re-login
-      become: true
-      copy:
-        dest: /etc/lightdm/
-        src: etc/lightdm/lightdm.conf.d
 
     - name: Install Pisco package
       become: true
