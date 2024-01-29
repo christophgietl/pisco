@@ -1,6 +1,5 @@
 """Functions for cached downloading and scaling of images."""
 
-
 import functools
 import io
 import logging

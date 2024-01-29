@@ -1,6 +1,5 @@
 """Helper for discovering and controlling a Sonos device."""
 
-
 from __future__ import annotations
 
 import _thread

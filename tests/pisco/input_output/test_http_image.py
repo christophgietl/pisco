@@ -49,12 +49,15 @@ def test_get_photo_image_returns_correctly_scaled_image_for_http_url(
     max_width = faker.random_int(min=10, max=500)
     max_height = faker.random_int(min=10, max=500)
 
-    with unittest.mock.patch(
-        "pisco.input_output.http_image.urllib.request.urlopen",
-        unittest.mock.mock_open(read_data=image),
-    ) as mock_urlopen, unittest.mock.patch(
-        "pisco.input_output.http_image.PIL.ImageTk.PhotoImage"
-    ) as mock_photo_image:
+    with (
+        unittest.mock.patch(
+            "pisco.input_output.http_image.urllib.request.urlopen",
+            unittest.mock.mock_open(read_data=image),
+        ) as mock_urlopen,
+        unittest.mock.patch(
+            "pisco.input_output.http_image.PIL.ImageTk.PhotoImage"
+        ) as mock_photo_image,
+    ):
         pisco.input_output.http_image.get_photo_image(uri, max_width, max_height)
 
     mock_urlopen.assert_called_once_with(uri, timeout=10)

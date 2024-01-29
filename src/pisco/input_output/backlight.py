@@ -1,6 +1,5 @@
 """Classes for activating and deactivating backlights."""
 
-
 from __future__ import annotations
 
 import abc
@@ -121,13 +120,11 @@ class SysfsBacklightFileAccessError(Exception):
 
 
 @overload
-def get_backlight(sysfs_directory: None) -> DummyBacklight:
-    ...
+def get_backlight(sysfs_directory: None) -> DummyBacklight: ...
 
 
 @overload
-def get_backlight(sysfs_directory: pathlib.Path) -> SysfsBacklight:
-    ...
+def get_backlight(sysfs_directory: pathlib.Path) -> SysfsBacklight: ...
 
 
 def get_backlight(
