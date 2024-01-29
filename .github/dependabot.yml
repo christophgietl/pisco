@@ -9,3 +9,7 @@ updates:
     schedule:
       interval: weekly
     versioning-strategy: increase
+  - directory: /.github/actions/set-up-python-environment/
+    package-ecosystem: github-actions
+    schedule:
+      interval: weekly
