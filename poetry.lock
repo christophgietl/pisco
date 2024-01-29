@@ -251,13 +251,13 @@ test = ["pytest (>=6)"]
 
 [[package]]
 name = "faker"
-version = "22.4.0"
+version = "22.5.1"
 description = "Faker is a Python package that generates fake data for you."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "Faker-22.4.0-py3-none-any.whl", hash = "sha256:b649d7b9b03e9e8283506411a56ecef124c8cd8d2bd300d8d7c858fa42350c4e"},
-    {file = "Faker-22.4.0.tar.gz", hash = "sha256:9abc6decb78dde54cccbad4432431b3caba796bd06950225da158e86c55855d3"},
+    {file = "Faker-22.5.1-py3-none-any.whl", hash = "sha256:4e7bb19c1955bb978bf1d4cb0cf25930e37de0e7dfbc6abd768fd4784d9a9653"},
+    {file = "Faker-22.5.1.tar.gz", hash = "sha256:79cbe3be786789efa05b8c75d7e0ec4efa6ecb786b8fe90eae49c2f8f9cbe31a"},
 ]
 
 [package.dependencies]
@@ -843,13 +843,13 @@ files = [
 
 [[package]]
 name = "types-pillow"
-version = "10.2.0.20240111"
+version = "10.2.0.20240125"
 description = "Typing stubs for Pillow"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "types-Pillow-10.2.0.20240111.tar.gz", hash = "sha256:e8d359bfdc5a149a3c90a7e153cb2d0750ddf7fc3508a20dfadabd8a9435e354"},
-    {file = "types_Pillow-10.2.0.20240111-py3-none-any.whl", hash = "sha256:1f4243b30c143b56b0646626f052e4269123e550f9096cdfb5fbd999daee7dbb"},
+    {file = "types-Pillow-10.2.0.20240125.tar.gz", hash = "sha256:c449b2c43b9fdbe0494a7b950e6b39a4e50516091213fec24ef3f33c1d017717"},
+    {file = "types_Pillow-10.2.0.20240125-py3-none-any.whl", hash = "sha256:322dbae32b4b7918da5e8a47c50ac0f24b0aa72a804a23857620f2722b03c858"},
 ]
 
 [[package]]
