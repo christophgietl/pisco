@@ -8,3 +8,4 @@ updates:
     package-ecosystem: pip
     schedule:
       interval: weekly
+    versioning-strategy: increase
