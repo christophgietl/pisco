@@ -33,7 +33,7 @@ xdg = "^6.0"
 Faker = ">=21,<23"
 mypy = "^1.7"
 pre-commit = "^3.5"
-pytest = "^7.4"
+pytest = ">=7.4,<9.0"
 pytest-cov = "^4.0"
 types-Pillow = "^10.1"
 
