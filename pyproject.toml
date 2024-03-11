@@ -31,7 +31,7 @@ xdg = "^6.0"
 
 [tool.poetry.group.dev.dependencies]
 Faker = "^24.1"
-mypy = "^1.7"
+mypy = "^1.9"
 pre-commit = "^3.6"
 pytest = "^8.1"
 pytest-cov = "^4.0"
