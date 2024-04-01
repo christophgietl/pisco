@@ -30,7 +30,7 @@ soco = "^0.30"
 xdg = "^6.0"
 
 [tool.poetry.group.dev.dependencies]
-Faker = "^24.3"
+Faker = "^24.4"
 mypy = "^1.9"
 pre-commit = "^3.7"
 pytest = "^8.1"
