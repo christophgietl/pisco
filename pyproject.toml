@@ -35,7 +35,6 @@ mypy = "^1.9"
 pre-commit = "^3.7"
 pytest = "^8.1"
 pytest-cov = "^5.0"
-types-Pillow = "^10.2"
 
 [tool.poetry.scripts]
 pisco = "pisco.user_interface.command_line_interface:run"

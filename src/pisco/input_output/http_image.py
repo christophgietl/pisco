@@ -39,7 +39,9 @@ def get_photo_image(
     image = _to_image(content)
     image_wo_alpha = _remove_alpha_channel(image)
     resized_image = _resize_image(image_wo_alpha, max_width, max_height)
-    photo_image = PIL.ImageTk.PhotoImage(resized_image)
+    photo_image = PIL.ImageTk.PhotoImage(
+        resized_image
+    )  # type: ignore[no-untyped-call] # ImageTk doesn't have type hints in Pillow 10.3.
     logger.debug(
         "Tkinter-compatible photo image created.",
         extra={"URI": absolute_uri},

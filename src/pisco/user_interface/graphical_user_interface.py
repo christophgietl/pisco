@@ -6,12 +6,11 @@ import logging
 import queue
 import signal
 import tkinter as tk
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, cast
 
 from pisco.input_output import http_image
 
 if TYPE_CHECKING:
-    import PIL.ImageTk
     import soco.events_base
 
     from pisco.input_output import backlight, sonos_device
@@ -108,12 +107,13 @@ class PlaybackInformationLabel(tk.Label):
 
     def _update_album_art(self, absolute_uri: str | None) -> None:
         logger.info("Updating album art ...", extra={"URI": absolute_uri})
-        image: PIL.ImageTk.PhotoImage | Literal[""] = (
-            http_image.get_photo_image(absolute_uri, self._max_width, self._max_height)
-            if absolute_uri
-            else ""  # Empty string means no image.
-        )
-        self.config(image=image)
+        if absolute_uri is None:
+            self.config(image="")  # Empty string means no image.
+        else:
+            image = http_image.get_photo_image(
+                absolute_uri, self._max_width, self._max_height
+            )
+            self.config(image=cast(tk.PhotoImage, image))
         logger.info("Album art updated.", extra={"URI": absolute_uri})
 
 
