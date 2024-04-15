@@ -811,13 +811,13 @@ files = [
 
 [[package]]
 name = "soco"
-version = "0.30.2"
+version = "0.30.3"
 description = "SoCo (Sonos Controller) is a simple library to control Sonos speakers."
 optional = false
 python-versions = ">=3.6"
 files = [
-    {file = "soco-0.30.2-py2.py3-none-any.whl", hash = "sha256:aaf462c55d6f8eeb2405ddf4bded915d816a4edf79556720796b1abfbfde3568"},
-    {file = "soco-0.30.2.tar.gz", hash = "sha256:328a6fc0653d9f9e4883fd59674fb73feb61dc273f7c1f0a8212e91103112cb5"},
+    {file = "soco-0.30.3-py2.py3-none-any.whl", hash = "sha256:731909456ec10c359c065410fbf33388bba741eaac890f91ac6c6a1c8e115824"},
+    {file = "soco-0.30.3.tar.gz", hash = "sha256:1590afe852bbcb24a1a2905aa82840921766a8a467a50c396ad3c0d23b97d253"},
 ]
 
 [package.dependencies]
