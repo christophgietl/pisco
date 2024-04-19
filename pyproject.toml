@@ -40,13 +40,15 @@ pytest-cov = "^5.0"
 pisco = "pisco.user_interface.command_line_interface:run"
 
 [tool.ruff]
-select = ["ALL"]
-ignore = ["ANN101", "COM812"]
 src = ["src", "tests"]
 target-version = "py39"
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = ["ANN101", "COM812"]
+
+[tool.ruff.lint.per-file-ignores]
 "tests/*" = ["D", "INP001", "S101"]
 
-[tool.ruff.pydocstyle]
+[tool.ruff.lint.pydocstyle]
 convention = "google"
