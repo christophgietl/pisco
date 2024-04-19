@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 import pathlib
+from typing import Final
 
 import click
 
@@ -11,7 +12,7 @@ from pisco import application
 
 logger = logging.getLogger(__name__)
 
-_backlight_directory_option = click.Option(
+_BACKLIGHT_DIRECTORY_OPTION: Final = click.Option(
     help="""
         sysfs directory of the backlight that should be deactivated
         when the device is not playing
@@ -20,13 +21,13 @@ _backlight_directory_option = click.Option(
     type=click.Path(exists=True, file_okay=False, path_type=pathlib.Path),
 )
 
-_sonos_device_name_argument = click.Argument(param_decls=("sonos_device_name",))
+_SONOS_DEVICE_NAME_ARGUMENT: Final = click.Argument(param_decls=("sonos_device_name",))
 
 
 @click.command(
     params=(
-        _sonos_device_name_argument,
-        _backlight_directory_option,
+        _SONOS_DEVICE_NAME_ARGUMENT,
+        _BACKLIGHT_DIRECTORY_OPTION,
         click.Option(
             default=320,
             help="width of the Pisco window",
@@ -69,12 +70,12 @@ def run(
     except application.SysfsBacklightFileAccessError as e:
         raise click.BadParameter(
             message=f"Cannot {e.mode} file {e.path}.",
-            param=_backlight_directory_option,
+            param=_BACKLIGHT_DIRECTORY_OPTION,
         ) from e
     except application.SonosDeviceNotFoundError as e:
         raise click.BadParameter(
             message=f"Cannot find Sonos device '{e.name}'.",
-            param=_sonos_device_name_argument,
+            param=_SONOS_DEVICE_NAME_ARGUMENT,
         ) from e
     except Exception:
         logger.exception("Exception has not been handled.")
