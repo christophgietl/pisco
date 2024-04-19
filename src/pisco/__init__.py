@@ -3,10 +3,11 @@
 import logging.config
 from typing import Final
 
-import xdg
+import platformdirs
 
-LOG_FILE: Final = xdg.XDG_DATA_HOME / "pisco" / "logs" / "pisco.jsonl"
-LOG_FILE.parent.mkdir(exist_ok=True, parents=True)
+LOG_FILE: Final = (
+    platformdirs.user_log_path(appname="pisco", ensure_exists=True) / "pisco.jsonl"
+)
 
 LOG_FORMAT: Final = (
     "%(asctime)s %(name)s %(levelname)s %(message)s %(thread)s %(threadName)s"

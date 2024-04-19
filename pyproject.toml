@@ -25,9 +25,9 @@ repository = "https://github.com/christophgietl/pisco"
 python = "^3.9"
 click = "^8.1"
 Pillow = "^10.3"
+platformdirs = "^4.2"
 python-json-logger = "^2.0"
 soco = "^0.30"
-xdg = "^6.0"
 
 [tool.poetry.group.dev.dependencies]
 Faker = "^24.9"
