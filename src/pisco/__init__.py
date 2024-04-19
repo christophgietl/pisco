@@ -1,17 +1,8 @@
 """Keyboard-only controller for Sonos speakers."""
 
 import logging.config
-from typing import Final
 
 import platformdirs
-
-LOG_FILE: Final = (
-    platformdirs.user_log_path(appname="pisco", ensure_exists=True) / "pisco.jsonl"
-)
-
-LOG_FORMAT: Final = (
-    "%(asctime)s %(name)s %(levelname)s %(message)s %(thread)s %(threadName)s"
-)
 
 logging.config.dictConfig(
     {
@@ -19,14 +10,20 @@ logging.config.dictConfig(
         "formatters": {
             "json_formatter": {
                 "class": "pythonjsonlogger.jsonlogger.JsonFormatter",
-                "format": LOG_FORMAT,
+                "format": (
+                    "%(asctime)s %(name)s %(levelname)s "
+                    "%(message)s %(thread)s %(threadName)s"
+                ),
             }
         },
         "handlers": {
             "rot_file_handler": {
                 "backupCount": 9,
                 "class": "logging.handlers.RotatingFileHandler",
-                "filename": LOG_FILE,
+                "filename": (
+                    platformdirs.user_log_path(appname="pisco", ensure_exists=True)
+                    / "pisco.jsonl"
+                ),
                 "formatter": "json_formatter",
                 "maxBytes": 1_000_000,
             }
