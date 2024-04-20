@@ -4,7 +4,9 @@ updates:
     package-ecosystem: github-actions
     schedule:
       interval: weekly
-  - directory: /
+  - allow:
+      - dependency-type: all
+    directory: /
     package-ecosystem: pip
     schedule:
       interval: weekly
