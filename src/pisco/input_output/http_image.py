@@ -51,8 +51,7 @@ def get_photo_image(
 
 def _download_resource(absolute_uri: str) -> bytes:
     logger.debug("Downloading resource ...", extra={"URI": absolute_uri})
-    supported_prefixes = ("http:", "https:")
-    if not absolute_uri.startswith(supported_prefixes):
+    if not absolute_uri.startswith(supported_prefixes := ("http:", "https:")):
         msg = "Cannot download resource: URI does not start with a supported prefix."
         logger.debug(
             msg, extra={"supported_prefixes": supported_prefixes, "URI": absolute_uri}
