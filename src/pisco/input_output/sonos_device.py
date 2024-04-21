@@ -146,7 +146,6 @@ class SonosDeviceNotFoundError(Exception):
 
 
 def _discover_controller(name: str) -> soco.core.SoCo:
-    controller = soco.discovery.by_name(name)
-    if controller is None:
+    if controller := soco.discovery.by_name(name) is None:
         raise SonosDeviceNotFoundError(name=name)
     return controller
