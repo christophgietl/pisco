@@ -7,6 +7,8 @@ target-version = ["py39", "py310", "py311", "py312"]
 
 [tool.mypy]
 strict = true
+warn_unreachable = true
+warn_unused_configs = true
 
 [[tool.mypy.overrides]]
 module = "soco.*"
