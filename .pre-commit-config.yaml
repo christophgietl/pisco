@@ -21,6 +21,11 @@ repos:
         language: system
         name: mypy
         pass_filenames: false
+      - id: stubtest
+        entry: poetry run stubtest --ignore-missing-stub --mypy-config-file pyproject.toml soco
+        language: system
+        name: stubtest
+        pass_filenames: false
       - id: pytest
         entry: poetry run pytest --cov=src --cov-report term-missing
         language: system

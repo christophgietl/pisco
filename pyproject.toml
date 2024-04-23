@@ -6,13 +6,11 @@ build-backend = "poetry.core.masonry.api"
 target-version = ["py39", "py310", "py311", "py312"]
 
 [tool.mypy]
+disallow_any_decorated = true
+disallow_any_unimported = true
+mypy_path = "$MYPY_CONFIG_FILE_DIR/stubs" # needed for stubtest
 strict = true
 warn_unreachable = true
-warn_unused_configs = true
-
-[[tool.mypy.overrides]]
-module = "soco.*"
-ignore_missing_imports = true
 
 [tool.poetry]
 name = "pisco"
