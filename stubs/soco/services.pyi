@@ -9,7 +9,7 @@ class Service:
     def subscribe(
         self,
         requested_timeout: None = ...,
-        auto_renew: bool = ...,  # noqa: FBT001
+        auto_renew: bool = ...,
         event_queue: None = ...,
-        strict: bool = ...,  # noqa: FBT001
+        strict: bool = ...,
     ) -> Subscription: ...

@@ -2,12 +2,12 @@ from _typeshed import Incomplete
 
 class DidlObject(metaclass=type):
     resources: list[DidlResource]
-    def __init__(  # noqa: PLR0913
+    def __init__(
         self,
         title: str,
         parent_id: str,
         item_id: str,
-        restricted: bool = ...,  # noqa: FBT001
+        restricted: bool = ...,
         resources: list[DidlResource] | None = ...,
         desc: str = ...,
         **kwargs: Incomplete,
@@ -15,7 +15,7 @@ class DidlObject(metaclass=type):
 
 class DidlResource:
     uri: str
-    def __init__(  # noqa: PLR0913
+    def __init__(
         self,
         uri: str,
         protocol_info: str,
@@ -41,7 +41,7 @@ class ListOfMusicInfoItems(list[object]):
     ) -> None: ...
 
 class SearchResult(ListOfMusicInfoItems):
-    def __init__(  # noqa: PLR0913
+    def __init__(
         self,
         items: list[object],
         search_type: str,

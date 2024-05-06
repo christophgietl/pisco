@@ -13,20 +13,20 @@ class _CurrentTransportInfo(TypedDict):
     current_speed: Literal["1"] | Incomplete
 
 class SoCo(metaclass=type):
-    avTransport: AVTransport  # noqa: N815
+    avTransport: AVTransport
     music_library: MusicLibrary
     def __init__(self, ip_address: str) -> None: ...
     @property
     def player_name(self) -> str: ...
     def set_relative_volume(self, relative_volume: int) -> int: ...
     def play(self, **kwargs: Incomplete) -> None: ...
-    def play_uri(  # noqa: PLR0913
+    def play_uri(
         self,
         uri: str = ...,
         meta: str = ...,
         title: str = ...,
-        start: bool = ...,  # noqa: FBT001
-        force_radio: bool = ...,  # noqa: FBT001
+        start: bool = ...,
+        force_radio: bool = ...,
         **kwargs: Incomplete,
     ) -> bool | None: ...
     def pause(self) -> None: ...

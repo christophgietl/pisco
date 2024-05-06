@@ -6,7 +6,7 @@ from .services import Service
 class Event:
     service: Service
     variables: dict[object, object]
-    def __init__(  # noqa: PLR0913
+    def __init__(
         self,
         sid: str,
         seq: str,
