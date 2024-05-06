@@ -12,7 +12,6 @@ from pisco.input_output import http_image
 
 if TYPE_CHECKING:
     import soco.events_base
-
     from pisco.input_output import backlight, sonos_device
 
 logger = logging.getLogger(__name__)
