@@ -40,7 +40,7 @@ pytest-cov = "^5.0"
 pisco = "pisco.user_interface.command_line_interface:run"
 
 [tool.ruff]
-src = ["src", "tests"]
+src = ["src", "stubs", "tests"]
 target-version = "py39"
 
 [tool.ruff.lint]
