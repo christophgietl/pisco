@@ -29,8 +29,8 @@ def fake_image_file(
     format_: Format, mode: Mode, width: int, height: int, color: str
 ) -> bytes:
     bytes_io = io.BytesIO()
-    image = PIL.Image.new(mode, (width, height), color=color)
-    image.save(bytes_io, format=format_)
+    image = PIL.Image.new(mode, (width, height), color)
+    image.save(bytes_io, format_)
     return bytes_io.getvalue()
 
 
