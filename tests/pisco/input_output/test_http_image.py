@@ -45,7 +45,7 @@ def test_get_photo_image_returns_correctly_scaled_image_for_http_url(
     color = faker.safe_color_name()
     image = fake_image_file(format_, mode, width, height, color)
 
-    uri = faker.uri(schemes=("http:", "https:"))
+    uri = faker.uri(schemes=["http:", "https:"])
     max_width = faker.random_int(min=10, max=500)
     max_height = faker.random_int(min=10, max=500)
 
@@ -77,7 +77,7 @@ def test_get_photo_image_returns_correctly_scaled_image_for_http_url(
 
 
 def test_get_photo_image_raises_error_for_non_http_url() -> None:
-    uri = faker.uri(schemes=("file:",))
+    uri = faker.uri(schemes=["file:"])
     max_width = faker.random_int(min=10, max=500)
     max_height = faker.random_int(min=10, max=500)
 
