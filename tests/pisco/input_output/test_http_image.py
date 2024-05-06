@@ -19,8 +19,6 @@ FORMAT_MODE: Final[dict[Format, list[Mode]]] = {
     "TIFF": ["1", "CMYK", "F", "I", "L", "P", "RGB", "RGBA", "RGBX"],
 }
 
-faker = fk.Faker()
-
 
 def fake_image_file(
     format_: Format, mode: Mode, width: int, height: int, color: str
@@ -36,7 +34,7 @@ def fake_image_file(
     [(format_, mode) for format_, modes in FORMAT_MODE.items() for mode in modes],
 )
 def test_get_photo_image_returns_correctly_scaled_image_for_http_url(
-    format_: Format, mode: Mode
+    format_: Format, mode: Mode, faker: fk.Faker
 ) -> None:
     pisco.input_output.http_image.get_photo_image.cache_clear()
 
@@ -76,7 +74,7 @@ def test_get_photo_image_returns_correctly_scaled_image_for_http_url(
         assert new_height == pytest.approx(new_width * height / width, abs=0.5)
 
 
-def test_get_photo_image_raises_error_for_non_http_url() -> None:
+def test_get_photo_image_raises_error_for_non_http_url(faker: fk.Faker) -> None:
     uri = faker.uri(schemes=["file:"])
     max_width = faker.random_int(min=10, max=500)
     max_height = faker.random_int(min=10, max=500)
