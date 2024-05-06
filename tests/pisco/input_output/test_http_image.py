@@ -1,12 +1,17 @@
+from __future__ import annotations
+
 import io
 import unittest.mock
-from typing import Final, Literal
+from typing import TYPE_CHECKING, Final, Literal
 
-import faker as fk
 import PIL.Image
 import pytest
 
 import pisco.input_output.http_image
+
+if TYPE_CHECKING:
+    import faker as fk
+
 
 Format = Literal["BMP", "GIF", "JPEG", "PNG", "TIFF"]
 Mode = Literal["1", "CMYK", "F", "I", "L", "P", "RGB", "RGBA", "RGBX", "YCbCr"]

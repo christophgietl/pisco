@@ -1,6 +1,11 @@
-import pathlib
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 from pisco.input_output import backlight
+
+if TYPE_CHECKING:
+    import pathlib
 
 
 class TestDummyBacklight:
