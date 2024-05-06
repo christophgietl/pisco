@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Final, Literal
 import PIL.Image
 import pytest
 
-import pisco.input_output.http_image
+from pisco.input_output import http_image
 
 if TYPE_CHECKING:
     import faker as fk
@@ -41,7 +41,7 @@ def fake_image_file(
 def test_get_photo_image_returns_correctly_scaled_image_for_http_url(
     format_: Format, mode: Mode, faker: fk.Faker
 ) -> None:
-    pisco.input_output.http_image.get_photo_image.cache_clear()
+    http_image.get_photo_image.cache_clear()
 
     width = faker.random_int(min=10, max=500)
     height = faker.random_int(min=10, max=500)
@@ -61,7 +61,7 @@ def test_get_photo_image_returns_correctly_scaled_image_for_http_url(
             "pisco.input_output.http_image.PIL.ImageTk.PhotoImage"
         ) as mock_photo_image,
     ):
-        pisco.input_output.http_image.get_photo_image(uri, max_width, max_height)
+        http_image.get_photo_image(uri, max_width, max_height)
 
     mock_urlopen.assert_called_once_with(uri, timeout=10)
     mock_photo_image.assert_called_once()
@@ -88,4 +88,4 @@ def test_get_photo_image_raises_error_for_non_http_url(faker: fk.Faker) -> None:
         ValueError,
         match="^Cannot download resource: URI does not start with a supported prefix.$",
     ):
-        pisco.input_output.http_image.get_photo_image(uri, max_width, max_height)
+        http_image.get_photo_image(uri, max_width, max_height)
