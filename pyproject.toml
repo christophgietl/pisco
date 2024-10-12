@@ -45,7 +45,7 @@ target-version = "py39"
 
 [tool.ruff.lint]
 select = ["ALL"]
-ignore = ["ANN101", "COM812"]
+ignore = ["ANN101", "COM812", "ISC001"]
 
 [tool.ruff.lint.per-file-ignores]
 "stubs/*" = ["FBT", "N815", "PLR0913"]
