@@ -22,7 +22,7 @@ runs:
       shell: bash
     - uses: actions/setup-python@v5
       with:
-        cache: poetry
+        cache: ${{ fromJSON(inputs.install-dependencies) && 'poetry' || null }}
         python-version: ${{ inputs.python-version }}
     - if: fromJSON(inputs.install-dependencies)
       run: poetry install
