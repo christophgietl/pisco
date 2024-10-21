@@ -115,7 +115,7 @@ class PlaybackInformationLabel(tk.Label):
             # The type hints for self.config are
             # currently incompatible with PIL.ImageTk.PhotoImage
             # (cf. https://github.com/python/typeshed/issues/11721):
-            self.config(image=image) # type: ignore[call-overload]
+            self.config(image=image)  # type: ignore[call-overload]
         logger.info("Album art updated.", extra={"URI": absolute_uri})
 
 
