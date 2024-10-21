@@ -6,7 +6,7 @@ import logging
 import queue
 import signal
 import tkinter as tk
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from pisco.input_output import http_image
 
@@ -109,13 +109,13 @@ class PlaybackInformationLabel(tk.Label):
         if absolute_uri is None:
             self.config(image="")  # Empty string means no image.
         else:
-            # We need to use Any because the type hints for self.config are
-            # currently incompatible with PIL.ImageTk.PhotoImage
-            # (cf. https://github.com/python/typeshed/issues/11721):
-            image: Any = http_image.get_photo_image(
+            image = http_image.get_photo_image(
                 absolute_uri, self._max_width, self._max_height
             )
-            self.config(image=image)
+            # The type hints for self.config are
+            # currently incompatible with PIL.ImageTk.PhotoImage
+            # (cf. https://github.com/python/typeshed/issues/11721):
+            self.config(image=image)  # type: ignore[call-overload]
         logger.info("Album art updated.", extra={"URI": absolute_uri})
 
 
