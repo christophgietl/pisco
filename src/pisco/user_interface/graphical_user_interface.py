@@ -112,10 +112,10 @@ class PlaybackInformationLabel(tk.Label):
             image = http_image.get_photo_image(
                 absolute_uri, self._max_width, self._max_height
             )
-            # We need to use Any because the type hints for self.config are
+            # The type hints for self.config are
             # currently incompatible with PIL.ImageTk.PhotoImage
             # (cf. https://github.com/python/typeshed/issues/11721):
-            self.config(image=image)
+            self.config(image=image)    # type: ignore[call-overload]
         logger.info("Album art updated.", extra={"URI": absolute_uri})
 
 
