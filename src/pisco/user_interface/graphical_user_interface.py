@@ -179,7 +179,7 @@ class TopLevelWidget(tk.Tk):
                 "No action defined for key press.",
                 extra={"key_press_event": event},
             )
-        logger.info("Key press event handled.")
+        logger.info("Key press event handled.", extra={"key_press_event": event})
 
 
 def run(
