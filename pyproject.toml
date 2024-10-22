@@ -9,6 +9,7 @@ disallow_any_unimported = true
 files = "."
 mypy_path = "$MYPY_CONFIG_FILE_DIR/stubs" # needed for stubtest
 strict = true
+warn_incomplete_stub = true
 warn_unreachable = true
 
 [tool.poetry]
