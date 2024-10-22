@@ -4,6 +4,7 @@ requires = ["poetry-core>=1.0.0"]
 
 [tool.mypy]
 disallow_any_decorated = true
+disallow_any_explicit = true
 disallow_any_unimported = true
 files = "."
 mypy_path = "$MYPY_CONFIG_FILE_DIR/stubs" # needed for stubtest
