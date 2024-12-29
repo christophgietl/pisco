@@ -106,16 +106,14 @@ class PlaybackInformationLabel(tk.Label):
 
     def _update_album_art(self, absolute_uri: str | None) -> None:
         logger.info("Updating album art ...", extra={"URI": absolute_uri})
-        if absolute_uri is None:
-            self.config(image="")  # Empty string means no image.
-        else:
-            image = http_image.get_photo_image(
+        image = (
+            ""
+            if absolute_uri is None
+            else http_image.get_photo_image(
                 absolute_uri, self._max_width, self._max_height
             )
-            # The type hints for self.config are
-            # currently incompatible with PIL.ImageTk.PhotoImage
-            # (cf. https://github.com/python/typeshed/issues/11721):
-            self.config(image=image)  # type: ignore[call-overload]
+        )
+        self.config(image=image)  # Empty string means no image.
         logger.info("Album art updated.", extra={"URI": absolute_uri})
 
 
