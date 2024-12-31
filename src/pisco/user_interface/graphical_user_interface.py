@@ -106,14 +106,13 @@ class PlaybackInformationLabel(tk.Label):
 
     def _update_album_art(self, absolute_uri: str | None) -> None:
         logger.info("Updating album art ...", extra={"URI": absolute_uri})
-        image = (
-            ""
-            if absolute_uri is None
-            else http_image.get_photo_image(
+        if absolute_uri is None:
+            self.config(image="")  # Empty string means no image.
+        else:
+            image = http_image.get_photo_image(
                 absolute_uri, self._max_width, self._max_height
             )
-        )
-        self.config(image=image)  # Empty string means no image.
+            self.config(image=image)
         logger.info("Album art updated.", extra={"URI": absolute_uri})
 
 
