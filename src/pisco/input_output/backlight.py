@@ -22,7 +22,7 @@ class AbstractBacklight(contextlib.AbstractContextManager["AbstractBacklight"]):
     """
 
     def __exit__(
-        self, __exc_type: object, __exc_value: object, __traceback: object
+        self, _exc_type: object, _exc_value: object, _traceback: object
     ) -> None:
         """Activates the backlight."""
         logger.info("Exiting backlight context ...")
