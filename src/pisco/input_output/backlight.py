@@ -51,6 +51,7 @@ class DummyBacklight(AbstractBacklight):
 class SysfsBacklight(AbstractBacklight):
     """Context manager for activating and deactivating a sysfs backlight."""
 
+    _adapter: logging.LoggerAdapter[logging.Logger]
     _brightness: pathlib.Path
     _max_brightness: pathlib.Path
 
@@ -67,39 +68,33 @@ class SysfsBacklight(AbstractBacklight):
         self._brightness = directory / "brightness"
         if not os.access(self._brightness, os.W_OK):
             raise SysfsBacklightFileAccessError(mode="write", path=self._brightness)
+        self._adapter = logging.LoggerAdapter(
+            logger, extra={"brightness": self._brightness}
+        )
         self._max_brightness = directory / "max_brightness"
         if not os.access(self._max_brightness, os.R_OK):
             raise SysfsBacklightFileAccessError(mode="read", path=self._max_brightness)
 
     def activate(self) -> None:
         """Sets backlight brightness to maximum value."""
-        logger.info("Activating backlight ...", extra={"brightness": self._brightness})
+        self._adapter.info("Activating backlight ...")
         try:
             max_brightness_value = self._max_brightness.read_text()
             self._brightness.write_text(max_brightness_value)
         except OSError:
-            logger.exception(
-                "Could not activate backlight.", extra={"brightness": self._brightness}
-            )
+            self._adapter.exception("Could not activate backlight.")
         else:
-            logger.info("Backlight activated.", extra={"brightness": self._brightness})
+            self._adapter.info("Backlight activated.")
 
     def deactivate(self) -> None:
         """Sets backlight brightness to zero."""
-        logger.info(
-            "Deactivating backlight ...", extra={"brightness": self._brightness}
-        )
+        self._adapter.info("Deactivating backlight ...")
         try:
             self._brightness.write_text("0")
         except OSError:
-            logger.exception(
-                "Could not deactivate backlight.",
-                extra={"brightness": self._brightness},
-            )
+            self._adapter.exception("Could not deactivate backlight.")
         else:
-            logger.info(
-                "Backlight deactivated.", extra={"brightness": self._brightness}
-            )
+            self._adapter.info("Backlight deactivated.")
 
 
 @dataclasses.dataclass(frozen=True, repr=False)

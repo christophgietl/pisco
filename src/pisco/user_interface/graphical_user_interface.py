@@ -62,17 +62,15 @@ class PlaybackInformationLabel(tk.Label):
         self.after(self._refresh_interval_in_ms, self._process_av_transport_event_queue)
 
     def _process_av_transport_event(self, event: soco.events_base.Event) -> None:
-        logger.info(
-            "Processing AV transport event ...",
-            extra={"event": event.__dict__},
-        )
+        adapter = logging.LoggerAdapter(logger, extra={"event": event.__dict__})
+        adapter.info("Processing AV transport event ...")
         if event.variables["transport_state"] in ("PLAYING", "TRANSITIONING"):
             self._process_track_meta_data(event)
             self._backlight.activate()
         else:
             self._backlight.deactivate()
             self._update_album_art(None)
-        logger.info("AV transport event processed.", extra={"event": event.__dict__})
+        adapter.info("AV transport event processed.")
 
     def _process_av_transport_event_queue(self) -> None:
         try:
@@ -88,10 +86,10 @@ class PlaybackInformationLabel(tk.Label):
 
     def _process_track_meta_data(self, event: soco.events_base.Event) -> None:
         track_meta_data = event.variables["current_track_meta_data"]
-        logger.info(
-            "Processing track meta data ...",
-            extra={"track_meta_data": track_meta_data.__dict__},
+        adapter = logging.LoggerAdapter(
+            logger, extra={"track_meta_data": track_meta_data.__dict__}
         )
+        adapter.info("Processing track meta data ...")
         if hasattr(track_meta_data, "album_art_uri"):
             album_art_full_uri = (
                 event.service.soco.music_library.build_album_art_full_uri(
@@ -99,13 +97,11 @@ class PlaybackInformationLabel(tk.Label):
                 )
             )
             self._update_album_art(album_art_full_uri)
-        logger.info(
-            "Track meta data processed.",
-            extra={"track_meta_data": track_meta_data.__dict__},
-        )
+        adapter.info("Track meta data processed.")
 
     def _update_album_art(self, absolute_uri: str | None) -> None:
-        logger.info("Updating album art ...", extra={"URI": absolute_uri})
+        adapter = logging.LoggerAdapter(logger, extra={"URI": absolute_uri})
+        adapter.info("Updating album art ...")
         if absolute_uri is None:
             self.config(image="")  # Empty string means no image.
         else:
@@ -113,7 +109,7 @@ class PlaybackInformationLabel(tk.Label):
                 absolute_uri, self._max_width, self._max_height
             )
             self.config(image=image)
-        logger.info("Album art updated.", extra={"URI": absolute_uri})
+        adapter.info("Album art updated.")
 
 
 class TopLevelWidget(tk.Tk):
@@ -147,12 +143,14 @@ class TopLevelWidget(tk.Tk):
         signal.signal(signal.SIGTERM, self._handle_int_or_term_signal)
 
     def _handle_int_or_term_signal(self, signal_number: int, _: object) -> None:
-        logger.info("Handling signal ...", extra={"signal_number": signal_number})
+        adapter = logging.LoggerAdapter(logger, extra={"signal_number": signal_number})
+        adapter.info("Handling signal ...")
         self.destroy()
-        logger.info("Signal handled.", extra={"signal_number": signal_number})
+        adapter.info("Signal handled.")
 
     def _handle_key_press_event(self, event: tk.Event[tk.Misc]) -> None:
-        logger.info("Handling key press event ...", extra={"key_press_event": event})
+        adapter = logging.LoggerAdapter(logger, extra={"key_press_event": event})
+        adapter.info("Handling key press event ...")
         key_symbol = event.keysym
         device = self._sonos_device
         if key_symbol.isdigit():
@@ -172,11 +170,8 @@ class TopLevelWidget(tk.Tk):
         elif key_symbol in ("Down", "XF86AudioLowerVolume"):
             device.controller.set_relative_volume(-5)
         else:
-            logger.info(
-                "No action defined for key press.",
-                extra={"key_press_event": event},
-            )
-        logger.info("Key press event handled.", extra={"key_press_event": event})
+            adapter.info("No action defined for key press.")
+        adapter.info("Key press event handled.")
 
 
 def run(

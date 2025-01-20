@@ -24,16 +24,13 @@ class SonosDevice(contextlib.AbstractContextManager["SonosDevice"]):
 
     def __exit__(self, exc_type: object, exc_value: object, traceback: object) -> None:
         """Unsubscribes from the transport subscription and stops the event listener."""
-        logger.info(
-            "Tearing down manager for Sonos device ...",
-            extra={"sonos_device_name": self.controller.player_name},
+        adapter = logging.LoggerAdapter(
+            logger, extra={"sonos_device_name": self.controller.player_name}
         )
+        adapter.info("Tearing down manager for Sonos device ...")
         self._av_transport_subscription.unsubscribe()
         self._av_transport_subscription.event_listener.stop()
-        logger.info(
-            "Manager for Sonos device torn down.",
-            extra={"sonos_device_name": self.controller.player_name},
-        )
+        adapter.info("Manager for Sonos device torn down.")
 
     def __init__(self, name: str) -> None:
         """Discovers a device and creates a controller and an AV transport subscription.
@@ -44,16 +41,11 @@ class SonosDevice(contextlib.AbstractContextManager["SonosDevice"]):
         Raises:
             SonosDeviceNotFoundError: Found no device named `name`.
         """
-        logger.info(
-            "Initializing manager for Sonos device ...",
-            extra={"sonos_device_name": name},
-        )
+        adapter = logging.LoggerAdapter(logger, extra={"sonos_device_name": name})
+        adapter.info("Initializing manager for Sonos device ...")
         self._controller = _discover_controller(name)
         self._av_transport_subscription = self._initialize_av_transport_subscription()
-        logger.info(
-            "Manager for Sonos device initialized.",
-            extra={"sonos_device_name": name},
-        )
+        adapter.info("Manager for Sonos device initialized.")
 
     def _initialize_av_transport_subscription(self) -> soco.events.Subscription:
         def handle_autorenew_failure(_: Exception) -> None:
@@ -101,9 +93,8 @@ class SonosDevice(contextlib.AbstractContextManager["SonosDevice"]):
                 Position of the track or station to be played
                 in the list of Sonos favorites.
         """
-        logger.info(
-            "Starting to play Sonos favorite ...", extra={"sonos_favorite_index": index}
-        )
+        adapter = logging.LoggerAdapter(logger, extra={"sonos_favorite_index": index})
+        adapter.info("Starting to play Sonos favorite ...")
         favorite = self.controller.music_library.get_sonos_favorites()[index]
         if not isinstance(favorite, soco.data_structures.DidlObject):
             logger.error(
@@ -112,9 +103,7 @@ class SonosDevice(contextlib.AbstractContextManager["SonosDevice"]):
             )
             return
         self._play_sonos_favorite(favorite)
-        logger.info(
-            "Started to play Sonos favorite.", extra={"sonos_favorite_index": index}
-        )
+        adapter.info("Started to play Sonos favorite.")
 
     def toggle_current_transport_state(self) -> None:
         """Pauses the track if it is playing and plays the track if it is paused.
