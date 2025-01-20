@@ -31,24 +31,20 @@ def get_photo_image(
         `width==max_width & height<=max_height` or
         `width<=max_width & height==max_height`.
     """
-    logger.debug(
-        "Creating Tkinter-compatible photo image ...",
-        extra={"URI": absolute_uri},
-    )
+    adapter = logging.LoggerAdapter(logger, extra={"URI": absolute_uri})
+    adapter.debug("Creating Tkinter-compatible photo image ...")
     content = _download_resource(absolute_uri)
     image = _to_image(content)
     image_wo_alpha = _remove_alpha_channel(image)
     resized_image = _resize_image(image_wo_alpha, max_width, max_height)
     photo_image = PIL.ImageTk.PhotoImage(resized_image)
-    logger.debug(
-        "Tkinter-compatible photo image created.",
-        extra={"URI": absolute_uri},
-    )
+    adapter.debug("Tkinter-compatible photo image created.")
     return photo_image
 
 
 def _download_resource(absolute_uri: str) -> bytes:
-    logger.debug("Downloading resource ...", extra={"URI": absolute_uri})
+    adapter = logging.LoggerAdapter(logger, extra={"URI": absolute_uri})
+    adapter.debug("Downloading resource ...")
     if not absolute_uri.startswith(supported_prefixes := ("http:", "https:")):
         msg = "Cannot download resource: URI does not start with a supported prefix."
         logger.debug(
@@ -57,7 +53,7 @@ def _download_resource(absolute_uri: str) -> bytes:
         raise ValueError(msg)
     with urllib.request.urlopen(absolute_uri, timeout=10) as response:  # noqa: S310
         content: bytes = response.read()
-    logger.debug("Resource downloaded.", extra={"URI": absolute_uri})
+    adapter.debug("Resource downloaded.")
     return content
 
 
