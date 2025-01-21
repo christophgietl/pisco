@@ -6,7 +6,7 @@ import logging
 import queue
 import signal
 import tkinter as tk
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Final
 
 from pisco.input_output import http_image
 
@@ -23,11 +23,11 @@ class PlaybackInformationLabel(tk.Label):
     The album art is automatically updated whenever a new track starts playing.
     """
 
-    _av_transport_event_queue: queue.Queue[soco.events_base.Event]
-    _backlight: backlight.AbstractBacklight
-    _max_width: int
-    _max_height: int
-    _refresh_interval_in_ms: int
+    _av_transport_event_queue: Final[queue.Queue[soco.events_base.Event]]
+    _backlight: Final[backlight.AbstractBacklight]
+    _max_width: Final[int]
+    _max_height: Final[int]
+    _refresh_interval_in_ms: Final[int]
 
     def __init__(  # noqa: PLR0913
         self,
@@ -119,7 +119,7 @@ class TopLevelWidget(tk.Tk):
     Handles keypress events and signals.
     """
 
-    _sonos_device: sonos_device.SonosDevice
+    _sonos_device: Final[sonos_device.SonosDevice]
 
     def __init__(
         self,
