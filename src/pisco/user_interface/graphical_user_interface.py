@@ -62,7 +62,7 @@ class PlaybackInformationLabel(tk.Label):
         self.after(self._refresh_interval_in_ms, self._process_av_transport_event_queue)
 
     def _process_av_transport_event(self, event: soco.events_base.Event) -> None:
-        adapter = logging.LoggerAdapter(logger, extra={"event": event.__dict__})
+        adapter = logging.LoggerAdapter(logger, extra={"event": vars(event)})
         adapter.info("Processing AV transport event ...")
         if event.variables["transport_state"] in ("PLAYING", "TRANSITIONING"):
             self._process_track_meta_data(event)
@@ -87,7 +87,7 @@ class PlaybackInformationLabel(tk.Label):
     def _process_track_meta_data(self, event: soco.events_base.Event) -> None:
         track_meta_data = event.variables["current_track_meta_data"]
         adapter = logging.LoggerAdapter(
-            logger, extra={"track_meta_data": track_meta_data.__dict__}
+            logger, extra={"track_meta_data": vars(track_meta_data)}
         )
         adapter.info("Processing track meta data ...")
         if hasattr(track_meta_data, "album_art_uri"):
