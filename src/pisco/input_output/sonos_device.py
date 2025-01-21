@@ -72,7 +72,7 @@ class SonosDevice(contextlib.AbstractContextManager["SonosDevice"]):
 
         logger.warning(
             "Favorite does not have attribute resource_meta_data.",
-            extra={"favorite": favorite.__dict__},
+            extra={"favorite": vars(favorite)},
         )
         self.controller.play_uri(uri=favorite.resources[0].uri)
 
@@ -90,7 +90,7 @@ class SonosDevice(contextlib.AbstractContextManager["SonosDevice"]):
         if not isinstance(favorite, soco.data_structures.DidlObject):
             logger.error(
                 "Could not play Sonos favorite.",
-                extra={"favorite": favorite.__dict__, "sonos_favorite_index": index},
+                extra={"favorite": vars(favorite), "sonos_favorite_index": index},
             )
             return
         self._play_sonos_favorite(favorite)
