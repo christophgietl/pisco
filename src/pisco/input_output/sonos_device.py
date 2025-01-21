@@ -6,6 +6,7 @@ import _thread
 import contextlib
 import dataclasses
 import logging
+from typing import Final
 
 import soco.core
 import soco.data_structures
@@ -19,8 +20,8 @@ logger = logging.getLogger(__name__)
 class SonosDevice(contextlib.AbstractContextManager["SonosDevice"]):
     """Helper for discovering and controlling a Sonos device."""
 
-    _av_transport_subscription: soco.events.Subscription
-    _controller: soco.core.SoCo
+    _av_transport_subscription: Final[soco.events.Subscription]
+    _controller: Final[soco.core.SoCo]
 
     def __exit__(self, exc_type: object, exc_value: object, traceback: object) -> None:
         """Unsubscribes from the transport subscription and stops the event listener."""
