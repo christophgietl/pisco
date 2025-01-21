@@ -7,7 +7,7 @@ import contextlib
 import dataclasses
 import logging
 import os
-from typing import TYPE_CHECKING, Literal, overload
+from typing import TYPE_CHECKING, Final, Literal, overload
 
 if TYPE_CHECKING:
     import pathlib
@@ -51,9 +51,9 @@ class DummyBacklight(AbstractBacklight):
 class SysfsBacklight(AbstractBacklight):
     """Context manager for activating and deactivating a sysfs backlight."""
 
-    _adapter: logging.LoggerAdapter[logging.Logger]
-    _brightness: pathlib.Path
-    _max_brightness: pathlib.Path
+    _adapter: Final[logging.LoggerAdapter[logging.Logger]]
+    _brightness: Final[pathlib.Path]
+    _max_brightness: Final[pathlib.Path]
 
     def __init__(self, directory: pathlib.Path) -> None:
         """Initializes context manager for (de-)activating a sysfs backlight.
