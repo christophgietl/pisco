@@ -20,8 +20,8 @@ logger = logging.getLogger(__name__)
 class SonosDevice(contextlib.AbstractContextManager["SonosDevice"]):
     """Helper for discovering and controlling a Sonos device."""
 
-    _av_transport_subscription: Final[soco.events.Subscription]
-    _controller: Final[soco.core.SoCo]
+    av_transport_subscription: Final[soco.events.Subscription]
+    controller: Final[soco.core.SoCo]
 
     def __exit__(self, exc_type: object, exc_value: object, traceback: object) -> None:
         """Unsubscribes from the transport subscription and stops the event listener."""
@@ -29,8 +29,8 @@ class SonosDevice(contextlib.AbstractContextManager["SonosDevice"]):
             logger, extra={"sonos_device_name": self.controller.player_name}
         )
         adapter.info("Tearing down manager for Sonos device ...")
-        self._av_transport_subscription.unsubscribe()
-        self._av_transport_subscription.event_listener.stop()
+        self.av_transport_subscription.unsubscribe()
+        self.av_transport_subscription.event_listener.stop()
         adapter.info("Manager for Sonos device torn down.")
 
     def __init__(self, name: str) -> None:
@@ -44,8 +44,8 @@ class SonosDevice(contextlib.AbstractContextManager["SonosDevice"]):
         """
         adapter = logging.LoggerAdapter(logger, extra={"sonos_device_name": name})
         adapter.info("Initializing manager for Sonos device ...")
-        self._controller = _discover_controller(name)
-        self._av_transport_subscription = self._initialize_av_transport_subscription()
+        self.controller = _discover_controller(name)
+        self.av_transport_subscription = self._initialize_av_transport_subscription()
         adapter.info("Manager for Sonos device initialized.")
 
     def _initialize_av_transport_subscription(self) -> soco.events.Subscription:
@@ -75,16 +75,6 @@ class SonosDevice(contextlib.AbstractContextManager["SonosDevice"]):
             extra={"favorite": favorite.__dict__},
         )
         self.controller.play_uri(uri=favorite.resources[0].uri)
-
-    @property
-    def av_transport_subscription(self) -> soco.events.Subscription:
-        """Subscription to transport state changes of the Sonos device."""
-        return self._av_transport_subscription
-
-    @property
-    def controller(self) -> soco.core.SoCo:
-        """Controller for the discovered Sonos device."""
-        return self._controller
 
     def play_sonos_favorite_by_index(self, index: int) -> None:
         """Plays a track or station from Sonos favorites.
