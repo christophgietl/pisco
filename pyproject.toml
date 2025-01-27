@@ -30,7 +30,7 @@ python-json-logger = "^3.2"
 soco = "^0.30"
 
 [tool.poetry.group.dev.dependencies]
-Faker = "^33.3"
+Faker = "^35.0"
 mypy = "^1.14"
 pre-commit = "^4.1"
 pytest = "^8.3"
