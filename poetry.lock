@@ -892,13 +892,13 @@ files = [
 
 [[package]]
 name = "soco"
-version = "0.30.6"
+version = "0.30.8"
 description = "SoCo (Sonos Controller) is a simple library to control Sonos speakers."
 optional = false
 python-versions = ">=3.6"
 files = [
-    {file = "soco-0.30.6-py2.py3-none-any.whl", hash = "sha256:06c486218d0558a89276ed573ae2264d8e9bfd95a46a7dc253e03d19a3e6f423"},
-    {file = "soco-0.30.6.tar.gz", hash = "sha256:7ae48e865dbf1d9fae8023e1b69465c2c4c17048992a05e9c017b35c43d4f4f2"},
+    {file = "soco-0.30.8-py2.py3-none-any.whl", hash = "sha256:7d8211ce730281a434a46c3d428450cb2f84400896fdd187b94698e88ea2af6c"},
+    {file = "soco-0.30.8.tar.gz", hash = "sha256:3114204347fc0f5c93a66f6c8213a6e0974a2c131115c64ba7f158f1dfa6d3e2"},
 ]
 
 [package.dependencies]
@@ -910,7 +910,7 @@ xmltodict = "*"
 
 [package.extras]
 events-asyncio = ["aiohttp"]
-testing = ["black (>=22.12.0)", "coveralls", "flake8", "graphviz", "importlib-metadata (<5)", "pylint", "pytest (>=2.5)", "pytest-cov (<2.6.0)", "requests-mock", "sphinx (==4.5.0)", "sphinx-rtd-theme", "twine", "wheel"]
+testing = ["black (>=22.12.0)", "coveralls", "flake8", "graphviz", "importlib-metadata (<5)", "pylint", "pytest (>=2.5)", "pytest-cov (<2.6.0)", "requests-mock", "sphinx (==4.5.0)", "sphinx_rtd_theme", "twine", "wheel"]
 
 [[package]]
 name = "tomli"
