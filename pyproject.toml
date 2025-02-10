@@ -31,7 +31,7 @@ soco = "^0.30"
 
 [tool.poetry.group.dev.dependencies]
 Faker = "^35.2"
-mypy = "^1.14"
+mypy = "^1.15"
 pre-commit = "^4.1"
 pytest = "^8.3"
 pytest-cov = "^6.0"
