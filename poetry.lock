@@ -861,13 +861,13 @@ use-chardet-on-py3 = ["chardet (>=3.0.2,<6)"]
 
 [[package]]
 name = "soco"
-version = "0.30.8"
+version = "0.30.9"
 description = "SoCo (Sonos Controller) is a simple library to control Sonos speakers."
 optional = false
 python-versions = ">=3.6"
 files = [
-    {file = "soco-0.30.8-py2.py3-none-any.whl", hash = "sha256:7d8211ce730281a434a46c3d428450cb2f84400896fdd187b94698e88ea2af6c"},
-    {file = "soco-0.30.8.tar.gz", hash = "sha256:3114204347fc0f5c93a66f6c8213a6e0974a2c131115c64ba7f158f1dfa6d3e2"},
+    {file = "soco-0.30.9-py2.py3-none-any.whl", hash = "sha256:cf06a56c7431e06fe923dfd58a1217f25e7a1737b74525850859f6d30dc86a24"},
+    {file = "soco-0.30.9.tar.gz", hash = "sha256:21f7a3b3f0e65aadfc90aaef69a5a428205597271b09c3d99bea8b5cb00df9da"},
 ]
 
 [package.dependencies]
