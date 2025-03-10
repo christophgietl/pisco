@@ -38,6 +38,9 @@ strict_bytes = true  # will become the default in mypy 2.0
 warn_incomplete_stub = true
 warn_unreachable = true
 
+[tool.poetry]
+packages = [{include = "soco"}]
+
 [tool.poetry.group.dev.dependencies]
 Faker = "^37.0"
 mypy = "^1.15"
