@@ -10,10 +10,10 @@ authors = [
     {name = "Christoph Gietl", email = "christophgietl@users.noreply.github.com"}
 ]
 dependencies = [
-  "click~=8.1.8",
-  "Pillow~=11.1.0",
-  "platformdirs~=4.3.6",
-  "python-json-logger~=3.3.0",
+  "click~=8.1",
+  "Pillow~=11.1",
+  "platformdirs~=4.3",
+  "python-json-logger~=3.3",
   "soco~=0.30.0"
 ]
 license = { text = "MIT" }
@@ -39,11 +39,11 @@ warn_incomplete_stub = true
 warn_unreachable = true
 
 [tool.poetry.group.dev.dependencies]
-Faker = "^37.0"
-mypy = "^1.15"
-pre-commit = "^4.1"
-pytest = "^8.3"
-pytest-cov = "^6.0"
+Faker = "37.0.0"
+mypy = "1.15.0"
+pre-commit = "4.1.0"
+pytest = "8.3.5"
+pytest-cov = "6.0.0"
 
 [tool.ruff]
 src = ["src", "stubs", "tests"]
