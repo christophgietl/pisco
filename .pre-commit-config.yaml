@@ -12,7 +12,7 @@ repos:
         name: poetry-check
         pass_filenames: false
       - id: poetry-lock
-        entry: poetry lock --no-update
+        entry: poetry lock
         files: ^(.*/)?(poetry\.lock|pyproject\.toml)$
         language: system
         name: poetry-lock
