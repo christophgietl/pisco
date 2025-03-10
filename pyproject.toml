@@ -39,7 +39,7 @@ warn_incomplete_stub = true
 warn_unreachable = true
 
 [tool.poetry]
-packages = [{include = "soco"}]
+packages = [{include = "src/pisco"}]
 
 [tool.poetry.group.dev.dependencies]
 Faker = "^37.0"
