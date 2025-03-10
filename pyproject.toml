@@ -20,6 +20,9 @@ license = "MIT"
 readme = "README.md"
 requires-python = ">=3.9"
 
+[project.gui-scripts]
+pisco = "pisco.user_interface.command_line_interface:run"
+
 [project.urls]
 GitHub = "https://github.com/christophgietl/pisco"
 Repository = "https://github.com/christophgietl/pisco.git"
@@ -41,9 +44,6 @@ mypy = "^1.15"
 pre-commit = "^4.1"
 pytest = "^8.3"
 pytest-cov = "^6.0"
-
-[tool.poetry.scripts]
-pisco = "pisco.user_interface.command_line_interface:run"
 
 [tool.ruff]
 src = ["src", "stubs", "tests"]
