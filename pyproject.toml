@@ -43,7 +43,7 @@ Faker = "37.0.0"
 mypy = "1.15.0"
 pre-commit = "4.1.0"
 pytest = "8.3.5"
-pytest-cov = "6.0.0"
+pytest-cov = "6.1.1"
 
 [tool.ruff]
 src = ["src", "stubs", "tests"]
