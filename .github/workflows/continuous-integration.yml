@@ -41,7 +41,7 @@ jobs:
         with:
           install-dependencies: true
           python-version: ${{ matrix.python-version }}
-      - run: poetry run pre-commit run --all-files
+      - run: poetry run pre-commit run --all-files --show-diff-on-failure
   publish:
     if: github.ref_type == 'tag'
     needs:
