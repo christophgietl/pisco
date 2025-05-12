@@ -9,8 +9,8 @@ inputs:
     default: 2.1.1
     description: >
       poetry version to be installed.
-      Needs to match the version used by dependabot
-      for PRs created by dependabot to successfully pass CI/CD.
+      Needs to match the version used by Dependabot
+      for PRs created by Dependabot to successfully pass CI/CD.
     required: true
   python-version:
     default: "3.9"
