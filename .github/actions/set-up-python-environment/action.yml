@@ -6,8 +6,11 @@ inputs:
     description: whether to install the dependencies specified in pyproject.toml
     required: true
   poetry-version:
-    default: 2.1.2
-    description: poetry version to be installed
+    default: 2.1.1
+    description: >
+      poetry version to be installed.
+      Needs to match the version used by dependabot
+      for PRs created by dependabot to successfully pass CI/CD.
     required: true
   python-version:
     default: "3.9"
