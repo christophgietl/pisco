@@ -1,6 +1,6 @@
 from _typeshed import Incomplete
 
-class DidlObject(metaclass=type):
+class DidlObject(metaclass=type):  # noqa: UP050
     resources: list[DidlResource]
     def __init__(
         self,

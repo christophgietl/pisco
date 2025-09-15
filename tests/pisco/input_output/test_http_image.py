@@ -86,6 +86,8 @@ def test_get_photo_image_raises_error_for_non_http_url(faker: fk.Faker) -> None:
 
     with pytest.raises(
         ValueError,
-        match="^Cannot download resource: URI does not start with a supported prefix.$",
+        match=(
+            r"^Cannot download resource: URI does not start with a supported prefix.$"
+        ),
     ):
         http_image.get_photo_image(uri, max_width, max_height)

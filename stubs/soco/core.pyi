@@ -12,7 +12,7 @@ class _CurrentTransportInfo(TypedDict):
     current_transport_status: Literal["OK"] | Incomplete
     current_speed: Literal["1"] | Incomplete
 
-class SoCo(metaclass=type):
+class SoCo(metaclass=type):  # noqa: UP050
     avTransport: AVTransport
     music_library: MusicLibrary
     def __init__(self, ip_address: str) -> None: ...

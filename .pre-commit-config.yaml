@@ -33,7 +33,7 @@ repos:
         name: pytest
         pass_filenames: false
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: cef0300fd0fc4d2a87a85fa2093c6b283ea36f4b  # frozen: v5.0.0
+    rev: 3e8a8703264a2f4a69428a0aa4dcb512790b2c8c  # frozen: v6.0.0
     hooks:
       - id: check-added-large-files
       - id: check-case-conflict
@@ -55,7 +55,7 @@ repos:
       - id: pretty-format-json
       - id: trailing-whitespace
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: 9aeda5d1f4bbd212c557da1ea78eca9e8c829e19  # frozen: v0.11.13
+    rev: 13a6bda8ea7612b3aec844ded16569d424b9a1ab  # frozen: v0.13.0
     hooks:
       - id: ruff-check
         args:
