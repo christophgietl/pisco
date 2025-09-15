@@ -1,20 +1,29 @@
 [build-system]
 build-backend = "poetry.core.masonry.api"
-requires = ["poetry-core>=2.0"]
+requires = ["poetry-core>=2.2"] # needed for the dependency-groups section
+
+[dependency-groups]
+dev = [
+    "Faker==37.6.0",
+    "mypy==1.18.1",
+    "pre-commit==4.3.0",
+    "pytest==8.4.2",
+    "pytest-cov==7.0.0"
+]
 
 [project]
 name = "pisco"
 version = "0.0.0"   # Version will be set by CI workflow based on git tag.
 description = "Keyboard-only controller for Sonos speakers"
 authors = [
-    {name = "Christoph Gietl", email = "christophgietl@users.noreply.github.com"}
+    { name = "Christoph Gietl", email = "christophgietl@users.noreply.github.com" }
 ]
 dependencies = [
-  "click~=8.1",
-  "Pillow~=11.3",
-  "platformdirs~=4.4",
-  "python-json-logger~=3.3",
-  "soco~=0.30.0"
+    "click~=8.1",
+    "Pillow~=11.3",
+    "platformdirs~=4.4",
+    "python-json-logger~=3.3",
+    "soco~=0.30.0"
 ]
 license = { text = "MIT" }
 readme = "README.md"
@@ -37,13 +46,6 @@ strict = true
 strict_bytes = true  # will become the default in mypy 2.0
 warn_incomplete_stub = true
 warn_unreachable = true
-
-[tool.poetry.group.dev.dependencies]
-Faker = "37.6.0"
-mypy = "1.18.1"
-pre-commit = "4.3.0"
-pytest = "8.4.2"
-pytest-cov = "7.0.0"
 
 [tool.ruff]
 src = ["src", "stubs", "tests"]
