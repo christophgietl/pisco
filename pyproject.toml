@@ -11,8 +11,8 @@ authors = [
 ]
 dependencies = [
   "click~=8.1",
-  "Pillow~=11.2",
-  "platformdirs~=4.3",
+  "Pillow~=11.3",
+  "platformdirs~=4.4",
   "python-json-logger~=3.3",
   "soco~=0.30.0"
 ]
@@ -39,11 +39,11 @@ warn_incomplete_stub = true
 warn_unreachable = true
 
 [tool.poetry.group.dev.dependencies]
-Faker = "37.0.0"
-mypy = "1.15.0"
-pre-commit = "4.1.0"
-pytest = "8.3.5"
-pytest-cov = "6.1.1"
+Faker = "37.6.0"
+mypy = "1.18.1"
+pre-commit = "4.3.0"
+pytest = "8.4.2"
+pytest-cov = "7.0.0"
 
 [tool.ruff]
 src = ["src", "stubs", "tests"]
