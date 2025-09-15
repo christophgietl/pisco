@@ -25,7 +25,8 @@ dependencies = [
     "python-json-logger~=3.3",
     "soco~=0.30.0"
 ]
-license = { text = "MIT" }
+license = "MIT"
+license-files = ["LICENSE"]
 readme = "README.md"
 requires-python = ">=3.9"
 
