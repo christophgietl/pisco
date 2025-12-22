@@ -23,7 +23,7 @@ dependencies = [
     "Pillow~=11.3",
     "platformdirs~=4.4",
     "python-json-logger~=4.0",
-    "soco~=0.30.12"
+    "soco~=0.30.13"
 ]
 license = "MIT"
 license-files = ["LICENSE"]
