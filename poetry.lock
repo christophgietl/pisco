@@ -1133,14 +1133,14 @@ use-chardet-on-py3 = ["chardet (>=3.0.2,<6)"]
 
 [[package]]
 name = "soco"
-version = "0.30.13"
+version = "0.30.14"
 description = "SoCo (Sonos Controller) is a simple library to control Sonos speakers."
 optional = false
 python-versions = ">=3.6"
 groups = ["main"]
 files = [
-    {file = "soco-0.30.13-py2.py3-none-any.whl", hash = "sha256:e20cbc14f22fcfc5e41a0d95dcaa875918623063ad6dbc1b8a4cecaab9737a7c"},
-    {file = "soco-0.30.13.tar.gz", hash = "sha256:cb1d4beb53ba676323846b173050d6afbb91e2dbac67e0125b566fd8e5e743ca"},
+    {file = "soco-0.30.14-py2.py3-none-any.whl", hash = "sha256:6953e0308c27e543ef99cd698eb07f976549310742760fdf8558bc7bf444e4b6"},
+    {file = "soco-0.30.14.tar.gz", hash = "sha256:850a26481cb924dfb956fd020552c7df2bab3b321513101d6a804c24a598fa26"},
 ]
 
 [package.dependencies]
@@ -1290,4 +1290,4 @@ test = ["pytest", "pytest-cov"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9"
-content-hash = "b514044329f89b8403cb4219e8ce391d62f2073b082f7b2fc83410da8cf7b05a"
+content-hash = "bf684de7e37bea27f05d85d0c7bd72e26c1152e8d59a0cbb9ba6a61da5533748"
