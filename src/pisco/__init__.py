@@ -15,23 +15,22 @@ logging.config.dictConfig(
         "formatters": {
             "json_formatter": {
                 "()": "pythonjsonlogger.json.JsonFormatter",
-                "format": (
-                    "{filename}"
-                    "{funcName}"
-                    "{levelname}"
-                    "{levelno}"
-                    "{lineno}"
-                    "{message}"
-                    "{module}"
-                    "{name}"
-                    "{pathname}"
-                    "{process}"
-                    "{processName}"
-                    "{taskName}"
-                    "{thread}"
-                    "{threadName}"
-                ),
-                "style": "{",
+                "format": [
+                    "filename",
+                    "funcName",
+                    "levelname",
+                    "levelno",
+                    "lineno",
+                    "message",
+                    "module",
+                    "name",
+                    "pathname",
+                    "process",
+                    "processName",
+                    "taskName",
+                    "thread",
+                    "threadName",
+                ],
                 "timestamp": True,
             }
         },
